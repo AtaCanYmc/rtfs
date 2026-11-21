@@ -1,0 +1,36 @@
+name: Bug Report
+description: Report a parser regression, provider failure, or CLI defect.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction Command or Code
+      description: Provide the exact CLI invocation or Python snippet that triggers the failure.
+      placeholder: |
+        rtfs get "The Matrix" --source imsdb --format json
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: State what the parser, provider, or exporter should produce.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Output / Traceback
+      description: Paste the error output or malformed AST fragment.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, and rtfs version.
+      placeholder: "macOS 15, Python 3.12, rtfs 0.1.0"
+    validations:
+      required: true

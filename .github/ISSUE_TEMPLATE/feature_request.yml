@@ -1,0 +1,19 @@
+name: Feature Request
+description: Propose a new script provider, parser capability, or export format.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Technical Problem or Use Case
+      description: Describe the missing source, layout edge case, or export target.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed Implementation
+      description: Specify which modules in src/rtfs/ would change and how.
+    validations:
+      required: true
