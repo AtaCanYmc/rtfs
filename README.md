@@ -171,11 +171,15 @@ rtfs/
 ├── .gitattributes
 ├── .gitignore
 ├── .markdownlint.json
+├── .release-please-manifest.json
 ├── assets/
 │   └── logo.svg
+├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── LICENSE
+├── Makefile
 ├── README.md
+├── release-please-config.json
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── pyproject.toml
@@ -302,9 +306,12 @@ Implement the four async methods of `CacheBackend` (`get`, `set`, `delete`, `clo
 
 ## Development & Verification
 
-Run the linter and unit test suite:
+Run the linter and unit test suite via `Makefile` or directly:
 
 ```bash
+make help
+make check
+# or directly:
 .venv/bin/ruff check .
 .venv/bin/pytest -v
 ```

@@ -13,4 +13,7 @@
 .gitattributes export-ignore
 .editorconfig export-ignore
 .markdownlint.json export-ignore
+.release-please-manifest.json export-ignore
+release-please-config.json export-ignore
+Makefile export-ignore
 tests export-ignore
