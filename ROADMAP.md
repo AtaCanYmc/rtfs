@@ -3,8 +3,9 @@
 ## v0.1.0 (Current)
 
 - [x] Canonical Pydantic v2 strict AST (`ScriptDocument`, `Scene`, `Action`, `Dialogue`, `Transition`).
-- [x] Async HTTP client with per-host rate-limiting and exponential backoff retries.
-- [x] SQLite-backed local disk caching in `~/.cache/rtfs`.
+- [x] Async HTTP client with per-host rate-limiting, exponential backoff retries, SSRF/redirect guards, and response payload limits.
+- [x] Pluggable async `CacheBackend` protocol (`disk://`, `redis://`, `rediss://`, `memory://`, `none://`) configurable via `RTFS_CACHE_URL`, `--cache-url`, `--no-cache`, or SDK injection.
+- [x] Provider host allowlists and bounded PDF page extraction (`max_pages=500`).
 - [x] Coordinate-clustering PDF screenplay parser via PyMuPDF.
 - [x] Indentation and `<b>`-tag HTML screenplay parser via Selectolax Lexbor.
 - [x] Plain-text and HTML fallback transcript parser.
@@ -18,8 +19,10 @@
 - [ ] Interactive terminal prompt (`rtfs get --interactive`) to select from ranked search candidates before downloading.
 - [ ] Scene-level filtering in `rtfs get` (`--character`, `--location`, `--scene-range`).
 - [ ] Local file parsing support (`rtfs parse ./local_script.pdf --format json`) without provider lookup.
+- [ ] CLI cache management subcommand (`rtfs cache clear`, `rtfs cache info`).
 
 ## v0.3.0
 
 - [ ] Final Draft (`.fdx`) XML parser and exporter.
 - [ ] Batch export command (`rtfs batch queries.txt --output-dir ./corpus`) with concurrency limits.
+- [ ] DNS resolution pinning in `HttpClient` to defend against time-of-check to time-of-use DNS rebinding.
