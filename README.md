@@ -4,6 +4,7 @@
   <p><strong>Read The F***ing Script — Multi-Source Screenplay CLI, Python SDK &amp; FastMCP Server</strong></p>
 
 [![CI](https://github.com/AtaCanYmc/rtfs/actions/workflows/ci.yml/badge.svg)](https://github.com/AtaCanYmc/rtfs/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/pyrtfs.svg)](https://pypi.org/project/pyrtfs/)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 </div>
@@ -25,9 +26,16 @@
 
 ## Quick Start
 
-Install the package and verify the CLI entry point:
+Install via Homebrew or `pip` / `uv`:
 
 ```bash
+# Homebrew (macOS & Linux)
+brew install AtaCanYmc/tap/rtfs
+
+# PyPI
+pip install "pyrtfs[all]"
+
+# Local editable install
 uv pip install -e ".[dev]"
 rtfs --help
 ```
