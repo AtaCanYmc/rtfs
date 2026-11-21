@@ -4,12 +4,13 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 
-`rtfs` is an asynchronous Python 3.11+ CLI and SDK that queries multiple screenplay archives, parses PDF and HTML layouts into a typed Pydantic v2 Abstract Syntax Tree, and exports to JSON, Fountain, or dialogue analytics.
+`rtfs` is an asynchronous Python 3.11+ CLI, SDK, and FastMCP server that queries multiple screenplay archives, parses PDF and HTML layouts into a typed Pydantic v2 Abstract Syntax Tree, and exports to JSON, Fountain, or dialogue analytics.
 
 ## Table of Contents
 
 - [Quick Start](#quick-start)
 - [Architecture](#architecture)
+- [MCP Server](#mcp-server)
 - [Caching](#caching)
 - [Repository Layout](#repository-layout)
 - [CLI Reference](#cli-reference)
@@ -48,11 +49,11 @@ rtfs stats "The Matrix"
 
 ## Architecture
 
-`rtfs` separates upstream HTTP retrieval from structural parsing. Every provider returns a `RawScript` payload containing raw bytes or strings alongside `ScriptMetadata`. Specialized parsers transform `RawScript` into a canonical `ScriptDocument` AST before handing it to exporters.
+`rtfs` separates upstream HTTP retrieval from structural parsing. Every provider returns a `RawScript` payload containing raw bytes or strings alongside `ScriptMetadata`. Specialized parsers transform `RawScript` into a canonical `ScriptDocument` AST before handing it to exporters or the progressive-disclosure MCP layer.
 
 ```mermaid
 flowchart LR
-    CLI["CLI / SDK"] --> AGG["ScriptAggregator"]
+    CLI["CLI / SDK / FastMCP"] --> AGG["ScriptAggregator"]
     AGG --> P1["ScriptSlugProvider (PDF)"]
     AGG --> P2["TVWritingProvider (PDF)"]
     AGG --> P3["IMSDbProvider (HTML)"]
@@ -72,6 +73,58 @@ flowchart LR
 1. **PDF Coordinate Clustering (`PdfScreenplayParser`)**: Extracts text spans and bounding boxes via PyMuPDF `page.get_text("dict")`. Strips headers above `y0 < 50`, footers below `y1 > 740`, page numbers, revision stamps, and continuation markers. Groups horizontal `x0` offsets within an 8pt tolerance to classify action margins, dialogue columns, parentheticals, character cues, and right-aligned transitions. Consecutive lines in the same column merge when vertical delta is under `1.5x` line height.
 2. **HTML Indentation & Tag Parsing (`HtmlScreenplayParser`)**: Extracts `<td class="scrtext"><pre>` blocks from IMSDb documents. Handles both `<b>`-delimited character cues and whitespace-indented scripts through 1D margin clustering.
 3. **Transcript Normalization (`TranscriptParser`)**: Parses `SPEAKER: line` patterns and bracketed stage directions from HTML or plain-text transcripts into `ScriptDocument` scenes.
+
+## MCP Server
+
+Full feature-length screenplays typically span 25,000 to 35,000 tokens. The `rtfs` Model Context Protocol (MCP) server exposes progressive-disclosure tools so AI agents can search titles, inspect the scene heading index, fetch bounded scene ranges (max 10 scenes per call), or filter dialogue by character and keyword without exhausting their context window.
+
+### Installation
+
+```bash
+pip install "rtfs[mcp]"
+# or install all optional extras (Redis + MCP)
+pip install "rtfs[all]"
+```
+
+### Exposed MCP Tools & Resources
+
+| Tool / Resource | Parameters | Description |
+| :--- | :--- | :--- |
+| `search_scripts` | `query`, `allow_transcript=False`, `limit=10` | Searches across active providers and returns concise metadata records. |
+| `get_script_overview` | `query_or_url`, `source=None` | Returns metadata, total scene count, top 15 speaking characters, and a full `scene_index` (`scene_number`, `heading`) without dumping body text. |
+| `get_scenes` | `query_or_url`, `start_scene`, `end_scene=None`, `format="fountain"` | Returns a single scene or inclusive range (hard-capped at 10 scenes per call) in Fountain or JSON format. |
+| `search_dialogue` | `query_or_url`, `character=None`, `keyword=None`, `limit=30` | Case-insensitive filtering of dialogue turns by character name and/or keyword. |
+| `get_script_stats` | `query_or_url` | Returns scene counts, `INT.` vs. `EXT.` breakdown, dialogue-to-action ratio, and character distribution. |
+| `rtfs://script/{source}/{slug}/fountain` | `source`, `slug` | MCP resource returning the complete Fountain screenplay when a client explicitly attaches it. |
+
+### Client Configuration (`claude_desktop_config.json` / Cursor)
+
+```json
+{
+  "mcpServers": {
+    "rtfs": {
+      "command": "uvx",
+      "args": ["--from", "rtfs[mcp]", "rtfs", "mcp"],
+      "env": {
+        "RTFS_CACHE_URL": "disk://~/.cache/rtfs"
+      }
+    }
+  }
+}
+```
+
+Or if installed directly into an environment:
+
+```json
+{
+  "mcpServers": {
+    "rtfs": {
+      "command": "rtfs",
+      "args": ["mcp", "--transport", "stdio"]
+    }
+  }
+}
+```
 
 ## Caching
 
@@ -141,6 +194,9 @@ rtfs/
 │       │   ├── fountain_exp.py
 │       │   ├── json_exp.py
 │       │   └── stats_exp.py
+│       ├── mcp/
+│       │   ├── __init__.py
+│       │   └── server.py
 │       ├── parsers/
 │       │   ├── base.py
 │       │   ├── html_screenplay.py
@@ -158,7 +214,9 @@ rtfs/
     ├── test_aggregator.py
     ├── test_cache.py
     ├── test_exporters.py
-    └── test_parsers.py
+    ├── test_mcp.py
+    ├── test_parsers.py
+    └── test_security.py
 ```
 
 ## CLI Reference
@@ -182,6 +240,11 @@ rtfs/
 | `rtfs stats` | `--allow-transcript` | `False` | Allow transcript sources for statistics calculation. |
 | `rtfs stats` | `--cache-url` | `None` | Cache backend URI. Overrides `RTFS_CACHE_URL`. |
 | `rtfs stats` | `--no-cache` | `False` | Disable caching (`none://`). |
+| `rtfs mcp` | `--transport`, `-t` | `stdio` | MCP transport protocol: `stdio` or `sse`. |
+| `rtfs mcp` | `--host` | `127.0.0.1` | Bind host when running SSE transport. |
+| `rtfs mcp` | `--port` | `8000` | Bind port when running SSE transport. |
+| `rtfs mcp` | `--cache-url` | `None` | Cache backend URI. Overrides `RTFS_CACHE_URL`. |
+| `rtfs mcp` | `--no-cache` | `False` | Disable caching (`none://`). |
 
 ## Python SDK
 

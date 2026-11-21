@@ -3,8 +3,17 @@ from __future__ import annotations
 from pathlib import Path
 
 import fitz
+import pytest
 
 from rtfs.core.models import Action, Dialogue, RawScript, ScriptMetadata, Transition
+from rtfs.parsers.base import (
+    cluster_x_positions,
+    is_character_candidate,
+    is_noise_line,
+    is_transition,
+    parse_character_cue,
+    parse_heading,
+)
 from rtfs.parsers.html_screenplay import HtmlScreenplayParser
 from rtfs.parsers.pdf_screenplay import PdfScreenplayParser
 from rtfs.parsers.transcript import TranscriptParser
@@ -181,3 +190,111 @@ def test_transcript_parser() -> None:
     assert isinstance(s.elements[2], Dialogue)
     assert s.elements[2].character == "NEO"
     assert s.elements[2].lines == "You can't scare me."
+
+
+@pytest.mark.parametrize(
+    ("raw_heading", "expected_loc", "expected_tod"),
+    [
+        ("INT. SERVER ROOM - NIGHT", "SERVER ROOM", "NIGHT"),
+        ("42A EXT. HIGHWAY OVERPASS -- CONTINUOUS", "HIGHWAY OVERPASS", "CONTINUOUS"),
+        ("I/E. PATROL CAR - MOVING", "PATROL CAR", "MOVING"),
+        ("EXT. DESERT", "DESERT", None),
+        ("NON_STANDARD_HEADING", None, None),
+    ],
+)
+def test_parse_heading_variants(
+    raw_heading: str,
+    expected_loc: str | None,
+    expected_tod: str | None,
+) -> None:
+    _, loc, tod = parse_heading(raw_heading)
+    assert loc == expected_loc
+    assert tod == expected_tod
+
+
+@pytest.mark.parametrize(
+    ("cue", "expected_name", "expected_mods"),
+    [
+        ("MORPHEUS (V.O.) (CONT'D)", "MORPHEUS", ["V.O.", "CONT'D"]),
+        ("DR. KING SCHULTZ (O.S.)", "DR. KING SCHULTZ", ["O.S."]),
+        ("MR. ANDERSON:", "MR. ANDERSON", []),
+    ],
+)
+def test_parse_character_cue_and_candidates(
+    cue: str,
+    expected_name: str,
+    expected_mods: list[str],
+) -> None:
+    assert is_character_candidate(cue) is True
+    name, mods = parse_character_cue(cue)
+    assert name == expected_name
+    assert mods == expected_mods
+
+
+@pytest.mark.parametrize(
+    "non_char",
+    [
+        "A sentence ending with a period.",
+        "(whispering)",
+        "CUT TO:",
+        "INT. ROOM - DAY",
+        "CONTINUED:",
+        "12A.",
+    ],
+)
+def test_is_character_candidate_rejects_non_characters(non_char: str) -> None:
+    assert is_character_candidate(non_char) is False
+
+
+@pytest.mark.parametrize(
+    "noise",
+    [
+        "",
+        "   ",
+        "CONTINUED:",
+        "(CONTINUED)",
+        "CONTINUED: (2)",
+        "(MORE)",
+        "42.",
+        "14A.",
+        "BLUE REV. 04/15/21",
+    ],
+)
+def test_is_noise_line_filters_page_artifacts(noise: str) -> None:
+    assert is_noise_line(noise) is True
+
+
+@pytest.mark.parametrize(
+    "transition",
+    [
+        "CUT TO:",
+        "FADE IN:",
+        "FADE OUT.",
+        "SMASH CUT TO:",
+        "DISSOLVE TO:",
+        "FLASHBACK TO:",
+    ],
+)
+def test_is_transition_recognizes_standard_transitions(transition: str) -> None:
+    assert is_transition(transition) is True
+
+
+def test_cluster_x_positions_groups_within_tolerance() -> None:
+    assert cluster_x_positions([]) == []
+    pts = [72.0, 73.5, 71.0, 144.0, 145.0, 216.0]
+    clusters = cluster_x_positions(pts, tolerance=8.0)
+    assert len(clusters) == 3
+    assert abs(clusters[0] - 72.16) < 1.0
+    assert abs(clusters[1] - 144.5) < 1.0
+    assert abs(clusters[2] - 216.0) < 1.0
+
+
+def test_html_parser_empty_content_returns_empty_scenes() -> None:
+    raw = RawScript(
+        content="<pre>   \n  CONTINUED: \n 12. </pre>",
+        content_type="html",
+        metadata=_make_metadata(),
+    )
+    doc = HtmlScreenplayParser().parse(raw)
+    assert doc.scenes == []
+

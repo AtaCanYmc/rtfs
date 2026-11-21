@@ -251,5 +251,52 @@ def stats_cmd(
         raise typer.Exit(code=1) from exc
 
 
+@app.command("mcp")
+def mcp_cmd(
+    transport: Annotated[
+        str,
+        typer.Option("--transport", "-t", help="MCP transport: stdio|sse"),
+    ] = "stdio",
+    host: Annotated[
+        str,
+        typer.Option("--host", help="Bind host when using SSE transport"),
+    ] = "127.0.0.1",
+    port: Annotated[
+        int,
+        typer.Option("--port", help="Bind port when using SSE transport"),
+    ] = 8000,
+    cache_url: Annotated[
+        str | None,
+        typer.Option(
+            "--cache-url",
+            help="Cache URI (disk://, redis://, memory://, none://); overrides RTFS_CACHE_URL",
+        ),
+    ] = None,
+    no_cache: Annotated[
+        bool,
+        typer.Option("--no-cache", help="Disable caching (shorthand for none://)"),
+    ] = False,
+) -> None:
+    """Start the FastMCP server for progressive screenplay exploration."""
+    transport_lower = transport.lower()
+    if transport_lower not in {"stdio", "sse"}:
+        err_console.print("[red]Error:[/red] Invalid transport. Choose from: stdio, sse")
+        raise typer.Exit(code=2)
+
+    resolved_cache = _resolve_cache_url(cache_url, no_cache)
+    try:
+        from rtfs.mcp.server import run_mcp_server
+
+        run_mcp_server(
+            transport=transport_lower,  # type: ignore[arg-type]
+            host=host,
+            port=port,
+            cache_url=resolved_cache,
+        )
+    except (ImportError, ValueError) as exc:
+        err_console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+
 if __name__ == "__main__":
     app()
