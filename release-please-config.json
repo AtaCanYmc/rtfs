@@ -12,7 +12,8 @@
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         "pyproject.toml",
-        "src/rtfs/__init__.py"
+        "src/rtfs/__init__.py",
+        "docs/index.html"
       ]
     }
   },
