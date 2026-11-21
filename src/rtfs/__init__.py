@@ -13,6 +13,7 @@ from rtfs.core.cache import (
     RedisCacheBackend,
     create_cache,
 )
+from rtfs.core.client import BatchItemResult, RTFSClient, render_document
 from rtfs.core.models import (
     Action,
     Dialogue,
@@ -31,6 +32,7 @@ from rtfs.parsers.fdx import FdxParser
 
 __all__ = [
     "Action",
+    "BatchItemResult",
     "CacheBackend",
     "CacheInfo",
     "Dialogue",
@@ -38,6 +40,7 @@ __all__ = [
     "FdxParser",
     "MemoryCacheBackend",
     "NullCacheBackend",
+    "RTFSClient",
     "RawScript",
     "RedisCacheBackend",
     "Scene",
@@ -56,5 +59,6 @@ __all__ = [
     "filter_scenes",
     "parse_file",
     "parse_scene_range",
+    "render_document",
 ]
 __version__ = "0.1.0"

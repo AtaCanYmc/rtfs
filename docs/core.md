@@ -272,6 +272,18 @@ async def main() -> None:
     print(f"Parsed local file: {local_doc.metadata.title} ({len(local_doc.scenes)} scene)")
     local_fdx.unlink()
 
+    # 4. High-level RTFSClient SDK wrapper (search, filtered get, local parse, batch export, cache management)
+    from rtfs import RTFSClient, render_document
+
+    async with RTFSClient(cache="memory://") as client:
+        doc_slice = await client.get_document(
+            "The Matrix",
+            character="NEO",
+            scene_range="1-15",
+        )
+        fountain_text = render_document(doc_slice, "fountain")
+        print(f"Rendered {len(fountain_text)} chars via RTFSClient")
+
 
 asyncio.run(main())
 ```

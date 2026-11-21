@@ -225,6 +225,7 @@ rtfs/
 │   └── rtfs/
 │       ├── __init__.py
 │       ├── cli/
+│       │   ├── formatting.py
 │       │   └── main.py
 │       ├── core/
 │       │   ├── aggregator.py
@@ -236,9 +237,12 @@ rtfs/
 │       │   │   ├── memory.py
 │       │   │   ├── null.py
 │       │   │   └── redis.py
+│       │   ├── client.py
 │       │   ├── http.py
-│       │   └── models.py
+│       │   ├── models.py
+│       │   └── network.py
 │       ├── exporters/
+│       │   ├── fdx_exp.py
 │       │   ├── fountain_exp.py
 │       │   ├── json_exp.py
 │       │   └── stats_exp.py
@@ -247,7 +251,13 @@ rtfs/
 │       │   └── server.py
 │       ├── parsers/
 │       │   ├── base.py
+│       │   ├── fdx.py
 │       │   ├── html_screenplay.py
+│       │   ├── pdf/
+│       │   │   ├── __init__.py
+│       │   │   ├── dual_column.py
+│       │   │   ├── extract.py
+│       │   │   └── parser.py
 │       │   ├── pdf_screenplay.py
 │       │   └── transcript.py
 │       └── providers/
