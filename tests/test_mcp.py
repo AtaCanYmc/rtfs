@@ -106,7 +106,7 @@ async def test_mcp_missing_dependency_raises_helpful_importerror(
 
     with pytest.raises(
         ImportError,
-        match=r"MCP server requires the mcp extra: pip install rtfs\[mcp\]",
+        match=r"MCP server requires the mcp extra: pip install pyrtfs\[mcp\]",
     ):
         create_mcp_server(cache="memory://")
 

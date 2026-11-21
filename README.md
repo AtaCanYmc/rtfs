@@ -85,9 +85,9 @@ Full feature-length screenplays typically span 25,000 to 35,000 tokens. The `rtf
 ### Installation
 
 ```bash
-pip install "rtfs[mcp]"
+pip install "pyrtfs[mcp]"
 # or install all optional extras (Redis + MCP)
-pip install "rtfs[all]"
+pip install "pyrtfs[all]"
 ```
 
 ### Exposed MCP Tools & Resources
@@ -108,7 +108,7 @@ pip install "rtfs[all]"
   "mcpServers": {
     "rtfs": {
       "command": "uvx",
-      "args": ["--from", "rtfs[mcp]", "rtfs", "mcp"],
+      "args": ["--from", "pyrtfs[mcp]", "rtfs", "mcp"],
       "env": {
         "RTFS_CACHE_URL": "disk://~/.cache/rtfs"
       }
@@ -139,7 +139,7 @@ Or if installed directly into an environment:
 | URI Pattern | Backend Class | Description |
 | :--- | :--- | :--- |
 | `disk://~/.cache/rtfs` | `DiskCacheBackend` | Default SQLite-backed disk cache offloaded via `asyncio.to_thread`. |
-| `redis://localhost:6379/0` | `RedisCacheBackend` | Async Redis cache (`rediss://` also supported). Requires `pip install rtfs[redis]`. |
+| `redis://localhost:6379/0` | `RedisCacheBackend` | Async Redis cache (`rediss://` also supported). Requires `pip install pyrtfs[redis]`. |
 | `memory://` | `MemoryCacheBackend` | Ephemeral in-memory dictionary with monotonic TTL expiration. |
 | `none://` | `NullCacheBackend` | No-op cache backend (equivalent to `--no-cache`). |
 
@@ -160,7 +160,7 @@ rtfs stats "The Matrix" --no-cache
 To use the Redis backend, install the optional `redis` extra:
 
 ```bash
-pip install "rtfs[redis]"
+pip install "pyrtfs[redis]"
 ```
 
 ## Repository Layout

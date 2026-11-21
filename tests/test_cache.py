@@ -103,7 +103,7 @@ async def test_redis_cache_backend_missing_dependency(
 
     with pytest.raises(
         ImportError,
-        match=r"Redis backend requires the redis extra: pip install rtfs\[redis\]",
+        match=r"Redis backend requires the redis extra: pip install pyrtfs\[redis\]",
     ):
         RedisCacheBackend("redis://localhost:6379/0")
 

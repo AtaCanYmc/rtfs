@@ -25,7 +25,7 @@ class RedisCacheBackend:
                 import redis.asyncio as redis_async  # type: ignore[import-not-found]
             except ImportError as exc:
                 raise ImportError(
-                    "Redis backend requires the redis extra: pip install rtfs[redis]"
+                    "Redis backend requires the redis extra: pip install pyrtfs[redis]"
                 ) from exc
             self._client = redis_async.from_url(url, decode_responses=False)
 

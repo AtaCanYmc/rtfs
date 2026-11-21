@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "rtfs"
+name = "pyrtfs"
 version = "0.1.0"
 description = "Multi-Source Movie & TV Script CLI + Python SDK"
 readme = "README.md"

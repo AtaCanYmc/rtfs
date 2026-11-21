@@ -17,7 +17,7 @@ def _import_fastmcp() -> Any:
         from mcp.server.fastmcp import FastMCP  # type: ignore[import-not-found]
     except ImportError as exc:
         raise ImportError(
-            "MCP server requires the mcp extra: pip install rtfs[mcp]"
+            "MCP server requires the mcp extra: pip install pyrtfs[mcp]"
         ) from exc
     return FastMCP
 

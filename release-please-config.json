@@ -8,7 +8,7 @@
   "changelog-path": "CHANGELOG.md",
   "packages": {
     ".": {
-      "package-name": "rtfs",
+      "package-name": "pyrtfs",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         "pyproject.toml",
