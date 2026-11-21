@@ -30,6 +30,8 @@ def export_fountain(doc: ScriptDocument) -> str:
             elif isinstance(elem, Dialogue):
                 mods = " ".join(f"({m})" for m in elem.modifiers)
                 cue = f"{elem.character} {mods}".strip()
+                if elem.dual and not cue.endswith("^"):
+                    cue = f"{cue}^"
                 lines.append(cue)
                 if elem.parenthetical:
                     lines.append(f"({elem.parenthetical})")

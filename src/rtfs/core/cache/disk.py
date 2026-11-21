@@ -5,6 +5,8 @@ from pathlib import Path
 
 from diskcache import Cache
 
+from rtfs.core.cache.base import CacheInfo
+
 DEFAULT_CACHE_DIR = Path("~/.cache/rtfs")
 DEFAULT_TTL = 86400 * 7
 
@@ -41,6 +43,18 @@ class DiskCacheBackend:
 
     async def clear(self) -> None:
         await asyncio.to_thread(self._cache.clear)
+
+    async def info(self) -> CacheInfo:
+        def _read_info() -> CacheInfo:
+            self._cache.expire()
+            return CacheInfo(
+                backend="disk",
+                location=str(self.path),
+                entries=len(self._cache),
+                size_bytes=int(self._cache.volume()),
+            )
+
+        return await asyncio.to_thread(_read_info)
 
     async def close(self) -> None:
         await asyncio.to_thread(self._cache.close)

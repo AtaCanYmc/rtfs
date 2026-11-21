@@ -1,12 +1,23 @@
 from __future__ import annotations
 
 import asyncio
+import re
+from pathlib import Path
+from typing import Literal
 from urllib.parse import urlparse
 
 from rtfs.core.cache import CacheBackend, create_cache
 from rtfs.core.http import HttpClient, host_matches
-from rtfs.core.models import RawScript, ScriptDocument, SearchResult
+from rtfs.core.models import (
+    Dialogue,
+    RawScript,
+    Scene,
+    ScriptDocument,
+    ScriptMetadata,
+    SearchResult,
+)
 from rtfs.parsers.base import BaseParser
+from rtfs.parsers.fdx import FdxParser
 from rtfs.parsers.html_screenplay import HtmlScreenplayParser
 from rtfs.parsers.pdf_screenplay import PdfScreenplayParser
 from rtfs.parsers.transcript import TranscriptParser
@@ -22,6 +33,157 @@ SOURCE_PRIORITY_BONUS: dict[str, float] = {
     "imsdb": 7.0,           # HTML screenplay
     "subslikescript": 0.0,  # Fallback transcript
 }
+
+SCENE_RANGE_RE = re.compile(r"^\s*(\d+)(?:\s*-\s*(\d+))?\s*$")
+
+EXTENSION_TO_CONTENT_TYPE: dict[str, Literal["html", "pdf", "text", "fdx"]] = {
+    ".pdf": "pdf",
+    ".fdx": "fdx",
+    ".xml": "fdx",
+    ".html": "html",
+    ".htm": "html",
+    ".txt": "text",
+    ".fountain": "text",
+}
+
+
+def parse_scene_range(spec: str) -> tuple[int, int]:
+    """Parse 'N' or 'start-end' into a 1-indexed inclusive (start, end) tuple."""
+    m = SCENE_RANGE_RE.match(spec)
+    if not m:
+        raise ValueError(
+            f"Invalid scene range '{spec}'. Expected a positive integer 'N' or range 'start-end'."
+        )
+    start = int(m.group(1))
+    end = int(m.group(2)) if m.group(2) is not None else start
+    if start < 1 or end < start:
+        raise ValueError(
+            f"Invalid scene range '{spec}': scene numbers must be >= 1 and end >= start."
+        )
+    return start, end
+
+
+def filter_scenes(
+    doc: ScriptDocument,
+    *,
+    character: str | None = None,
+    location: str | None = None,
+    scene_range: str | tuple[int, int] | None = None,
+) -> ScriptDocument:
+    """Filter scenes in a ScriptDocument using logical AND across character, location, and range."""
+    char_q = character.strip().lower() if character and character.strip() else None
+    loc_q = location.strip().lower() if location and location.strip() else None
+
+    bounds: tuple[int, int] | None = None
+    if isinstance(scene_range, str) and scene_range.strip():
+        bounds = parse_scene_range(scene_range)
+    elif isinstance(scene_range, tuple):
+        start, end = scene_range
+        if start < 1 or end < start:
+            raise ValueError(f"Invalid scene_range tuple: ({start}, {end})")
+        bounds = (start, end)
+
+    if char_q is None and loc_q is None and bounds is None:
+        return doc
+
+    matched: list[Scene] = []
+    for scene in doc.scenes:
+        if bounds is not None and not (bounds[0] <= scene.scene_number <= bounds[1]):
+            continue
+
+        if loc_q is not None:
+            loc_target = f"{scene.location or ''} {scene.heading}".lower()
+            if loc_q not in loc_target:
+                continue
+
+        if char_q is not None:
+            has_char = any(
+                isinstance(el, Dialogue) and char_q in el.character.lower()
+                for el in scene.elements
+            )
+            if not has_char:
+                continue
+
+        matched.append(scene)
+
+    return ScriptDocument(metadata=doc.metadata, scenes=matched)
+
+
+def _build_default_parsers() -> dict[str, BaseParser]:
+    return {
+        "pdf": PdfScreenplayParser(),
+        "html": HtmlScreenplayParser(),
+        "text": TranscriptParser(),
+        "fdx": FdxParser(),
+    }
+
+
+def parse_file(
+    path: str | Path,
+    *,
+    title: str | None = None,
+    content_type: Literal["html", "pdf", "text", "fdx"] | None = None,
+    media_type: Literal["movie", "tv"] = "movie",
+) -> ScriptDocument:
+    """Parse a local screenplay/transcript file (.pdf, .fdx, .html, .txt) without network calls."""
+    file_path = Path(path)
+    if not file_path.exists() or not file_path.is_file():
+        raise FileNotFoundError(f"Local script file not found: {file_path}")
+
+    resolved_type = content_type
+    if resolved_type is None:
+        ext = file_path.suffix.lower()
+        resolved_type = EXTENSION_TO_CONTENT_TYPE.get(ext)
+        if resolved_type is None:
+            raise ValueError(
+                f"Unsupported file extension '{ext}' for '{file_path.name}'. "
+                f"Supported: {', '.join(sorted(EXTENSION_TO_CONTENT_TYPE))}"
+            )
+
+    parsers = _build_default_parsers()
+    parser = parsers.get(resolved_type)
+    if parser is None:
+        raise ValueError(f"Unsupported content_type: {resolved_type}")
+
+    raw_bytes = file_path.read_bytes()
+    payload: bytes | str = (
+        raw_bytes
+        if resolved_type == "pdf"
+        else raw_bytes.decode("utf-8", errors="replace")
+    )
+
+    stem_title = file_path.stem.replace("-", " ").replace("_", " ").strip()
+    inferred_title = (
+        title
+        if title is not None
+        else ("" if resolved_type == "fdx" else stem_title)
+    )
+    fmt: Literal["screenplay", "transcript"] = (
+        "transcript" if resolved_type == "text" else "screenplay"
+    )
+    meta_title = (
+        inferred_title
+        if resolved_type == "fdx"
+        else (inferred_title or file_path.stem)
+    )
+    meta = ScriptMetadata(
+        title=meta_title,
+        media_type=media_type,
+        source="local",
+        format=fmt,
+        url=str(file_path.resolve()),
+    )
+    raw = RawScript(content=payload, content_type=resolved_type, metadata=meta)
+    doc = parser.parse(raw)
+    if not doc.metadata.title:
+        doc = doc.model_copy(
+            update={
+                "metadata": doc.metadata.model_copy(
+                    update={"title": stem_title or "Untitled"}
+                )
+            }
+        )
+    return doc
 
 
 class ScriptAggregator:
@@ -45,11 +207,7 @@ class ScriptAggregator:
             "tvwriting": TVWritingProvider(self.http, self.cache),
             "subslikescript": SubsLikeScriptProvider(self.http, self.cache),
         }
-        self._parsers: dict[str, BaseParser] = {
-            "pdf": PdfScreenplayParser(),
-            "html": HtmlScreenplayParser(),
-            "text": TranscriptParser(),
-        }
+        self._parsers: dict[str, BaseParser] = _build_default_parsers()
 
     def _select_providers(
         self,
@@ -106,7 +264,13 @@ class ScriptAggregator:
         host = (parsed.hostname or "").lower()
         path = parsed.path
         slug = path.rstrip("/").split("/")[-1] or "Direct Script"
-        title = slug.replace(".html", "").replace(".pdf", "").replace("-", " ").strip()
+        title = (
+            slug.replace(".html", "")
+            .replace(".pdf", "")
+            .replace(".fdx", "")
+            .replace("-", " ")
+            .strip()
+        )
 
         if host_matches(host, "imsdb.com"):
             source = "imsdb"
@@ -138,6 +302,21 @@ class ScriptAggregator:
         if parser is None:
             raise ValueError(f"Unsupported content_type: {raw.content_type}")
         return parser.parse(raw)
+
+    def parse_file(
+        self,
+        path: str | Path,
+        *,
+        title: str | None = None,
+        content_type: Literal["html", "pdf", "text", "fdx"] | None = None,
+        media_type: Literal["movie", "tv"] = "movie",
+    ) -> ScriptDocument:
+        return parse_file(
+            path,
+            title=title,
+            content_type=content_type,
+            media_type=media_type,
+        )
 
     async def fetch_and_parse(self, result: SearchResult) -> ScriptDocument:
         provider = self.providers.get(result.source)

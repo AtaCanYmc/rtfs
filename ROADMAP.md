@@ -1,6 +1,6 @@
 # Roadmap
 
-## v0.1.0 (Current)
+## v0.1.0
 
 - [x] Canonical Pydantic v2 strict AST (`ScriptDocument`, `Scene`, `Action`, `Dialogue`, `Transition`).
 - [x] Async HTTP client with per-host rate-limiting, exponential backoff retries, SSRF/redirect guards, and response payload limits.
@@ -11,18 +11,19 @@
 - [x] Plain-text and HTML fallback transcript parser.
 - [x] Parallel multi-provider search (`imsdb`, `scriptslug`, `tvwriting`, `subslikescript`) with `rapidfuzz` ranking.
 - [x] JSON, Fountain, plain-text, and character/scene analytics exporters.
-- [x] Typer + Rich CLI (`rtfs search`, `rtfs get`, `rtfs stats`).
+- [x] Progressive-disclosure FastMCP server (`rtfs mcp`).
+- [x] Typer + Rich CLI (`rtfs search`, `rtfs get`, `rtfs stats`, `rtfs mcp`).
 
 ## v0.2.0
 
-- [ ] Dual-column simultaneous dialogue detection in `PdfScreenplayParser` via horizontal bounding-box overlap (`y0` intersection with separate `x0` columns).
-- [ ] Interactive terminal prompt (`rtfs get --interactive`) to select from ranked search candidates before downloading.
-- [ ] Scene-level filtering in `rtfs get` (`--character`, `--location`, `--scene-range`).
-- [ ] Local file parsing support (`rtfs parse ./local_script.pdf --format json`) without provider lookup.
-- [ ] CLI cache management subcommand (`rtfs cache clear`, `rtfs cache info`).
+- [x] Dual-column simultaneous dialogue detection in `PdfScreenplayParser` via horizontal bounding-box overlap (`y0` intersection with separate `x0` columns) and Fountain `^` dual-dialogue export.
+- [x] Interactive terminal prompt (`rtfs get --interactive`) to select from ranked search candidates before downloading.
+- [x] Scene-level filtering in `rtfs get` and `rtfs parse` (`--character`, `--location`, `--scene-range`).
+- [x] Local file parsing support (`rtfs parse ./local_script.pdf --format json`) without provider lookup.
+- [x] CLI cache management subcommands (`rtfs cache clear`, `rtfs cache info`).
 
-## v0.3.0
+## v0.3.0 (Current)
 
-- [ ] Final Draft (`.fdx`) XML parser and exporter.
-- [ ] Batch export command (`rtfs batch queries.txt --output-dir ./corpus`) with concurrency limits.
-- [ ] DNS resolution pinning in `HttpClient` to defend against time-of-check to time-of-use DNS rebinding.
+- [x] Final Draft (`.fdx`) XML parser (`FdxParser`) and exporter (`export_fdx`) with `<DualDialogue>` support and XXE/entity-expansion hardening.
+- [x] Batch export command (`rtfs batch queries.txt --output-dir ./corpus`) with `--concurrency` semaphore limits.
+- [x] DNS resolution pinning in `HttpClient` (`PinnedAsyncNetworkBackend` / `PinnedAsyncHTTPTransport`) to defend against time-of-check to time-of-use (TOCTOU) DNS rebinding.

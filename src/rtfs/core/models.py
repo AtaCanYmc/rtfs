@@ -38,7 +38,7 @@ class RawScript(BaseModel):
     model_config = ConfigDict(strict=True)
 
     content: bytes | str
-    content_type: Literal["html", "pdf", "text"]
+    content_type: Literal["html", "pdf", "text", "fdx"]
     metadata: ScriptMetadata
 
 
@@ -57,6 +57,7 @@ class Dialogue(BaseModel):
     modifiers: list[str] = Field(default_factory=list)
     parenthetical: str | None = None
     lines: str
+    dual: bool = False
 
 
 class Transition(BaseModel):

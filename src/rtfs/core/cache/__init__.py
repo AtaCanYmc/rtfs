@@ -1,5 +1,6 @@
 from rtfs.core.cache.base import (
     CacheBackend,
+    CacheInfo,
     decode_raw_script,
     decode_search_results,
     encode_raw_script,
@@ -14,6 +15,7 @@ from rtfs.core.cache.redis import RedisCacheBackend
 
 __all__ = [
     "CacheBackend",
+    "CacheInfo",
     "DEFAULT_CACHE_URL",
     "DiskCacheBackend",
     "MemoryCacheBackend",

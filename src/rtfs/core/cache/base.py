@@ -3,9 +3,20 @@ from __future__ import annotations
 import base64
 import hashlib
 import json
+from dataclasses import dataclass
 from typing import Protocol, runtime_checkable
 
 from rtfs.core.models import RawScript, SearchResult
+
+
+@dataclass(frozen=True)
+class CacheInfo:
+    """Inspection summary for a cache backend."""
+
+    backend: str
+    location: str | None = None
+    entries: int | None = None
+    size_bytes: int | None = None
 
 
 @runtime_checkable
@@ -15,6 +26,10 @@ class CacheBackend(Protocol):
     async def set(self, key: str, value: bytes, ttl: int | None = None) -> None: ...
 
     async def delete(self, key: str) -> None: ...
+
+    async def clear(self) -> None: ...
+
+    async def info(self) -> CacheInfo: ...
 
     async def close(self) -> None: ...
 

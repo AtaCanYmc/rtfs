@@ -47,11 +47,31 @@ Search across configured screenplay providers:
 rtfs search "The Matrix"
 ```
 
-Fetch, parse, and export a screenplay to Fountain or JSON:
+Fetch, parse, filter, or interactively choose a screenplay to export to Fountain, JSON, or Final Draft (`.fdx`):
 
 ```bash
 rtfs get "The Matrix" --format fountain --output matrix.fountain
-rtfs get "The Matrix" --format json --output matrix.json
+rtfs get "The Matrix" --format fdx --output matrix.fdx
+rtfs get "The Matrix" --interactive --character "MORPHEUS" --scene-range "1-20"
+```
+
+Parse a local screenplay file (`.pdf`, `.fdx`, `.html`, `.txt`) offline without querying providers:
+
+```bash
+rtfs parse ./local_script.pdf --format json --output parsed.json
+```
+
+Batch export a list of titles or URLs with bounded concurrency:
+
+```bash
+rtfs batch queries.txt --output-dir ./corpus --format fountain --concurrency 3
+```
+
+Inspect or clear the local/remote script cache:
+
+```bash
+rtfs cache info
+rtfs cache clear
 ```
 
 Compute scene and character dialogue metrics:
@@ -83,9 +103,10 @@ flowchart LR
 
 ### Parsing Mechanics
 
-1. **PDF Coordinate Clustering (`PdfScreenplayParser`)**: Extracts text spans and bounding boxes via PyMuPDF `page.get_text("dict")`. Strips headers above `y0 < 50`, footers below `y1 > 740`, page numbers, revision stamps, and continuation markers. Groups horizontal `x0` offsets within an 8pt tolerance to classify action margins, dialogue columns, parentheticals, character cues, and right-aligned transitions. Consecutive lines in the same column merge when vertical delta is under `1.5x` line height.
-2. **HTML Indentation & Tag Parsing (`HtmlScreenplayParser`)**: Extracts `<td class="scrtext"><pre>` blocks from IMSDb documents. Handles both `<b>`-delimited character cues and whitespace-indented scripts through 1D margin clustering.
-3. **Transcript Normalization (`TranscriptParser`)**: Parses `SPEAKER: line` patterns and bracketed stage directions from HTML or plain-text transcripts into `ScriptDocument` scenes.
+1. **PDF Coordinate Clustering & Dual-Column Dialogue (`PdfScreenplayParser`)**: Extracts text spans and bounding boxes via PyMuPDF `page.get_text("dict")`. Strips headers above `y0 < 50`, footers below `y1 > 740`, page numbers, revision stamps, and continuation markers. Groups horizontal `x0` offsets within an 8pt tolerance to classify action margins, dialogue columns, parentheticals, character cues, and right-aligned transitions. Detects side-by-side simultaneous dual dialogue via vertical `y0`/`y1` overlap across separated `x0` columns (`Dialogue.dual = True`, exported with `^` in Fountain and `<DualDialogue>` in Final Draft `.fdx`).
+2. **Final Draft XML (`FdxParser` & `export_fdx`)**: Parses and exports Final Draft `.fdx` XML files (`<FinalDraft DocumentType="Script" Version="5">`) using a DTD/entity-disabled `expat` stream parser and XML 1.0 control-character sanitizer.
+3. **HTML Indentation & Tag Parsing (`HtmlScreenplayParser`)**: Extracts `<td class="scrtext"><pre>` blocks from IMSDb documents. Handles both `<b>`-delimited character cues and whitespace-indented scripts through 1D margin clustering.
+4. **Transcript Normalization (`TranscriptParser`)**: Parses `SPEAKER: line` patterns and bracketed stage directions from HTML or plain-text transcripts into `ScriptDocument` scenes.
 
 ## MCP Server
 
@@ -248,12 +269,30 @@ rtfs/
 | `rtfs search` | `--cache-url` | `None` | Cache backend URI (`disk://`, `redis://`, `memory://`, `none://`). Overrides `RTFS_CACHE_URL`. |
 | `rtfs search` | `--no-cache` | `False` | Disable caching (`none://`). Takes precedence over `--cache-url`. |
 | `rtfs get` | `<query_or_url>` | Required | Title query string or direct script URL. |
-| `rtfs get` | `--format`, `-f` | `fountain` | Output format: `json`, `fountain`, `txt`. |
+| `rtfs get` | `--format`, `-f` | `fountain` | Output format: `json`, `fountain`, `txt`, `fdx`. |
 | `rtfs get` | `--output`, `-o` | `None` | Destination file path. Writes to `stdout` when omitted. |
+| `rtfs get` | `--interactive`, `-i` | `False` | Prompt to select from ranked search candidates before downloading. |
+| `rtfs get` | `--character` | `None` | Filter scenes containing dialogue by character (case-insensitive substring). |
+| `rtfs get` | `--location` | `None` | Filter scenes matching location or heading substring. |
+| `rtfs get` | `--scene-range` | `None` | Filter 1-indexed inclusive scene range (e.g. `1-10` or `5`). |
 | `rtfs get` | `--source`, `-s` | `all` | Restrict search to a single provider. |
 | `rtfs get` | `--allow-transcript` | `False` | Fall back to transcript sources when screenplay sources miss. |
 | `rtfs get` | `--cache-url` | `None` | Cache backend URI. Overrides `RTFS_CACHE_URL`. |
 | `rtfs get` | `--no-cache` | `False` | Disable caching (`none://`). |
+| `rtfs parse` | `<file_path>` | Required | Local screenplay/transcript path (`.pdf`, `.fdx`, `.html`, `.txt`). |
+| `rtfs parse` | `--format`, `-f` | `fountain` | Output format: `json`, `fountain`, `txt`, `fdx`. |
+| `rtfs parse` | `--output`, `-o` | `None` | Destination file path. Writes to `stdout` when omitted. |
+| `rtfs parse` | `--title` | `None` | Override inferred script title. |
+| `rtfs parse` | `--content-type` | `None` | Explicit parser type (`pdf`, `fdx`, `html`, `text`). |
+| `rtfs parse` | `--character` | `None` | Filter scenes containing dialogue by character. |
+| `rtfs parse` | `--location` | `None` | Filter scenes matching location or heading substring. |
+| `rtfs parse` | `--scene-range` | `None` | Filter 1-indexed inclusive scene range. |
+| `rtfs batch` | `<queries_file>` | Required | Text file with one title query or URL per line (`#` comments ignored). |
+| `rtfs batch` | `--output-dir`, `-o` | Required | Directory to write exported script files. |
+| `rtfs batch` | `--format`, `-f` | `fountain` | Output format: `json`, `fountain`, `txt`, `fdx`. |
+| `rtfs batch` | `--concurrency`, `-c` | `3` | Maximum concurrent downloads/parses (`>= 1`). |
+| `rtfs cache info` | `--cache-url` | `None` | Inspect backend, location, entry count, and byte size (`--format table\|json`). |
+| `rtfs cache clear` | `--cache-url` | `None` | Clear all entries in the configured cache backend. |
 | `rtfs stats` | `<query_or_url>` | Required | Title query string or direct script URL to analyze. |
 | `rtfs stats` | `--source`, `-s` | `all` | Restrict search to a single provider. |
 | `rtfs stats` | `--allow-transcript` | `False` | Allow transcript sources for statistics calculation. |

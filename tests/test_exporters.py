@@ -10,7 +10,7 @@ from rtfs.core.models import (
     ScriptMetadata,
     Transition,
 )
-from rtfs.exporters.fountain_exp import export_fountain
+from rtfs.exporters.fountain_exp import export_fountain, export_txt
 from rtfs.exporters.json_exp import export_json
 from rtfs.exporters.stats_exp import compute_stats
 
@@ -104,3 +104,66 @@ def test_compute_stats() -> None:
     assert stats.top_characters[0].dialogue_turns == 2
     assert stats.top_characters[1].character == "SAITO"
     assert stats.top_characters[1].dialogue_turns == 1
+
+
+def test_export_fountain_and_txt_dual_dialogue() -> None:
+    doc = ScriptDocument(
+        metadata=ScriptMetadata(
+            title="Dual Test",
+            source="test",
+            url="https://example.com/dual",
+        ),
+        scenes=[
+            Scene(
+                scene_number=1,
+                heading="INT. CONTROL ROOM - NIGHT",
+                elements=[
+                    Dialogue(character="ALICE", lines="Cut the wire!"),
+                    Dialogue(character="BOB", lines="Don't touch it!", dual=True),
+                    Dialogue(
+                        character="CAROL",
+                        modifiers=["V.O."],
+                        parenthetical="over radio",
+                        lines="Abort now!",
+                        dual=True,
+                    ),
+                ],
+            )
+        ],
+    )
+
+    fountain = export_fountain(doc)
+    txt = export_txt(doc)
+    assert fountain == txt
+    assert "\nALICE\nCut the wire!\n" in fountain
+    assert "\nBOB^\nDon't touch it!\n" in fountain
+    assert "\nCAROL (V.O.)^\n(over radio)\nAbort now!\n" in fountain
+
+
+def test_compute_stats_counts_dual_dialogue() -> None:
+    doc = ScriptDocument(
+        metadata=ScriptMetadata(
+            title="Dual Stats",
+            source="test",
+            url="https://example.com/dual-stats",
+        ),
+        scenes=[
+            Scene(
+                scene_number=1,
+                heading="INT. ROOM - DAY",
+                elements=[
+                    Dialogue(character="ALICE", lines="One two three"),
+                    Dialogue(character="BOB", lines="Four five", dual=True),
+                ],
+            )
+        ],
+    )
+
+    stats = compute_stats(doc)
+    assert stats.dialogue_words == 5
+    by_char = {c.character: c for c in stats.top_characters}
+    assert by_char["ALICE"].dialogue_turns == 1
+    assert by_char["ALICE"].word_count == 3
+    assert by_char["BOB"].dialogue_turns == 1
+    assert by_char["BOB"].word_count == 2
+

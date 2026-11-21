@@ -6,6 +6,7 @@ from typing import Any, Literal
 from rtfs.core.aggregator import ScriptAggregator
 from rtfs.core.cache import CacheBackend, make_cache_key
 from rtfs.core.models import Dialogue, ScriptDocument
+from rtfs.exporters.fdx_exp import export_fdx
 from rtfs.exporters.fountain_exp import export_fountain
 from rtfs.exporters.stats_exp import compute_stats
 
@@ -126,7 +127,7 @@ class MCPService:
         query_or_url: str,
         start_scene: int,
         end_scene: int | None = None,
-        format: Literal["fountain", "json"] = "fountain",
+        format: Literal["fountain", "json", "fdx"] = "fountain",
     ) -> str | dict[str, Any]:
         target_end = start_scene if end_scene is None else end_scene
         if start_scene < 1 or target_end < start_scene:
@@ -163,6 +164,8 @@ class MCPService:
                 "total_scenes_in_script": total,
                 "scenes": [s.model_dump(mode="json") for s in selected],
             }
+        if format == "fdx":
+            return export_fdx(sliced_doc)
         return export_fountain(sliced_doc)
 
     async def search_dialogue(
@@ -261,7 +264,7 @@ async def get_scenes(
     query_or_url: str,
     start_scene: int,
     end_scene: int | None = None,
-    format: Literal["fountain", "json"] = "fountain",
+    format: Literal["fountain", "json", "fdx"] = "fountain",
     service: MCPService | None = None,
 ) -> str | dict[str, Any]:
     """Return a single scene or inclusive scene range (max 10 scenes per call)."""
@@ -337,7 +340,7 @@ def create_mcp_server(
         query_or_url: str,
         start_scene: int,
         end_scene: int | None = None,
-        format: Literal["fountain", "json"] = "fountain",
+        format: Literal["fountain", "json", "fdx"] = "fountain",
     ) -> str | dict[str, Any]:
         """Fetch a single scene or range of scenes (capped at 10 scenes per call)."""
         return await svc.get_scenes(
