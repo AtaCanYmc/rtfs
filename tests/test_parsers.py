@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import fitz
+import pymupdf as fitz
 import pytest
 
 from rtfs.core.models import Action, Dialogue, RawScript, ScriptMetadata, Transition

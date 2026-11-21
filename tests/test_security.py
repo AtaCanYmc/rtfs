@@ -3,7 +3,7 @@ from __future__ import annotations
 import stat
 from pathlib import Path
 
-import fitz
+import pymupdf as fitz
 import pytest
 
 from rtfs.core.cache import DiskCacheBackend, NullCacheBackend

@@ -4,6 +4,7 @@ from unittest.mock import AsyncMock
 
 from rtfs.core.cache import MemoryCacheBackend
 from rtfs.core.http import HttpClient
+from rtfs.providers.base import compute_title_similarity, normalize_title_for_match
 from rtfs.providers.imsdb import IMSDbProvider
 from rtfs.providers.scriptslug import ScriptSlugProvider
 from rtfs.providers.subslikescript import SubsLikeScriptProvider
@@ -171,3 +172,15 @@ async def test_aggregator_direct_url_routing() -> None:
     assert res_sub.source == "subslikescript"
     assert res_sub.format == "transcript"
     await agg.close()
+
+
+def test_title_similarity_handles_articles_and_rejects_stopword_false_positives() -> None:
+    assert normalize_title_for_match("Matrix, The") == "matrix"
+    assert normalize_title_for_match("The Matrix") == "matrix"
+
+    assert compute_title_similarity("The Matrix", "Matrix, The") == 100.0
+    assert compute_title_similarity("The Matrix", "The Matrix") == 100.0
+    assert compute_title_similarity("The Matrix", "The Matrix Reloaded") < 100.0
+    # Unrelated titles that only share "The" must not get an 85.5 WRatio boost
+    assert compute_title_similarity("The Matrix", "The Honourable Woman") < 45.0
+

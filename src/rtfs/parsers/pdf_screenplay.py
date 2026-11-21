@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import fitz
+import pymupdf as fitz
 
 from rtfs.core.models import RawScript, ScriptDocument
 from rtfs.parsers.base import (

@@ -4,11 +4,10 @@ import re
 from typing import ClassVar
 from urllib.parse import quote, urljoin
 
-from rapidfuzz import fuzz
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from rtfs.core.models import RawScript, ScriptMetadata, SearchResult
-from rtfs.providers.base import BaseProvider
+from rtfs.providers.base import BaseProvider, compute_title_similarity
 
 
 class IMSDbProvider(BaseProvider):
@@ -56,8 +55,8 @@ class IMSDbProvider(BaseProvider):
                 continue
             if "/Movie Scripts/" in href or "/scripts/" in href:
                 title = re.sub(r"\s+Script$", "", text, flags=re.IGNORECASE).strip()
-                score = float(fuzz.WRatio(query.lower(), title.lower()))
-                if score < 45.0:
+                score = compute_title_similarity(query, title)
+                if score < 50.0:
                     continue
                 url = self.resolve_allowed_url(self.BASE_URL, href)
                 if not url or url in seen_urls:

@@ -3,8 +3,6 @@ from __future__ import annotations
 import asyncio
 from urllib.parse import urlparse
 
-from rapidfuzz import fuzz
-
 from rtfs.core.cache import CacheBackend, create_cache
 from rtfs.core.http import HttpClient, host_matches
 from rtfs.core.models import RawScript, ScriptDocument, SearchResult
@@ -12,7 +10,7 @@ from rtfs.parsers.base import BaseParser
 from rtfs.parsers.html_screenplay import HtmlScreenplayParser
 from rtfs.parsers.pdf_screenplay import PdfScreenplayParser
 from rtfs.parsers.transcript import TranscriptParser
-from rtfs.providers.base import BaseProvider
+from rtfs.providers.base import BaseProvider, compute_title_similarity
 from rtfs.providers.imsdb import IMSDbProvider
 from rtfs.providers.scriptslug import ScriptSlugProvider
 from rtfs.providers.subslikescript import SubsLikeScriptProvider
@@ -90,7 +88,7 @@ class ScriptAggregator:
                 if item.url in seen_urls:
                     continue
                 seen_urls.add(item.url)
-                base_similarity = float(fuzz.WRatio(query.lower(), item.title.lower()))
+                base_similarity = compute_title_similarity(query, item.title)
                 bonus = SOURCE_PRIORITY_BONUS.get(item.source, 0.0)
                 ranked.append(item.model_copy(update={"score": round(base_similarity + bonus, 2)}))
 

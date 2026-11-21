@@ -3,11 +3,10 @@ from __future__ import annotations
 import re
 from typing import ClassVar
 
-from rapidfuzz import fuzz
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from rtfs.core.models import RawScript, ScriptMetadata, SearchResult
-from rtfs.providers.base import BaseProvider
+from rtfs.providers.base import BaseProvider, compute_title_similarity
 
 EPISODE_CODE_RE = re.compile(r"\b(\d{1,2})x(\d{1,2})\b|\bS(\d{1,2})E(\d{1,2})\b", re.IGNORECASE)
 
@@ -46,8 +45,8 @@ class TVWritingProvider(BaseProvider):
             if not (is_pdf or is_script_page):
                 continue
 
-            score = float(fuzz.WRatio(query.lower(), text.lower()))
-            if score < 45.0:
+            score = compute_title_similarity(query, text)
+            if score < 55.0:
                 continue
 
             url = self.resolve_allowed_url(self.BASE_URL + "/", href)
@@ -95,6 +94,8 @@ class TVWritingProvider(BaseProvider):
                         break
 
         pdf_bytes = await self.http.get_bytes(target_url)
+        if not pdf_bytes.lstrip().startswith(b"%PDF"):
+            raise ValueError(f"TVWriting URL did not return a valid PDF payload: {target_url}")
         raw = RawScript(
             content=pdf_bytes,
             content_type="pdf",

@@ -3,11 +3,10 @@ from __future__ import annotations
 import re
 from typing import ClassVar, Literal
 
-from rapidfuzz import fuzz
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from rtfs.core.models import RawScript, ScriptMetadata, SearchResult
-from rtfs.providers.base import BaseProvider
+from rtfs.providers.base import BaseProvider, compute_title_similarity
 
 YEAR_PAREN_RE = re.compile(r"\((\d{4})\)")
 
@@ -43,8 +42,8 @@ class SubsLikeScriptProvider(BaseProvider):
             year = int(year_match.group(1)) if year_match else None
             clean_title = YEAR_PAREN_RE.sub("", text).strip()
 
-            score = float(fuzz.WRatio(query.lower(), clean_title.lower()))
-            if score < 45.0:
+            score = compute_title_similarity(query, clean_title)
+            if score < 50.0:
                 continue
 
             url = self.resolve_allowed_url(self.BASE_URL, href)

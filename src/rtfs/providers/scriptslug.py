@@ -3,14 +3,14 @@ from __future__ import annotations
 import re
 from typing import ClassVar, Literal
 
-from rapidfuzz import fuzz
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
 
 from rtfs.core.models import RawScript, ScriptMetadata, SearchResult
-from rtfs.providers.base import BaseProvider
+from rtfs.providers.base import BaseProvider, compute_title_similarity
 
 YEAR_RE = re.compile(r"\b(19\d{2}|20\d{2})\b")
 EPISODE_TAG_RE = re.compile(r"\bS(\d{1,2})E(\d{1,2})\b|\b(\d{1,2})x(\d{1,2})\b", re.IGNORECASE)
+SITEMAP_LOC_RE = re.compile(r"<loc>(https://www\.scriptslug\.com/script/[^<\s]+)</loc>")
 
 
 class ScriptSlugProvider(BaseProvider):
@@ -20,6 +20,50 @@ class ScriptSlugProvider(BaseProvider):
     ASSETS_BASE = "https://assets.scriptslug.com/live/pdf/scripts"
     allowed_hosts: ClassVar[set[str]] = {"scriptslug.com"}
 
+    def _candidate_from_slug_or_link(
+        self,
+        query: str,
+        href: str,
+        raw_text: str = "",
+    ) -> SearchResult | None:
+        url = self.resolve_allowed_url(self.BASE_URL, href)
+        if not url:
+            return None
+        slug = href.rstrip("/").split("/")[-1]
+        year_match = YEAR_RE.search(raw_text) or YEAR_RE.search(slug)
+        year = int(year_match.group(1)) if year_match else None
+
+        title = raw_text
+        if not title:
+            title = re.sub(r"-(19|20)\d{2}$", "", slug).replace("-", " ").title()
+        else:
+            title = re.sub(r"\s*\(?(19|20)\d{2}\)?$", "", title).strip()
+
+        score = compute_title_similarity(query, title)
+        if score < 50.0:
+            return None
+
+        ep_match = EPISODE_TAG_RE.search(raw_text) or EPISODE_TAG_RE.search(slug)
+        media_type: Literal["movie", "tv"] = (
+            "tv"
+            if (ep_match or "episode" in raw_text.lower() or "pilot" in slug.lower())
+            else "movie"
+        )
+        season = int(ep_match.group(1) or ep_match.group(3)) if ep_match else None
+        episode = int(ep_match.group(2) or ep_match.group(4)) if ep_match else None
+
+        return SearchResult(
+            title=title or slug,
+            url=url,
+            source=self.name,
+            media_type=media_type,
+            format="screenplay",
+            year=year,
+            season=season,
+            episode=episode,
+            score=score,
+        )
+
     async def search(self, query: str) -> list[SearchResult]:
         cached = await self._get_cached_search(query)
         if cached is not None:
@@ -28,58 +72,37 @@ class ScriptSlugProvider(BaseProvider):
         results: list[SearchResult] = []
         seen_urls: set[str] = set()
 
-        html_text = await self.http.get_text(
-            f"{self.BASE_URL}/scripts",
-            params={"search": query},
-        )
-        tree = HTMLParser(html_text)
-
-        for link in tree.css("a"):
-            href = link.attributes.get("href") or ""
-            if "/script/" not in href:
-                continue
-            url = self.resolve_allowed_url(self.BASE_URL, href)
-            if not url or url in seen_urls:
-                continue
-
-            raw_text = " ".join((link.text() or "").split()).strip()
-            slug = href.rstrip("/").split("/")[-1]
-            year_match = YEAR_RE.search(raw_text) or YEAR_RE.search(slug)
-            year = int(year_match.group(1)) if year_match else None
-
-            title = raw_text
-            if not title:
-                title = re.sub(r"-(19|20)\d{2}$", "", slug).replace("-", " ").title()
-            else:
-                title = re.sub(r"\s*\(?(19|20)\d{2}\)?$", "", title).strip()
-
-            score = float(fuzz.WRatio(query.lower(), title.lower()))
-            if score < 45.0:
-                continue
-
-            ep_match = EPISODE_TAG_RE.search(raw_text) or EPISODE_TAG_RE.search(slug)
-            media_type: Literal["movie", "tv"] = (
-                "tv"
-                if (ep_match or "episode" in raw_text.lower() or "pilot" in raw_text.lower())
-                else "movie"
-            )
-            season = int(ep_match.group(1) or ep_match.group(3)) if ep_match else None
-            episode = int(ep_match.group(2) or ep_match.group(4)) if ep_match else None
-
-            seen_urls.add(url)
-            results.append(
-                SearchResult(
-                    title=title or slug,
-                    url=url,
-                    source=self.name,
-                    media_type=media_type,
-                    format="screenplay",
-                    year=year,
-                    season=season,
-                    episode=episode,
-                    score=score,
+        # Primary: ScriptSlug's sitemap-scripts.xml (or HTML links if returned by a mock/endpoint)
+        try:
+            payload = await self.http.get_text(f"{self.BASE_URL}/sitemap-scripts.xml")
+        except Exception:
+            try:
+                payload = await self.http.get_text(
+                    f"{self.BASE_URL}/scripts",
+                    params={"search": query},
                 )
-            )
+            except Exception:
+                payload = ""
+
+        for loc_url in SITEMAP_LOC_RE.findall(payload):
+            if loc_url in seen_urls:
+                continue
+            cand = self._candidate_from_slug_or_link(query, loc_url)
+            if cand is not None:
+                seen_urls.add(cand.url)
+                results.append(cand)
+
+        if "<a" in payload:
+            tree = HTMLParser(payload)
+            for link in tree.css("a"):
+                href = link.attributes.get("href") or ""
+                if "/script/" not in href:
+                    continue
+                raw_text = " ".join((link.text() or "").split()).strip()
+                cand = self._candidate_from_slug_or_link(query, href, raw_text)
+                if cand is not None and cand.url not in seen_urls:
+                    seen_urls.add(cand.url)
+                    results.append(cand)
 
         if not results:
             slug = re.sub(r"[^a-z0-9]+", "-", query.lower()).strip("-")

@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import re
 from abc import ABC, abstractmethod
 from typing import ClassVar, Literal
 from urllib.parse import urljoin, urlparse
+
+from rapidfuzz import fuzz
 
 from rtfs.core.cache import (
     CacheBackend,
@@ -15,6 +18,47 @@ from rtfs.core.cache import (
 )
 from rtfs.core.http import HttpClient, host_matches, validate_public_http_url
 from rtfs.core.models import RawScript, SearchResult
+
+STOPWORDS = {"the", "a", "an", "of", "and", "in", "on", "to", "for"}
+TRAILING_ARTICLE_RE = re.compile(r"^(.*?),\s*(the|a|an)$", re.IGNORECASE)
+NON_ALNUM_RE = re.compile(r"[^a-z0-9\s]+")
+
+
+def normalize_title_for_match(title: str) -> str:
+    """Normalize script title by moving trailing ', The' and stripping leading articles."""
+    cleaned = title.strip()
+    m = TRAILING_ARTICLE_RE.match(cleaned)
+    if m:
+        cleaned = f"{m.group(2)} {m.group(1)}"
+    lowered = NON_ALNUM_RE.sub(" ", cleaned.lower())
+    tokens = lowered.split()
+    if len(tokens) > 1 and tokens[0] in {"the", "a", "an"}:
+        tokens = tokens[1:]
+    return " ".join(tokens)
+
+
+def compute_title_similarity(query: str, title: str) -> float:
+    """Compute rapidfuzz similarity while preventing stopword-only false positives."""
+    q_norm = normalize_title_for_match(query)
+    t_norm = normalize_title_for_match(title)
+    if not q_norm or not t_norm:
+        return 0.0
+
+    q_tokens = {tok for tok in q_norm.split() if tok not in STOPWORDS} or set(q_norm.split())
+    t_tokens = {tok for tok in t_norm.split() if tok not in STOPWORDS} or set(t_norm.split())
+
+    q_ratio = float(fuzz.QRatio(q_norm, t_norm))
+    sort_ratio = float(fuzz.token_sort_ratio(q_norm, t_norm))
+
+    # Only allow WRatio's partial/subset boost when meaningful tokens overlap
+    has_token_overlap = bool(q_tokens & t_tokens) or (q_norm in t_norm) or (t_norm in q_norm)
+    if has_token_overlap:
+        w_ratio = float(fuzz.WRatio(q_norm, t_norm))
+        # Penalize extra trailing words so "The Matrix" beats "The Matrix Reloaded"
+        len_penalty = min(10.0, max(0, len(t_norm.split()) - len(q_norm.split())) * 4.0)
+        return max(q_ratio, sort_ratio, w_ratio - len_penalty)
+
+    return max(q_ratio, sort_ratio)
 
 
 class BaseProvider(ABC):
