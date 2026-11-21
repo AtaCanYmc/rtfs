@@ -21,6 +21,7 @@
 - [Repository Layout](#repository-layout)
 - [CLI Reference](#cli-reference)
 - [Python SDK](#python-sdk)
+- [Module Documentation & Examples](#module-documentation--examples)
 - [FAQ](#faq)
 - [Development & Verification](#development--verification)
 - [License](#license)
@@ -206,6 +207,13 @@ rtfs/
 │   └── logo.svg
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
+├── docs/
+│   ├── README.md
+│   ├── cli-and-mcp.md
+│   ├── core.md
+│   ├── exporters.md
+│   ├── parsers.md
+│   └── providers.md
 ├── LICENSE
 ├── Makefile
 ├── README.md
@@ -337,6 +345,16 @@ async def main() -> None:
 
 asyncio.run(main())
 ```
+
+## Module Documentation & Examples
+
+Detailed runnable examples for every package module live under [`docs/`](docs/README.md):
+
+- **[Core Models, HTTP, Cache & Aggregator](docs/core.md)**: Strict Pydantic v2 AST construction, DNS-pinned `HttpClient`, `CacheBackend` implementations (`disk://`, `redis://`, `memory://`, `none://`), `ScriptAggregator`, `filter_scenes`, and `parse_file`.
+- **[Providers](docs/providers.md)**: Direct provider usage (`ScriptSlugProvider`, `TVWritingProvider`, `IMSDbProvider`, `SubsLikeScriptProvider`), domain allowlists, stopword-safe title similarity, and custom provider authoring.
+- **[Parsers](docs/parsers.md)**: `PdfScreenplayParser` (with dual-column simultaneous dialogue detection), `FdxParser` (Final Draft `.fdx` XML), `HtmlScreenplayParser`, and `TranscriptParser`.
+- **[Exporters & Analytics](docs/exporters.md)**: `export_fountain` (`^` dual dialogue), `export_fdx` (`<DualDialogue>`), `export_json`, and `compute_stats`.
+- **[CLI & FastMCP Server](docs/cli-and-mcp.md)**: Full CLI command cookbook (`search`, `get`, `parse`, `batch`, `cache`, `stats`, `mcp`) and programmatic `MCPService` usage.
 
 ## FAQ
 
