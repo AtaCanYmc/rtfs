@@ -5,6 +5,7 @@
 
 [![CI](https://github.com/AtaCanYmc/rtfs/actions/workflows/ci.yml/badge.svg)](https://github.com/AtaCanYmc/rtfs/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/pyrtfs.svg)](https://pypi.org/project/pyrtfs/)
+[![Homebrew](https://img.shields.io/badge/Homebrew-AtaCanYmc%2Ftap%2Frtfs-FBB040?logo=homebrew&logoColor=white)](https://github.com/AtaCanYmc/homebrew-tap/blob/main/Formula/rtfs.rb)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 </div>
