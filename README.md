@@ -4,6 +4,7 @@
   <p><strong>Read The F***ing Script — Multi-Source Screenplay CLI, Python SDK &amp; FastMCP Server</strong></p>
 
 [![CI](https://github.com/AtaCanYmc/rtfs/actions/workflows/ci.yml/badge.svg)](https://github.com/AtaCanYmc/rtfs/actions/workflows/ci.yml)
+[![Pages](https://github.com/AtaCanYmc/rtfs/actions/workflows/pages.yml/badge.svg)](https://atacanymc.github.io/rtfs/)
 [![PyPI](https://img.shields.io/pypi/v/pyrtfs.svg)](https://pypi.org/project/pyrtfs/)
 [![Homebrew](https://img.shields.io/badge/Homebrew-AtaCanYmc%2Ftap%2Frtfs-FBB040?logo=homebrew&logoColor=white)](https://github.com/AtaCanYmc/homebrew-tap/blob/main/Formula/rtfs.rb)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
@@ -11,6 +12,8 @@
 </div>
 
 `rtfs` is an asynchronous Python 3.11+ CLI, SDK, and FastMCP server that queries multiple screenplay archives, parses PDF and HTML layouts into a typed Pydantic v2 Abstract Syntax Tree, and exports to JSON, Fountain, or dialogue analytics.
+
+Interactive Showcase & Release Hub: [https://atacanymc.github.io/rtfs/](https://atacanymc.github.io/rtfs/)
 
 ## Table of Contents
 
@@ -208,10 +211,12 @@ rtfs/
 ├── CHANGELOG.md
 ├── CONTRIBUTING.md
 ├── docs/
+│   ├── .nojekyll
 │   ├── README.md
 │   ├── cli-and-mcp.md
 │   ├── core.md
 │   ├── exporters.md
+│   ├── index.html
 │   ├── parsers.md
 │   └── providers.md
 ├── LICENSE
