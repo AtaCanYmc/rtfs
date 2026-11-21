@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="160" height="160" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="256" y2="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0D1117"/>
+      <stop offset="100%" stop-color="#161B22"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="48" y1="36" x2="208" y2="220" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#E2B714"/>
+      <stop offset="100%" stop-color="#C99700"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="64" y1="44" x2="192" y2="212" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#21262D"/>
+      <stop offset="100%" stop-color="#161B22"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer Rounded Square Frame -->
+  <rect x="8" y="8" width="240" height="240" rx="44" fill="url(#bg)" stroke="#30363D" stroke-width="4"/>
+  <rect x="18" y="18" width="220" height="220" rx="36" stroke="#21262D" stroke-width="1.5"/>
+
+  <!-- Screenplay Page Body -->
+  <rect x="52" y="42" width="152" height="172" rx="12" fill="url(#paper)" stroke="url(#accent)" stroke-width="2.5"/>
+
+  <!-- 3-Hole Brass Brads on Left Margin -->
+  <circle cx="66" cy="72" r="4" fill="#E2B714"/>
+  <circle cx="66" cy="128" r="4" fill="#E2B714"/>
+  <circle cx="66" cy="184" r="4" fill="#E2B714"/>
+  <line x1="78" y1="44" x2="78" y2="212" stroke="#30363D" stroke-width="1.5" stroke-dasharray="4 4"/>
+
+  <!-- Clapperboard Top Stripe Accent -->
+  <path d="M52 54C52 47.3726 57.3726 42 64 42H192C198.627 42 204 47.3726 204 54V60H52V54Z" fill="#E2B714" fill-opacity="0.16"/>
+  <line x1="52" y1="60" x2="204" y2="60" stroke="#E2B714" stroke-width="1.5" stroke-opacity="0.5"/>
+
+  <!-- Screenplay AST Indentation Lines (x0 Coordinate Clusters) -->
+  <!-- Scene Heading: INT. -->
+  <rect x="88" y="72" width="84" height="6" rx="3" fill="#E2B714"/>
+  <!-- Action Line -->
+  <rect x="88" y="86" width="98" height="4" rx="2" fill="#8B949E" fill-opacity="0.65"/>
+  <rect x="88" y="94" width="76" height="4" rx="2" fill="#8B949E" fill-opacity="0.65"/>
+
+  <!-- Character Cue (Centered x0 Cluster) -->
+  <rect x="122" y="108" width="38" height="5" rx="2.5" fill="#F0F6FC"/>
+  <!-- Parenthetical -->
+  <rect x="114" y="117" width="28" height="3.5" rx="1.75" fill="#8B949E" fill-opacity="0.8"/>
+  <!-- Dialogue Block -->
+  <rect x="102" y="125" width="72" height="4" rx="2" fill="#C9D1D9"/>
+  <rect x="102" y="133" width="60" height="4" rx="2" fill="#C9D1D9"/>
+
+  <!-- Right-Aligned Transition: CUT TO: -->
+  <rect x="158" y="145" width="28" height="4" rx="2" fill="#E2B714" fill-opacity="0.85"/>
+
+  <!-- Monospace RTFS Badge Banner -->
+  <rect x="86" y="164" width="102" height="34" rx="7" fill="#0D1117" stroke="#E2B714" stroke-width="1.75"/>
+  <text x="137" y="187" text-anchor="middle" fill="#F0F6FC" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Courier New', monospace" font-size="21" font-weight="700" letter-spacing="3.5">RTFS</text>
+</svg>
