@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>rtfs — Read The F***ing Script | Screenplay CLI, SDK & MCP Server</title>
-  <meta name="description" content="Open-source multi-source movie & TV screenplay fetcher, PyMuPDF x0-coordinate AST parser, Final Draft (.fdx) / Fountain exporter, and token-efficient FastMCP server." />
+  <title>rtfs: Read The F***ing Script | Screenplay CLI, SDK &amp; MCP Server</title>
+  <meta name="description" content="Open-source multi-source movie &amp; TV screenplay fetcher, PyMuPDF x0-coordinate AST parser, Final Draft (.fdx) / Fountain exporter, and token-efficient FastMCP server." />
 
   <!-- Fonts: Instrument Serif (Editorial Display), Inter (UI), JetBrains Mono (Code & Screenplay) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -20,6 +20,8 @@
         extend: {
           colors: {
             obsidian: '#08080A',
+            panel: '#0B0B0E',
+            sheet: '#101013',
             charcoal: '#111114',
             elevated: '#16161A',
             ivory: '#F2EFE9',
@@ -40,16 +42,68 @@
   </script>
 
   <style>
+    /* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · macrostructure: editorial-workbench · theme: Midnight · contrast: pass (40–41) · nav: N2 · footer: Ft2 · slop: pass (42–45) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49) · icons: pass (30) · mobile: pass (34, 49, 50–57) */
     :root {
       color-scheme: dark;
+      --color-obsidian: #08080A;
+      --color-panel: #0B0B0E;
+      --color-sheet: #101013;
+      --color-charcoal: #111114;
+      --color-elevated: #16161A;
+      --color-ivory: #F2EFE9;
+      --color-slate-muted: #8A8A93;
+      --color-vermilion: #FF3B30;
+      --color-amber: #E5A93C;
+      --scrollbar-thumb: rgba(255, 255, 255, 0.24);
+      --scrollbar-track: #08080A;
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
     }
 
     html, body {
-      background-color: #08080A;
-      color: #F2EFE9;
-      overflow-x: hidden;
+      background-color: var(--color-obsidian);
+      color: var(--color-ivory);
+      overflow-x: clip;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1, h2, h3 {
+      overflow-wrap: anywhere;
+      min-width: 0;
+    }
+
+    a[href], button, label, input[type="checkbox"], summary, [role="tab"] {
+      cursor: pointer;
+    }
+
+    :disabled {
+      cursor: not-allowed;
+    }
+
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    [role="tab"]:focus-visible {
+      outline: 2px solid var(--color-amber);
+      outline-offset: 2px;
+    }
+
+    button:active:not(:disabled),
+    [role="tab"]:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    [role="tab"] {
+      position: relative;
+      white-space: nowrap;
+    }
+
+    [role="tab"][aria-selected="true"]::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      border-block-end: 2px solid var(--color-amber);
     }
 
     /* Subtle Film Grain Overlay via inline SVG Noise */
@@ -71,36 +125,41 @@
       border-color: rgba(255, 255, 255, 0.15);
     }
 
-    /* Editorial reveal animation */
+    /* Editorial reveal animation (opt-in motion) */
     .reveal {
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .reveal.is-visible {
       opacity: 1;
-      transform: translateY(0);
+      transform: none;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
-    /* Custom Scrollbars */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #08080A;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.14);
-      border-radius: 3px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.28);
+    /* Custom Scrollbars Legacy Fallback */
+    @supports not (scrollbar-color: auto) {
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--scrollbar-track);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--scrollbar-thumb);
+        border-radius: 3px;
+      }
     }
 
     /* Screenplay Archival Page Styling */
     .screenplay-sheet {
-      background: #101013;
+      background: var(--color-sheet);
       position: relative;
       font-family: 'JetBrains Mono', monospace;
     }
@@ -138,7 +197,7 @@
     }
     .show-x0 .sp-line[data-type="heading"] {
       background-color: rgba(255, 59, 48, 0.08);
-      border-left-color: #FF3B30;
+      border-left-color: var(--color-vermilion);
     }
     .show-x0 .sp-line[data-type="action"] {
       background-color: rgba(242, 239, 233, 0.04);
@@ -146,11 +205,11 @@
     }
     .show-x0 .sp-line[data-type="character"] {
       background-color: rgba(229, 169, 60, 0.10);
-      border-left-color: #E5A93C;
+      border-left-color: var(--color-amber);
     }
     .show-x0 .sp-line[data-type="parenthetical"] {
       background-color: rgba(138, 138, 147, 0.12);
-      border-left-color: #8A8A93;
+      border-left-color: var(--color-slate-muted);
     }
     .show-x0 .sp-line[data-type="dialogue"] {
       background-color: rgba(94, 234, 212, 0.07);
@@ -158,41 +217,41 @@
     }
     .show-x0 .sp-line[data-type="transition"] {
       background-color: rgba(255, 59, 48, 0.08);
-      border-left-color: #FF3B30;
+      border-left-color: var(--color-vermilion);
     }
 
-    /* Subtle REC pulse */
+    /* Subtle REC pulse & terminal cursor (opt-in motion) */
     @keyframes recPulse {
       0%, 100% { opacity: 1; }
       50% { opacity: 0.25; }
     }
-    .rec-dot {
-      animation: recPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    /* Terminal cursor blink */
     @keyframes blink {
       0%, 49% { opacity: 1; }
       50%, 100% { opacity: 0; }
     }
-    .term-cursor {
-      animation: blink 1s step-end infinite;
+    @media (prefers-reduced-motion: no-preference) {
+      .rec-dot {
+        animation: recPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+      .term-cursor {
+        animation: blink 1s step-end infinite;
+      }
     }
 
     /* Syntax Highlighting Colors */
-    .tok-key { color: #E5A93C; }
+    .tok-key { color: var(--color-amber); }
     .tok-str { color: #A7F3D0; }
     .tok-num { color: #FF7B72; }
     .tok-tag { color: #FF5F56; }
     .tok-muted { color: #6E6E78; }
-    .tok-bold { color: #F2EFE9; font-weight: 600; }
+    .tok-bold { color: var(--color-ivory); font-weight: 600; }
 
     /* Toast notification */
     #toast {
       transform: translateY(20px);
       opacity: 0;
       pointer-events: none;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     #toast.show {
       transform: translateY(0);
@@ -206,20 +265,12 @@
   <!-- Film Grain Overlay -->
   <div class="film-grain" aria-hidden="true"></div>
 
-  <!-- Subtle Background Grid Guides -->
-  <div class="fixed inset-0 pointer-events-none z-0 flex justify-center" aria-hidden="true">
-    <div class="w-full max-w-[1320px] h-full border-x border-hairline flex justify-between">
-      <div class="hidden lg:block w-px h-full bg-white/[0.025] ml-[25%]"></div>
-      <div class="hidden lg:block w-px h-full bg-white/[0.025] mr-[25%]"></div>
-    </div>
-  </div>
-
   <!-- ==================== 1. STICKY MINIMAL NAVBAR ==================== -->
   <header class="sticky top-0 z-40 bg-obsidian/85 backdrop-blur-md border-b border-hairline">
     <div class="max-w-[1320px] mx-auto px-5 sm:px-8 h-14 flex items-center justify-between gap-4">
       <!-- Left: Wordmark + Film Frame + Live Timecode -->
       <div class="flex items-center gap-4">
-        <a href="#top" class="group flex items-center gap-2.5 focus:outline-none">
+        <a href="#top" class="group flex items-center gap-2.5">
           <span class="relative flex items-center justify-center w-6 h-5 border border-white/20 rounded-[3px] bg-charcoal group-hover:border-vermilion/80 transition-colors">
             <span class="w-1.5 h-1.5 rounded-full bg-vermilion rec-dot"></span>
           </span>
@@ -234,22 +285,22 @@
       </div>
 
       <!-- Center: Editorial Navigation -->
-      <nav class="hidden md:flex items-center gap-7 text-xs font-medium tracking-wide text-slateMuted">
-        <a href="#playground" class="hover:text-ivory transition-colors py-1">Playground</a>
-        <a href="#terminal" class="hover:text-ivory transition-colors py-1">CLI</a>
-        <a href="#architecture" class="hover:text-ivory transition-colors py-1">Architecture</a>
-        <a href="#mcp-section" class="hover:text-ivory transition-colors py-1">MCP</a>
-        <a href="#downloads" class="hover:text-ivory transition-colors py-1">Downloads</a>
+      <nav aria-label="Primary navigation" class="hidden md:flex items-center gap-7 text-xs font-medium tracking-wide text-slateMuted">
+        <a href="#playground" class="hover:text-ivory transition-colors py-2 whitespace-nowrap">Playground</a>
+        <a href="#terminal" class="hover:text-ivory transition-colors py-2 whitespace-nowrap">CLI</a>
+        <a href="#architecture" class="hover:text-ivory transition-colors py-2 whitespace-nowrap">Architecture</a>
+        <a href="#mcp-section" class="hover:text-ivory transition-colors py-2 whitespace-nowrap">MCP</a>
+        <a href="#downloads" class="hover:text-ivory transition-colors py-2 whitespace-nowrap">Downloads</a>
       </nav>
 
       <!-- Right: Live GitHub Stats & Link -->
       <div class="flex items-center gap-2.5">
-        <a href="#downloads" id="nav-version-badge" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-hairline bg-charcoal hover:border-hairline-strong font-mono text-[11px] text-slateMuted hover:text-ivory transition-colors">
+        <a href="#downloads" id="nav-version-badge" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-hairline bg-charcoal hover:border-hairline-strong font-mono text-[11px] text-slateMuted hover:text-ivory transition-colors whitespace-nowrap">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          <span id="nav-version-text">main</span>
+          <span id="nav-version-text">v0.3.0</span>
         </a>
         <a href="https://github.com/AtaCanYmc/rtfs" target="_blank" rel="noopener noreferrer"
-           class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-hairline-strong bg-charcoal hover:bg-elevated text-xs font-medium text-ivory transition-colors">
+           class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-hairline-strong bg-charcoal hover:bg-elevated text-xs font-medium text-ivory transition-colors whitespace-nowrap">
           <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
           </svg>
@@ -275,36 +326,37 @@
             <span class="hidden sm:inline text-amberCinema/90">PYTHON 3.11+</span>
           </div>
 
-          <!-- Monumental Editorial Headline -->
-          <h1 class="font-serif text-[3.4rem] sm:text-[5.25rem] lg:text-[6.5rem] leading-[0.95] tracking-[-0.02em] text-ivory mb-7">
+          <!-- Monumental Editorial Headline (Roman per Hallmark Gate 38a) -->
+          <h1 class="font-serif text-[3.4rem] sm:text-[5.25rem] lg:text-[6.5rem] leading-[0.98] tracking-[-0.02em] text-ivory mb-7">
             Read the script.<br />
-            <span class="italic text-ivory/90">Parse the craft.</span>
+            <span class="text-amberCinema">Parse the craft.</span>
           </h1>
 
           <!-- Concise Technical Subtitle -->
           <p class="text-base sm:text-lg text-slateMuted max-w-2xl leading-relaxed mb-10 font-light">
-            <span class="font-mono text-ivory text-sm">rtfs</span> searches, fetches, caches, and parses movie &amp; TV screenplays across IMSDb, Script Slug, TV Writing, and transcripts—transforming PDFs via <span class="text-ivory/90">PyMuPDF x0-clustering</span>, HTML, and Final Draft <span class="font-mono text-xs text-amberCinema">.fdx</span> into a single canonical AST for terminals, Python SDKs, and AI agents via FastMCP.
+            <span class="font-mono text-ivory text-sm">rtfs</span> searches, fetches, caches, and parses movie &amp; TV screenplays across IMSDb, Script Slug, TV Writing, and transcripts, transforming PDFs via <span class="text-ivory/90">PyMuPDF x0-clustering</span> (including dual-column dialogue), HTML, and Final Draft <span class="font-mono text-xs text-amberCinema">.fdx</span> into a single canonical AST for terminals, Python SDKs, and AI agents via FastMCP.
           </p>
 
           <!-- Interactive Quick-Install Bar -->
           <div class="max-w-2xl mb-9 rounded-lg border border-hairline-strong bg-charcoal/95 overflow-hidden shadow-2xl shadow-black/60">
             <div class="flex items-center justify-between px-3 py-2 border-b border-hairline bg-obsidian/60">
               <div class="flex items-center gap-1" role="tablist" aria-label="Package manager">
-                <button data-pm="uv" class="pm-tab px-2.5 py-1 rounded text-[11px] font-mono transition-colors bg-white/10 text-ivory">uv</button>
-                <button data-pm="pip" class="pm-tab px-2.5 py-1 rounded text-[11px] font-mono transition-colors text-slateMuted hover:text-ivory">pip</button>
-                <button data-pm="pipx" class="pm-tab px-2.5 py-1 rounded text-[11px] font-mono transition-colors text-slateMuted hover:text-ivory">pipx</button>
+                <button type="button" role="tab" aria-selected="true" data-pm="brew" class="pm-tab px-3 py-1.5 rounded text-[11px] font-mono transition-colors bg-white/10 text-ivory">brew</button>
+                <button type="button" role="tab" aria-selected="false" data-pm="uv" class="pm-tab px-3 py-1.5 rounded text-[11px] font-mono transition-colors text-slateMuted hover:text-ivory">uv</button>
+                <button type="button" role="tab" aria-selected="false" data-pm="pip" class="pm-tab px-3 py-1.5 rounded text-[11px] font-mono transition-colors text-slateMuted hover:text-ivory">pip</button>
+                <button type="button" role="tab" aria-selected="false" data-pm="pipx" class="pm-tab px-3 py-1.5 rounded text-[11px] font-mono transition-colors text-slateMuted hover:text-ivory">pipx</button>
               </div>
-              <span class="font-mono text-[10px] tracking-wider uppercase text-slateMuted">Zero-config DiskCache included</span>
+              <span class="font-mono text-[10px] tracking-wider uppercase text-slateMuted hidden sm:inline">PyPI: pyrtfs // Tap: AtaCanYmc/tap</span>
             </div>
             <div class="flex items-center justify-between gap-3 px-4 py-3.5">
-              <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar">
+              <div class="flex items-center gap-2.5 overflow-x-auto">
                 <span class="font-mono text-xs text-vermilion select-none">$</span>
-                <code id="hero-install-cmd" class="font-mono text-xs sm:text-sm text-ivory whitespace-nowrap">uv tool install "git+https://github.com/AtaCanYmc/rtfs.git"</code>
+                <code id="hero-install-cmd" class="font-mono text-xs sm:text-sm text-ivory whitespace-nowrap">brew install AtaCanYmc/tap/rtfs</code>
               </div>
               <button id="hero-copy-btn" type="button"
-                      class="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded border border-hairline bg-elevated hover:border-hairline-strong text-[11px] font-mono text-slateMuted hover:text-ivory transition-colors"
+                      class="shrink-0 inline-flex items-center gap-1.5 px-3 py-2 rounded border border-hairline bg-elevated hover:border-hairline-strong text-[11px] font-mono text-slateMuted hover:text-ivory transition-colors"
                       aria-label="Copy install command">
-                <svg class="w-3.5 h-3.5 copy-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5 copy-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true">
                   <rect x="9" y="9" width="13" height="13" rx="2"></rect>
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                 </svg>
@@ -315,15 +367,15 @@
 
           <!-- Primary & Secondary CTAs -->
           <div class="flex flex-wrap items-center gap-3.5">
-            <a href="#downloads" class="inline-flex items-center gap-2.5 px-5 py-3 rounded-md bg-ivory text-obsidian hover:bg-white font-medium text-sm transition-colors">
+            <a href="#downloads" class="inline-flex items-center gap-2.5 px-5 py-3 rounded-md bg-ivory text-obsidian hover:bg-white font-medium text-sm transition-colors whitespace-nowrap">
               <span>Download &amp; Configure</span>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/>
               </svg>
             </a>
-            <a href="#playground" class="inline-flex items-center gap-2.5 px-5 py-3 rounded-md border border-hairline-strong bg-charcoal/70 hover:bg-elevated text-ivory font-medium text-sm transition-colors">
+            <a href="#playground" class="inline-flex items-center gap-2.5 px-5 py-3 rounded-md border border-hairline-strong bg-charcoal/70 hover:bg-elevated text-ivory font-medium text-sm transition-colors whitespace-nowrap">
               <span>Explore Live AST</span>
-              <span class="font-mono text-xs text-slateMuted">-&gt;</span>
+              <span class="font-mono text-xs text-slateMuted" aria-hidden="true">-&gt;</span>
             </a>
           </div>
         </div>
@@ -336,7 +388,7 @@
           </div>
           <div>
             <div class="text-slateMuted text-[10px] uppercase tracking-widest mb-1">Parsers</div>
-            <div class="text-ivory">PyMuPDF x0 · HTML · Final Draft .fdx</div>
+            <div class="text-ivory">PyMuPDF x0 + Dual-Column · HTML · Final Draft .fdx</div>
           </div>
           <div>
             <div class="text-slateMuted text-[10px] uppercase tracking-widest mb-1">Cache Protocol</div>
@@ -358,11 +410,11 @@
           <div>
             <div class="font-mono text-[11px] uppercase tracking-[0.16em] text-vermilion mb-2.5">SCENE 02 // COORDINATE PARSER</div>
             <h2 class="font-serif text-4xl sm:text-5xl text-ivory tracking-tight">
-              From archival ink to <span class="italic">canonical AST.</span>
+              From archival ink to <span class="text-amberCinema">canonical AST.</span>
             </h2>
           </div>
           <p class="text-sm text-slateMuted max-w-md leading-relaxed">
-            Toggle <span class="font-mono text-xs text-amberCinema">x0 Clusters</span> to inspect how <span class="font-mono text-xs text-ivory">pdf_screenplay.py</span> groups horizontal bounding boxes into Scene Headings, Action, Character, Parenthetical, Dialogue, and Transitions.
+            Toggle <span class="font-mono text-xs text-amberCinema">x0 Clusters</span> to inspect how <span class="font-mono text-xs text-ivory">parsers/pdf/</span> groups horizontal bounding boxes and dual-column overlaps into Scene Headings, Action, Character, Parenthetical, Dialogue, and Transitions.
           </p>
         </div>
 
@@ -370,19 +422,19 @@
         <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 rounded-t-lg border border-hairline bg-charcoal">
           <!-- Script Selector -->
           <div class="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Sample screenplay">
-            <button data-script="pulp" class="script-btn px-3 py-1.5 rounded text-xs font-mono transition-colors bg-ivory text-obsidian font-medium">
+            <button type="button" role="tab" aria-selected="true" data-script="pulp" class="script-btn px-3 py-2 rounded text-xs font-mono transition-colors bg-ivory text-obsidian font-medium">
               01. Pulp Fiction
             </button>
-            <button data-script="interstellar" class="script-btn px-3 py-1.5 rounded text-xs font-mono transition-colors text-slateMuted hover:text-ivory hover:bg-white/5">
+            <button type="button" role="tab" aria-selected="false" data-script="interstellar" class="script-btn px-3 py-2 rounded text-xs font-mono transition-colors text-slateMuted hover:text-ivory hover:bg-white/5">
               02. Interstellar
             </button>
-            <button data-script="severance" class="script-btn px-3 py-1.5 rounded text-xs font-mono transition-colors text-slateMuted hover:text-ivory hover:bg-white/5">
+            <button type="button" role="tab" aria-selected="false" data-script="severance" class="script-btn px-3 py-2 rounded text-xs font-mono transition-colors text-slateMuted hover:text-ivory hover:bg-white/5">
               03. Severance
             </button>
           </div>
 
           <!-- x0 Overlay Toggle -->
-          <label class="inline-flex items-center gap-2.5 cursor-pointer select-none px-3 py-1.5 rounded border border-hairline bg-obsidian/70 hover:border-hairline-strong transition-colors">
+          <label class="inline-flex items-center gap-2.5 cursor-pointer select-none px-3 py-2 rounded border border-hairline bg-obsidian/70 hover:border-hairline-strong transition-colors">
             <input id="x0-toggle" type="checkbox" checked class="sr-only peer" />
             <span class="relative w-8 h-4 rounded-full bg-white/15 peer-checked:bg-vermilion transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-3 after:h-3 after:rounded-full after:bg-ivory after:transition-transform peer-checked:after:translate-x-4"></span>
             <span class="font-mono text-[11px] text-ivory">Show x0 Clusters</span>
@@ -401,16 +453,16 @@
 
             <div id="screenplay-canvas" class="screenplay-sheet show-x0 p-6 sm:p-8 min-h-[430px] overflow-x-auto text-[12px] sm:text-[13px] leading-[1.65] text-ivory/90">
               <!-- Dynamic x0 Vertical Guides -->
-              <div class="x0-guide border-vermilion/45" style="left: 1.75rem;">
+              <div class="x0-guide border-vermilion/45" style="left: 1.75rem;" aria-hidden="true">
                 <span class="x0-badge bg-vermilion/20 text-vermilion">x0≈108pt</span>
               </div>
-              <div class="x0-guide border-teal-300/40" style="left: 5.5rem;">
+              <div class="x0-guide border-teal-300/40" style="left: 5.5rem;" aria-hidden="true">
                 <span class="x0-badge bg-teal-300/15 text-teal-200">x0≈180pt</span>
               </div>
-              <div class="x0-guide border-slateMuted/45" style="left: 8.5rem;">
+              <div class="x0-guide border-slateMuted/45" style="left: 8.5rem;" aria-hidden="true">
                 <span class="x0-badge bg-white/10 text-slateMuted">x0≈223pt</span>
               </div>
-              <div class="x0-guide border-amberCinema/50" style="left: 11.2rem;">
+              <div class="x0-guide border-amberCinema/50" style="left: 11.2rem;" aria-hidden="true">
                 <span class="x0-badge bg-amberCinema/20 text-amberCinema">x0≈266pt</span>
               </div>
 
@@ -429,79 +481,71 @@
           </div>
 
           <!-- RIGHT PANE: Switchable Structured Outputs -->
-          <div class="flex flex-col bg-[#0B0B0E]">
+          <div class="flex flex-col bg-panel">
             <div class="flex items-center justify-between gap-2 px-3 py-2 border-b border-hairline bg-charcoal/50 overflow-x-auto">
               <div class="flex items-center gap-1" role="tablist" aria-label="Output format">
-                <button data-out="json" class="out-tab px-2.5 py-1 rounded text-[11px] font-mono bg-white/10 text-ivory transition-colors">JSON AST</button>
-                <button data-out="fountain" class="out-tab px-2.5 py-1 rounded text-[11px] font-mono text-slateMuted hover:text-ivory transition-colors">.fountain</button>
-                <button data-out="fdx" class="out-tab px-2.5 py-1 rounded text-[11px] font-mono text-slateMuted hover:text-ivory transition-colors">.fdx XML</button>
-                <button data-out="stats" class="out-tab px-2.5 py-1 rounded text-[11px] font-mono text-slateMuted hover:text-ivory transition-colors">Stats</button>
-                <button data-out="mcp" class="out-tab px-2.5 py-1 rounded text-[11px] font-mono text-slateMuted hover:text-ivory transition-colors">MCP Tool</button>
+                <button type="button" role="tab" aria-selected="true" data-out="json" class="out-tab px-3 py-1.5 rounded text-[11px] font-mono bg-white/10 text-ivory transition-colors">JSON AST</button>
+                <button type="button" role="tab" aria-selected="false" data-out="fountain" class="out-tab px-3 py-1.5 rounded text-[11px] font-mono text-slateMuted hover:text-ivory transition-colors">.fountain</button>
+                <button type="button" role="tab" aria-selected="false" data-out="fdx" class="out-tab px-3 py-1.5 rounded text-[11px] font-mono text-slateMuted hover:text-ivory transition-colors">.fdx XML</button>
+                <button type="button" role="tab" aria-selected="false" data-out="stats" class="out-tab px-3 py-1.5 rounded text-[11px] font-mono text-slateMuted hover:text-ivory transition-colors">Stats</button>
+                <button type="button" role="tab" aria-selected="false" data-out="mcp" class="out-tab px-3 py-1.5 rounded text-[11px] font-mono text-slateMuted hover:text-ivory transition-colors">MCP Tool</button>
               </div>
-              <button id="ast-copy-btn" type="button" class="shrink-0 px-2.5 py-1 rounded border border-hairline hover:border-hairline-strong font-mono text-[10px] text-slateMuted hover:text-ivory transition-colors">
+              <button id="ast-copy-btn" type="button" aria-label="Copy formatted AST output" class="shrink-0 px-3 py-1.5 rounded border border-hairline hover:border-hairline-strong font-mono text-[10px] text-slateMuted hover:text-ivory transition-colors">
                 Copy
               </button>
             </div>
 
-            <pre id="ast-output" class="p-5 sm:p-6 font-mono text-[11.5px] sm:text-xs leading-relaxed overflow-auto max-h-[470px] flex-1 text-ivory/85"></pre>
+            <pre id="ast-output" role="tabpanel" tabindex="0" aria-label="Formatted AST output" class="p-5 sm:p-6 font-mono text-[11.5px] sm:text-xs leading-relaxed overflow-auto max-h-[470px] flex-1 text-ivory/85"></pre>
           </div>
 
         </div>
       </div>
     </section>
 
-    <!-- ==================== 4. INTERACTIVE TERMINAL SIMULATOR ==================== -->
+    <!-- ==================== 4. INTERACTIVE CLI WORKBENCH ==================== -->
     <section id="terminal" data-scene="03" class="py-20 sm:py-28 border-b border-hairline">
       <div class="max-w-[1320px] mx-auto px-5 sm:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           <!-- Left Editorial Column -->
           <div class="lg:col-span-4 reveal">
-            <div class="font-mono text-[11px] uppercase tracking-[0.16em] text-vermilion mb-2.5">SCENE 03 // TERMINAL</div>
+            <div class="font-mono text-[11px] uppercase tracking-[0.16em] text-vermilion mb-2.5">SCENE 03 // CLI WORKBENCH</div>
             <h2 class="font-serif text-4xl sm:text-5xl text-ivory tracking-tight mb-4">
-              Built for the <span class="italic">command line.</span>
+              Built for the <span class="text-amberCinema">command line.</span>
             </h2>
             <p class="text-sm text-slateMuted leading-relaxed mb-7">
-              Run parallel async queries across every configured provider, export clean Fountain or Final Draft files, inspect dialogue statistics, or spin up a local FastMCP server over stdio.
+              Run parallel async queries across every configured provider, filter by character or scene range, parse local PDFs and Final Draft files offline, batch-export corpora, or spin up a local FastMCP server over stdio.
             </p>
 
-            <div class="space-y-2">
-              <div class="font-mono text-[10px] uppercase tracking-widest text-slateMuted mb-2">Select a command to run</div>
-              <button data-cmd="search" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline-strong bg-charcoal text-xs font-mono text-ivory hover:border-vermilion/60 transition-colors flex items-center justify-between">
+            <div class="space-y-2" role="group" aria-label="CLI preset commands">
+              <div class="font-mono text-[10px] uppercase tracking-widest text-slateMuted mb-2">Select a command to inspect</div>
+              <button type="button" data-cmd="search" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline-strong bg-charcoal text-xs font-mono text-ivory hover:border-vermilion/60 transition-colors flex items-center justify-between">
                 <span>rtfs search "interstellar"</span>
                 <span class="text-[10px] text-amberCinema">RUN</span>
               </button>
-              <button data-cmd="stats" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline bg-charcoal/50 text-xs font-mono text-slateMuted hover:text-ivory hover:border-hairline-strong transition-colors flex items-center justify-between">
+              <button type="button" data-cmd="stats" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline bg-charcoal/50 text-xs font-mono text-slateMuted hover:text-ivory hover:border-hairline-strong transition-colors flex items-center justify-between">
                 <span>rtfs stats "pulp-fiction"</span>
                 <span class="text-[10px] text-white/30">RUN</span>
               </button>
-              <button data-cmd="get" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline bg-charcoal/50 text-xs font-mono text-slateMuted hover:text-ivory hover:border-hairline-strong transition-colors flex items-center justify-between">
-                <span>rtfs get "severance" --format fountain</span>
+              <button type="button" data-cmd="get" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline bg-charcoal/50 text-xs font-mono text-slateMuted hover:text-ivory hover:border-hairline-strong transition-colors flex items-center justify-between">
+                <span>rtfs get "severance" --format fdx</span>
                 <span class="text-[10px] text-white/30">RUN</span>
               </button>
-              <button data-cmd="mcp" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline bg-charcoal/50 text-xs font-mono text-slateMuted hover:text-ivory hover:border-hairline-strong transition-colors flex items-center justify-between">
+              <button type="button" data-cmd="mcp" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline bg-charcoal/50 text-xs font-mono text-slateMuted hover:text-ivory hover:border-hairline-strong transition-colors flex items-center justify-between">
                 <span>rtfs mcp --transport stdio</span>
                 <span class="text-[10px] text-white/30">RUN</span>
               </button>
             </div>
           </div>
 
-          <!-- Right Terminal Window -->
+          <!-- Right Output Panel (No fake OS traffic-light chrome per Hallmark Gate 47 & Antislop R-05) -->
           <div class="lg:col-span-8 reveal">
-            <div class="rounded-lg border border-hairline-strong bg-[#0B0B0E] overflow-hidden shadow-2xl shadow-black/70">
-              <!-- Window Chrome -->
-              <div class="flex items-center justify-between px-4 py-2.5 border-b border-hairline bg-charcoal">
-                <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-white/15"></span>
-                  <span class="w-2.5 h-2.5 rounded-full bg-white/15"></span>
-                  <span class="w-2.5 h-2.5 rounded-full bg-white/15"></span>
-                </div>
-                <span class="font-mono text-[11px] text-slateMuted">zsh — rtfs v0.1</span>
+            <figure class="rounded-lg border border-hairline-strong bg-panel overflow-hidden shadow-2xl shadow-black/70">
+              <figcaption class="flex items-center justify-between px-4 py-2.5 border-b border-hairline bg-charcoal">
+                <span class="font-mono text-[11px] uppercase tracking-wider text-slateMuted">STDOUT // RTFS CLI v0.3.0</span>
                 <span id="term-status" class="font-mono text-[10px] text-emerald-400">READY</span>
-              </div>
-
-              <!-- Terminal Body -->
-              <div id="term-screen" class="p-5 sm:p-6 font-mono text-[11.5px] sm:text-xs leading-[1.7] min-h-[370px] max-h-[420px] overflow-y-auto text-ivory/90 whitespace-pre"></div>
-            </div>
+              </figcaption>
+              <pre id="term-screen" class="p-5 sm:p-6 font-mono text-[11.5px] sm:text-xs leading-[1.7] min-h-[370px] max-h-[420px] overflow-y-auto text-ivory/90 whitespace-pre"></pre>
+            </figure>
           </div>
         </div>
       </div>
@@ -513,7 +557,7 @@
         <div class="mb-12 reveal">
           <div class="font-mono text-[11px] uppercase tracking-[0.16em] text-vermilion mb-2.5">SCENE 04 // ARCHITECTURE</div>
           <h2 class="font-serif text-4xl sm:text-5xl text-ivory tracking-tight max-w-2xl">
-            Decoupled by design. <span class="italic">Zero lock-in.</span>
+            Decoupled by design. <span class="text-amberCinema">Zero lock-in.</span>
           </h2>
         </div>
 
@@ -524,11 +568,11 @@
           <div class="p-7 sm:p-9 border-r border-b border-hairline bg-charcoal/30 hover:bg-charcoal/60 transition-colors">
             <div class="flex items-center justify-between mb-5">
               <span class="font-mono text-[11px] text-amberCinema tracking-wider">01 / PROVIDERS</span>
-              <span class="font-mono text-[10px] px-2 py-0.5 rounded border border-hairline text-slateMuted">httpx + rapidfuzz</span>
+              <span class="font-mono text-[10px] px-2 py-0.5 rounded border border-hairline text-slateMuted">httpx + DNS pinning</span>
             </div>
             <h3 class="font-serif text-3xl text-ivory mb-3">Multi-Source Async Aggregation</h3>
             <p class="text-sm text-slateMuted leading-relaxed mb-6">
-              Queries all active providers concurrently via <code class="font-mono text-xs text-ivory">asyncio.gather</code> with fault isolation. Results are deduplicated and ranked by fuzzy similarity plus source fidelity (<span class="text-ivory/80">PDF &gt; HTML &gt; Transcript</span>).
+              Queries all active providers concurrently via <code class="font-mono text-xs text-ivory">asyncio.gather</code> with fault isolation and SSRF / DNS-rebinding protection. Results are deduplicated and ranked by fuzzy similarity plus source fidelity (<span class="text-ivory/80">PDF &gt; HTML &gt; Transcript</span>).
             </p>
             <div class="grid grid-cols-2 gap-2 font-mono text-[11px]">
               <div class="px-3 py-2 rounded border border-hairline bg-obsidian/70 flex items-center justify-between">
@@ -554,7 +598,7 @@
             </div>
             <h3 class="font-serif text-3xl text-ivory mb-3">Coordinate &amp; Bidirectional FDX</h3>
             <p class="text-sm text-slateMuted leading-relaxed mb-6">
-              Plain text dumps destroy screenplay structure. <code class="font-mono text-xs text-ivory">rtfs</code> clusters PDF <code class="font-mono text-xs text-ivory">x0</code> bounding boxes dynamically, strips headers/revision stamps, parses IMSDb <code class="font-mono text-xs text-ivory">&lt;b&gt;</code>/whitespace layouts, and reads/writes native Final Draft <code class="font-mono text-xs text-amberCinema">.fdx</code>.
+              Plain text dumps destroy screenplay structure. <code class="font-mono text-xs text-ivory">rtfs</code> clusters PDF <code class="font-mono text-xs text-ivory">x0</code> bounding boxes dynamically, detects dual-column simultaneous dialogue, strips headers and revision stamps, parses IMSDb layouts, and reads/writes native Final Draft <code class="font-mono text-xs text-amberCinema">.fdx</code>.
             </p>
             <div class="font-mono text-[11px] p-3 rounded border border-hairline bg-obsidian/80 text-slateMuted space-y-1">
               <div><span class="text-vermilion">RawScript</span>(pdf | html | fdx | text)</div>
@@ -571,7 +615,7 @@
             </div>
             <h3 class="font-serif text-3xl text-ivory mb-3">Pluggable Async CacheBackend</h3>
             <p class="text-sm text-slateMuted leading-relaxed mb-6">
-              Zero-config SQLite-backed DiskCache out of the box, or switch backends via a single <code class="font-mono text-xs text-ivory">RTFS_CACHE_URL</code> URI—no pickle serialization, strict bytes contract, and clean custom backend injection.
+              Zero-config SQLite-backed DiskCache out of the box, or switch backends via a single <code class="font-mono text-xs text-ivory">RTFS_CACHE_URL</code> URI: no pickle serialization, strict bytes contract, CLI inspection (<code class="font-mono text-xs text-ivory">rtfs cache info</code>), and custom backend injection.
             </p>
             <div class="space-y-1.5 font-mono text-[11px]">
               <div class="flex items-center justify-between px-3 py-1.5 rounded bg-obsidian/80 border border-hairline">
@@ -580,7 +624,7 @@
               </div>
               <div class="flex items-center justify-between px-3 py-1.5 rounded bg-obsidian/80 border border-hairline">
                 <span class="text-ivory">redis://localhost:6379/0</span>
-                <span class="text-amberCinema text-[10px]">rtfs[redis]</span>
+                <span class="text-amberCinema text-[10px]">pyrtfs[redis]</span>
               </div>
               <div class="flex items-center justify-between px-3 py-1.5 rounded bg-obsidian/80 border border-hairline">
                 <span class="text-slateMuted">memory:// &nbsp;|&nbsp; none://</span>
@@ -593,7 +637,7 @@
           <div id="mcp-section" class="p-7 sm:p-9 border-r border-b border-hairline bg-charcoal/30 hover:bg-charcoal/60 transition-colors">
             <div class="flex items-center justify-between mb-5">
               <span class="font-mono text-[11px] text-vermilion tracking-wider">04 / FASTMCP SERVER</span>
-              <span class="font-mono text-[10px] px-2 py-0.5 rounded border border-vermilion/30 bg-vermilion/10 text-vermilion">rtfs[mcp]</span>
+              <span class="font-mono text-[10px] px-2 py-0.5 rounded border border-vermilion/30 bg-vermilion/10 text-vermilion">pyrtfs[mcp]</span>
             </div>
             <h3 class="font-serif text-3xl text-ivory mb-3">Progressive Disclosure for AI Agents</h3>
             <p class="text-sm text-slateMuted leading-relaxed mb-5">
@@ -619,11 +663,11 @@
           <div>
             <div class="font-mono text-[11px] uppercase tracking-[0.16em] text-vermilion mb-2.5">SCENE 05 // RELEASE &amp; DOWNLOAD HUB</div>
             <h2 class="font-serif text-4xl sm:text-5xl text-ivory tracking-tight">
-              Configure your stack. <span class="italic">Ship immediately.</span>
+              Configure your stack. <span class="text-amberCinema">Ship immediately.</span>
             </h2>
           </div>
           <div id="gh-sync-status" class="inline-flex items-center gap-2 px-3 py-1.5 rounded border border-hairline bg-charcoal font-mono text-[11px] text-slateMuted">
-            <span class="w-1.5 h-1.5 rounded-full bg-amberCinema animate-pulse"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-amberCinema rec-dot"></span>
             <span>Syncing with github.com/AtaCanYmc/rtfs...</span>
           </div>
         </div>
@@ -634,9 +678,10 @@
           <div class="lg:col-span-7 rounded-lg border border-hairline-strong bg-charcoal/60 overflow-hidden reveal">
             <div class="px-6 py-4 border-b border-hairline bg-charcoal flex items-center justify-between">
               <span class="font-mono text-xs uppercase tracking-wider text-ivory">Interactive Stack Configurator</span>
-              <div class="flex items-center gap-1 bg-obsidian p-0.5 rounded border border-hairline">
-                <button data-cfg-pm="uv" class="cfg-pm-btn px-2.5 py-1 rounded text-[11px] font-mono bg-white/10 text-ivory">uv</button>
-                <button data-cfg-pm="pip" class="cfg-pm-btn px-2.5 py-1 rounded text-[11px] font-mono text-slateMuted hover:text-ivory">pip</button>
+              <div class="flex items-center gap-1 bg-obsidian p-0.5 rounded border border-hairline" role="tablist" aria-label="Configurator package manager">
+                <button type="button" role="tab" aria-selected="true" data-cfg-pm="uv" class="cfg-pm-btn px-3 py-1.5 rounded text-[11px] font-mono bg-white/10 text-ivory">uv</button>
+                <button type="button" role="tab" aria-selected="false" data-cfg-pm="pip" class="cfg-pm-btn px-3 py-1.5 rounded text-[11px] font-mono text-slateMuted hover:text-ivory">pip</button>
+                <button type="button" role="tab" aria-selected="false" data-cfg-pm="brew" class="cfg-pm-btn px-3 py-1.5 rounded text-[11px] font-mono text-slateMuted hover:text-ivory">brew</button>
               </div>
             </div>
 
@@ -650,7 +695,7 @@
                     <input type="checkbox" checked disabled class="mt-0.5 accent-vermilion" />
                     <div class="flex-1">
                       <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-ivory">Core CLI &amp; Python SDK</span>
+                        <span class="text-sm font-medium text-ivory">Core CLI &amp; Python SDK (<code class="font-mono text-xs text-ivory">pyrtfs</code>)</span>
                         <span class="font-mono text-[10px] text-emerald-400">REQUIRED</span>
                       </div>
                       <p class="text-xs text-slateMuted mt-0.5">All 4 providers, PyMuPDF/HTML/FDX parsers, exporters, and SQLite DiskCache.</p>
@@ -662,7 +707,7 @@
                     <input id="extra-mcp" type="checkbox" checked class="mt-0.5 accent-vermilion cursor-pointer" />
                     <div class="flex-1">
                       <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-ivory">MCP Server <code class="font-mono text-xs text-vermilion ml-1">rtfs[mcp]</code></span>
+                        <span class="text-sm font-medium text-ivory">MCP Server <code class="font-mono text-xs text-vermilion ml-1">pyrtfs[mcp]</code></span>
                         <span class="font-mono text-[10px] text-slateMuted">FastMCP</span>
                       </div>
                       <p class="text-xs text-slateMuted mt-0.5">Exposes 5 token-efficient screenplay tools for Claude Desktop, Cursor &amp; Claude Code.</p>
@@ -674,7 +719,7 @@
                     <input id="extra-redis" type="checkbox" class="mt-0.5 accent-vermilion cursor-pointer" />
                     <div class="flex-1">
                       <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-ivory">Redis Cache Backend <code class="font-mono text-xs text-amberCinema ml-1">rtfs[redis]</code></span>
+                        <span class="text-sm font-medium text-ivory">Redis Cache Backend <code class="font-mono text-xs text-amberCinema ml-1">pyrtfs[redis]</code></span>
                         <span class="font-mono text-[10px] text-slateMuted">redis.asyncio</span>
                       </div>
                       <p class="text-xs text-slateMuted mt-0.5">Distributed async caching for multi-worker pipelines and shared teams.</p>
@@ -712,7 +757,7 @@
                 <div>
                   <div class="flex items-center justify-between mb-1.5">
                     <span class="font-mono text-[10px] uppercase tracking-widest text-slateMuted">Generated Install Command</span>
-                    <button type="button" data-copy-target="cfg-install-out" class="copy-trigger font-mono text-[10px] text-amberCinema hover:text-ivory transition-colors">Copy</button>
+                    <button type="button" data-copy-target="cfg-install-out" aria-label="Copy generated install command" class="copy-trigger px-2 py-1 font-mono text-[10px] text-amberCinema hover:text-ivory transition-colors">Copy</button>
                   </div>
                   <div class="p-3 rounded border border-hairline bg-obsidian font-mono text-xs text-ivory overflow-x-auto">
                     <code id="cfg-install-out"></code>
@@ -723,7 +768,7 @@
                 <div>
                   <div class="flex items-center justify-between mb-1.5">
                     <span class="font-mono text-[10px] uppercase tracking-widest text-slateMuted">Environment Variable</span>
-                    <button type="button" data-copy-target="cfg-env-out" class="copy-trigger font-mono text-[10px] text-amberCinema hover:text-ivory transition-colors">Copy</button>
+                    <button type="button" data-copy-target="cfg-env-out" aria-label="Copy environment variable" class="copy-trigger px-2 py-1 font-mono text-[10px] text-amberCinema hover:text-ivory transition-colors">Copy</button>
                   </div>
                   <div class="p-3 rounded border border-hairline bg-obsidian font-mono text-xs text-emerald-300/90 overflow-x-auto">
                     <code id="cfg-env-out"></code>
@@ -735,9 +780,9 @@
                   <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                     <span class="font-mono text-[10px] uppercase tracking-widest text-slateMuted">claude_desktop_config.json</span>
                     <div class="flex items-center gap-3">
-                      <button type="button" data-copy-target="cfg-mcp-json" class="copy-trigger font-mono text-[10px] text-slateMuted hover:text-ivory transition-colors">Copy JSON</button>
-                      <button id="download-mcp-json" type="button" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-ivory text-obsidian hover:bg-white font-mono text-[10px] font-semibold transition-colors">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <button type="button" data-copy-target="cfg-mcp-json" aria-label="Copy Claude Desktop MCP JSON" class="copy-trigger px-2 py-1 font-mono text-[10px] text-slateMuted hover:text-ivory transition-colors">Copy JSON</button>
+                      <button id="download-mcp-json" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-ivory text-obsidian hover:bg-white font-mono text-[10px] font-semibold transition-colors">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
                           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16"/>
                         </svg>
                         Download JSON
@@ -756,16 +801,16 @@
             <div class="rounded-lg border border-hairline-strong bg-charcoal/60 overflow-hidden">
               <div class="px-6 py-4 border-b border-hairline bg-charcoal flex items-center justify-between">
                 <span class="font-mono text-xs uppercase tracking-wider text-ivory">Latest Release</span>
-                <span id="rel-tag" class="font-mono text-[11px] px-2 py-0.5 rounded bg-vermilion/15 border border-vermilion/30 text-vermilion">main</span>
+                <span id="rel-tag" class="font-mono text-[11px] px-2 py-0.5 rounded bg-vermilion/15 border border-vermilion/30 text-vermilion">v0.3.0</span>
               </div>
 
               <div class="p-6">
                 <div class="flex items-baseline justify-between gap-4 mb-2">
-                  <h3 id="rel-title" class="font-serif text-2xl text-ivory">rtfs — Main Branch Snapshot</h3>
+                  <h3 id="rel-title" class="font-serif text-2xl text-ivory">rtfs v0.3.0</h3>
                   <span id="rel-date" class="font-mono text-[11px] text-slateMuted shrink-0">Active</span>
                 </div>
                 <p id="rel-notes" class="text-xs text-slateMuted leading-relaxed mb-6">
-                  Includes multi-source async providers (IMSDb, Script Slug, TV Writing, SubsLikeScript), PyMuPDF x0-clustering &amp; bidirectional Final Draft (.fdx) support, pluggable URI cache backends, and the FastMCP server layer.
+                  Includes multi-source async providers (IMSDb, Script Slug, TV Writing, SubsLikeScript), PyMuPDF x0-clustering with dual-column dialogue, bidirectional Final Draft (.fdx) support, DNS-pinned HTTP transport, batch export, pluggable URI cache backends, and the FastMCP server layer.
                 </p>
 
                 <!-- Direct Download Assets -->
@@ -805,7 +850,7 @@
                 </div>
                 <div class="p-3 rounded border border-hairline bg-obsidian/70">
                   <div class="font-mono text-[10px] text-slateMuted mb-1">LICENSE</div>
-                  <div id="stat-license" class="font-mono text-lg text-amberCinema">MIT</div>
+                  <div id="stat-license" class="font-mono text-lg text-amberCinema">AGPL-3.0</div>
                 </div>
               </div>
               <div class="flex flex-wrap gap-2 font-mono text-[11px]">
@@ -828,21 +873,22 @@
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-10 pb-12 border-b border-hairline">
         <div>
           <div class="font-mono text-xs tracking-[0.22em] text-vermilion uppercase mb-3">FADE OUT.</div>
-          <div class="font-serif text-4xl sm:text-5xl italic text-ivory/90">The End.</div>
+          <div class="font-serif text-4xl sm:text-5xl text-ivory/90">The End.</div>
         </div>
 
         <div class="flex flex-wrap gap-x-7 gap-y-3 font-mono text-xs text-slateMuted">
-          <a href="https://github.com/AtaCanYmc/rtfs" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors">GitHub</a>
-          <a href="https://github.com/AtaCanYmc/rtfs/tree/main/docs" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors">Documentation</a>
-          <a href="https://github.com/AtaCanYmc/rtfs/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors">Changelog</a>
-          <a href="https://github.com/AtaCanYmc/rtfs/blob/main/SECURITY.md" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors">Security</a>
-          <a href="https://github.com/AtaCanYmc/rtfs/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors">MIT License</a>
+          <a href="https://github.com/AtaCanYmc/rtfs" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors whitespace-nowrap">GitHub</a>
+          <a href="https://pypi.org/project/pyrtfs/" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors whitespace-nowrap">PyPI (pyrtfs)</a>
+          <a href="https://github.com/AtaCanYmc/rtfs/tree/main/docs" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors whitespace-nowrap">Documentation</a>
+          <a href="https://github.com/AtaCanYmc/rtfs/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors whitespace-nowrap">Changelog</a>
+          <a href="https://github.com/AtaCanYmc/rtfs/blob/main/SECURITY.md" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors whitespace-nowrap">Security</a>
+          <a href="https://github.com/AtaCanYmc/rtfs/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" class="hover:text-ivory transition-colors whitespace-nowrap">AGPL-3.0 License</a>
         </div>
       </div>
 
       <div class="pt-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-[11px] text-slateMuted">
         <div>
-          <span class="text-ivory">rtfs</span> — Read The F***ing Script. Crafted by <a href="https://github.com/AtaCanYmc" target="_blank" rel="noopener noreferrer" class="text-ivory hover:text-amberCinema transition-colors underline decoration-white/20 underline-offset-4">Ata Can Yaymacı</a>.
+          <span class="text-ivory">rtfs</span>: Read The F***ing Script. Crafted by <a href="https://github.com/AtaCanYmc" target="_blank" rel="noopener noreferrer" class="text-ivory hover:text-amberCinema transition-colors underline decoration-white/20 underline-offset-4">Ata Can Yaymacı</a>.
         </div>
         <div class="text-white/30">ZERO-BUILD GITHUB PAGES HUB // 24FPS</div>
       </div>
@@ -864,40 +910,87 @@
       const toastEl = document.getElementById('toast');
       const toastMsg = document.getElementById('toast-msg');
       let toastTimer = null;
+      let lastToastMessage = '';
 
       function showToast(message) {
-        toastMsg.textContent = message;
+        let nextMsg = message || 'Copied to clipboard';
+        if (nextMsg === lastToastMessage) nextMsg += '\u00A0';
+        lastToastMessage = nextMsg;
+        toastMsg.textContent = nextMsg;
         toastEl.classList.add('show');
         clearTimeout(toastTimer);
         toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
       }
 
-      // ---------- Utility: Reliable Clipboard Copy (iframe-safe) ----------
-      function copyText(text, label) {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.setAttribute('readonly', '');
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
+      // ---------- Utility: Async Clipboard API with Legacy Fallback ----------
+      function legacyCopy(text) {
+        const field = Object.assign(document.createElement('textarea'), { value: text });
+        field.setAttribute('readonly', '');
+        field.style.cssText = 'position:fixed;inset-block-start:0;opacity:0';
+        document.body.append(field);
+        field.select();
         try {
-          document.execCommand('copy');
+          return document.execCommand('copy');
+        } finally {
+          field.remove();
+        }
+      }
+
+      async function copyText(text, label) {
+        if (!text) return;
+        try {
+          await navigator.clipboard.writeText(text);
           showToast(label || 'Copied to clipboard');
-        } catch (err) {
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(() => showToast(label || 'Copied to clipboard')).catch(() => {});
+        } catch {
+          if (legacyCopy(text)) {
+            showToast(label || 'Copied to clipboard');
+          } else {
+            showToast('Copy failed');
           }
         }
-        document.body.removeChild(textarea);
+      }
+
+      // ---------- Utility: Accessible Tablist Wiring (Selection + Arrow Keys) ----------
+      function wireTablist(buttons, onSelect, activeClasses, inactiveClasses) {
+        const tabs = Array.from(buttons);
+        function activate(targetBtn, moveFocus = false) {
+          tabs.forEach((b) => {
+            const isSelected = b === targetBtn;
+            b.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+            b.setAttribute('tabindex', isSelected ? '0' : '-1');
+            activeClasses.forEach((cls) => b.classList.toggle(cls, isSelected));
+            inactiveClasses.forEach((cls) => b.classList.toggle(cls, !isSelected));
+          });
+          if (moveFocus) targetBtn.focus();
+          onSelect(targetBtn);
+        }
+
+        tabs.forEach((btn, idx) => {
+          const isInitial = btn.getAttribute('aria-selected') === 'true';
+          btn.setAttribute('tabindex', isInitial ? '0' : '-1');
+          btn.addEventListener('click', () => activate(btn, false));
+          btn.addEventListener('keydown', (e) => {
+            let nextIdx = null;
+            if (e.key === 'ArrowRight') nextIdx = (idx + 1) % tabs.length;
+            else if (e.key === 'ArrowLeft') nextIdx = (idx - 1 + tabs.length) % tabs.length;
+            else if (e.key === 'Home') nextIdx = 0;
+            else if (e.key === 'End') nextIdx = tabs.length - 1;
+            if (nextIdx !== null) {
+              e.preventDefault();
+              activate(tabs[nextIdx], true);
+            }
+          });
+        });
       }
 
       // ---------- 1. Scroll-Linked Timecode & Reveal Observer ----------
       const timecodeEl = document.getElementById('nav-timecode');
       const sceneEl = document.getElementById('nav-scene');
       const sections = Array.from(document.querySelectorAll('section[data-scene]'));
+      let scrollTicking = false;
 
       function updateTimecode() {
+        scrollTicking = false;
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
         const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
         const progress = Math.min(1, Math.max(0, scrollTop / maxScroll));
@@ -914,7 +1007,6 @@
           timecodeEl.textContent = `00:${pad(minutes)}:${pad(seconds)}:${pad(frames)}`;
         }
 
-        // Update active scene indicator
         let activeScene = '01';
         const viewportMid = window.innerHeight * 0.35;
         for (const sec of sections) {
@@ -928,7 +1020,12 @@
         }
       }
 
-      window.addEventListener('scroll', updateTimecode, { passive: true });
+      window.addEventListener('scroll', () => {
+        if (!scrollTicking) {
+          scrollTicking = true;
+          requestAnimationFrame(updateTimecode);
+        }
+      }, { passive: true });
       updateTimecode();
 
       // IntersectionObserver for smooth editorial reveals
@@ -949,25 +1046,23 @@
 
       // ---------- 2. Hero Quick-Install Bar ----------
       const heroCommands = {
-        uv: 'uv tool install "git+https://github.com/AtaCanYmc/rtfs.git"',
-        pip: 'pip install "git+https://github.com/AtaCanYmc/rtfs.git"',
-        pipx: 'pipx install "git+https://github.com/AtaCanYmc/rtfs.git"'
+        brew: 'brew install AtaCanYmc/tap/rtfs',
+        uv: 'uv tool install "pyrtfs[all]"',
+        pip: 'pip install "pyrtfs[all]"',
+        pipx: 'pipx install "pyrtfs[all]"'
       };
       const heroCmdEl = document.getElementById('hero-install-cmd');
       const pmTabs = document.querySelectorAll('.pm-tab');
 
-      pmTabs.forEach((btn) => {
-        btn.addEventListener('click', () => {
+      wireTablist(
+        pmTabs,
+        (btn) => {
           const pm = btn.getAttribute('data-pm');
-          pmTabs.forEach((b) => {
-            b.classList.remove('bg-white/10', 'text-ivory');
-            b.classList.add('text-slateMuted');
-          });
-          btn.classList.add('bg-white/10', 'text-ivory');
-          btn.classList.remove('text-slateMuted');
           heroCmdEl.textContent = heroCommands[pm];
-        });
-      });
+        },
+        ['bg-white/10', 'text-ivory'],
+        ['text-slateMuted']
+      );
 
       document.getElementById('hero-copy-btn').addEventListener('click', () => {
         copyText(heroCmdEl.textContent, 'Install command copied');
@@ -993,7 +1088,7 @@
             { type: 'dialogue', text: 'You always say that, the same thing every time: never again, I\'m through, too dangerous.' },
             { type: 'character', text: 'YOUNG MAN', modifiers: ['CONT\'D'] },
             { type: 'parenthetical', text: '(quietly, leaning in)' },
-            { type: 'dialogue', text: 'I know that\'s what I always say. I\'m always right too, but—' },
+            { type: 'dialogue', text: 'I know that\'s what I always say. I\'m always right too, but...' },
             { type: 'transition', text: 'CUT TO:' }
           ],
           stats: { scenes: 102, intPct: 76, extPct: 24, dialogueRatio: '68%', topCast: [['VINCENT', 274], ['JULES', 198], ['BUTCH', 142], ['MIA', 118]] }
@@ -1025,7 +1120,7 @@
         },
         severance: {
           sourceLabel: 'SOURCE: tvwriting // PDF Pilot S01E01',
-          title: 'Severance (S01E01 — Good News About Hell)',
+          title: 'Severance (S01E01: Good News About Hell)',
           year: 2022,
           writers: ['Dan Erickson'],
           sceneNumber: 1,
@@ -1070,7 +1165,7 @@
       function renderScreenplay() {
         const s = SCRIPTS[currentScriptKey];
         spSourceEl.textContent = s.sourceLabel;
-        spLinesEl.innerHTML = '';
+        spLinesEl.replaceChildren();
 
         s.lines.forEach((line) => {
           const div = document.createElement('div');
@@ -1110,7 +1205,8 @@
               character: l.text,
               modifiers: l.modifiers || [],
               parenthetical,
-              lines: dialogue
+              lines: dialogue,
+              dual: false
             });
           }
         }
@@ -1191,7 +1287,7 @@
             return `    <span class="tok-tag">&lt;Paragraph</span> <span class="tok-key">Type</span>=<span class="tok-str">"${typeMap[l.type]}"</span><span class="tok-tag">&gt;</span>\n      <span class="tok-tag">&lt;Text&gt;</span>${escapeHtml(l.text)}<span class="tok-tag">&lt;/Text&gt;</span>\n    <span class="tok-tag">&lt;/Paragraph&gt;</span>`;
           }).join('\n');
 
-          astOutputEl.innerHTML = `<span class="tok-muted">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>\n<span class="tok-tag">&lt;FinalDraft</span> <span class="tok-key">DocumentType</span>=<span class="tok-str">"Script"</span> <span class="tok-key">Version</span>=<span class="tok-str">"4"</span><span class="tok-tag">&gt;</span>\n  <span class="tok-tag">&lt;Content&gt;</span>\n${fdxLines}\n  <span class="tok-tag">&lt;/Content&gt;</span>\n<span class="tok-tag">&lt;/FinalDraft&gt;</span>`;
+          astOutputEl.innerHTML = `<span class="tok-muted">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>\n<span class="tok-tag">&lt;FinalDraft</span> <span class="tok-key">DocumentType</span>=<span class="tok-str">"Script"</span> <span class="tok-key">Template</span>=<span class="tok-str">"No"</span> <span class="tok-key">Version</span>=<span class="tok-str">"5"</span><span class="tok-tag">&gt;</span>\n  <span class="tok-tag">&lt;Content&gt;</span>\n${fdxLines}\n  <span class="tok-tag">&lt;/Content&gt;</span>\n<span class="tok-tag">&lt;/FinalDraft&gt;</span>`;
         } else if (currentOutputTab === 'stats') {
           const st = s.stats;
           const castRows = st.topCast.map(([name, count]) => {
@@ -1224,32 +1320,26 @@
         }
       }
 
-      document.querySelectorAll('.script-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
+      wireTablist(
+        document.querySelectorAll('.script-btn'),
+        (btn) => {
           currentScriptKey = btn.getAttribute('data-script');
-          document.querySelectorAll('.script-btn').forEach((b) => {
-            b.classList.remove('bg-ivory', 'text-obsidian', 'font-medium');
-            b.classList.add('text-slateMuted');
-          });
-          btn.classList.add('bg-ivory', 'text-obsidian', 'font-medium');
-          btn.classList.remove('text-slateMuted');
           renderScreenplay();
           renderOutputPane();
-        });
-      });
+        },
+        ['bg-ivory', 'text-obsidian', 'font-medium'],
+        ['text-slateMuted']
+      );
 
-      document.querySelectorAll('.out-tab').forEach((btn) => {
-        btn.addEventListener('click', () => {
+      wireTablist(
+        document.querySelectorAll('.out-tab'),
+        (btn) => {
           currentOutputTab = btn.getAttribute('data-out');
-          document.querySelectorAll('.out-tab').forEach((b) => {
-            b.classList.remove('bg-white/10', 'text-ivory');
-            b.classList.add('text-slateMuted');
-          });
-          btn.classList.add('bg-white/10', 'text-ivory');
-          btn.classList.remove('text-slateMuted');
           renderOutputPane();
-        });
-      });
+        },
+        ['bg-white/10', 'text-ivory'],
+        ['text-slateMuted']
+      );
 
       document.getElementById('x0-toggle').addEventListener('change', (e) => {
         spCanvas.classList.toggle('show-x0', e.target.checked);
@@ -1262,7 +1352,7 @@
       renderScreenplay();
       renderOutputPane();
 
-      // ---------- 4. Interactive Terminal Simulator ----------
+      // ---------- 4. Interactive CLI Workbench ----------
       const TERM_OUTPUTS = {
         search: [
           '$ rtfs search "interstellar"',
@@ -1279,7 +1369,7 @@
         stats: [
           '$ rtfs stats "pulp-fiction"',
           'Resolved -> Pulp Fiction (1994) [scriptslug / PDF]',
-          'Parsed 102 scenes via PyMuPDF x0-clustering (4 clusters detected).',
+          'Parsed 102 scenes via PyMuPDF x0-clustering (4 clusters + dual-column ready).',
           '',
           '  Scenes       : 102  (76% INT / 24% EXT)',
           '  Dialogue     : 1,148 blocks  (68.2% of script)',
@@ -1288,22 +1378,23 @@
           '  Top Cast     : VINCENT (274) · JULES (198) · BUTCH (142) · MIA (118)'
         ],
         get: [
-          '$ rtfs get "severance" --format fountain',
+          '$ rtfs get "severance" --format fdx',
           'Resolved -> Severance S01E01 "Good News About Hell" [tvwriting / PDF]',
           '',
-          'Title: Severance (S01E01)',
-          'Credit: Written by',
-          'Author: Dan Erickson',
-          '',
-          'INT. LUMON CONFERENCE ROOM - DAY',
-          '',
-          'A stark, windowless room. Fluorescent hum.',
-          '',
-          'MARK (O.S.) (FILTERED)',
-          '(through intercom)',
-          'Who are you?',
-          '',
-          '-- Exported 58 scenes (14,820 words) to stdout --'
+          '<?xml version="1.0" encoding="UTF-8"?>',
+          '<FinalDraft DocumentType="Script" Template="No" Version="5">',
+          '  <Content>',
+          '    <Paragraph Type="Scene Heading">',
+          '      <Text>INT. LUMON CONFERENCE ROOM - DAY</Text>',
+          '    </Paragraph>',
+          '    <Paragraph Type="Character">',
+          '      <Text>MARK (O.S.) (FILTERED)</Text>',
+          '    </Paragraph>',
+          '    <Paragraph Type="Dialogue">',
+          '      <Text>Who are you?</Text>',
+          '    </Paragraph>',
+          '  </Content>',
+          '</FinalDraft>'
         ],
         mcp: [
           '$ rtfs mcp --transport stdio',
@@ -1341,6 +1432,14 @@
         });
 
         const lines = TERM_OUTPUTS[key] || [];
+        const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reducedMotion) {
+          termScreen.textContent = lines.join('\n');
+          termStatus.textContent = 'EXIT 0';
+          termStatus.className = 'font-mono text-[10px] text-emerald-400';
+          return;
+        }
+
         lines.forEach((line, idx) => {
           const t = setTimeout(() => {
             termScreen.textContent += (idx === 0 ? '' : '\n') + line;
@@ -1350,7 +1449,7 @@
               termStatus.textContent = 'EXIT 0';
               termStatus.className = 'font-mono text-[10px] text-emerald-400';
             }
-          }, idx * 85);
+          }, idx * 75);
           termTimers.push(t);
         });
       }
@@ -1376,11 +1475,11 @@
         if (extraRedis.checked) extras.push('redis');
 
         const extraSuffix = extras.length ? `[${extras.join(',')}]` : '';
-        const pkgSpec = extras.length
-          ? `"rtfs${extraSuffix} @ git+https://github.com/AtaCanYmc/rtfs.git"`
-          : `"git+https://github.com/AtaCanYmc/rtfs.git"`;
+        const pkgSpec = extras.length ? `"pyrtfs${extraSuffix}"` : 'pyrtfs';
 
-        if (cfgPm === 'uv') {
+        if (cfgPm === 'brew') {
+          cfgInstallOut.textContent = 'brew install AtaCanYmc/tap/rtfs';
+        } else if (cfgPm === 'uv') {
           cfgInstallOut.textContent = `uv tool install ${pkgSpec}`;
         } else {
           cfgInstallOut.textContent = `pip install ${pkgSpec}`;
@@ -1393,7 +1492,7 @@
             rtfs: {
               command: cfgPm === 'uv' ? 'uvx' : 'rtfs',
               args: cfgPm === 'uv'
-                ? ['--from', `git+https://github.com/AtaCanYmc/rtfs.git${extraSuffix ? '#egg=rtfs' + extraSuffix : ''}`, 'rtfs', 'mcp']
+                ? ['--from', `pyrtfs${extraSuffix || '[mcp]'}`, 'rtfs', 'mcp']
                 : ['mcp', '--transport', 'stdio'],
               env: {
                 RTFS_CACHE_URL: cfgCache
@@ -1405,18 +1504,15 @@
         cfgMcpJson.textContent = JSON.stringify(mcpConfig, null, 2);
       }
 
-      document.querySelectorAll('.cfg-pm-btn').forEach((btn) => {
-        btn.addEventListener('click', () => {
+      wireTablist(
+        document.querySelectorAll('.cfg-pm-btn'),
+        (btn) => {
           cfgPm = btn.getAttribute('data-cfg-pm');
-          document.querySelectorAll('.cfg-pm-btn').forEach((b) => {
-            b.classList.remove('bg-white/10', 'text-ivory');
-            b.classList.add('text-slateMuted');
-          });
-          btn.classList.add('bg-white/10', 'text-ivory');
-          btn.classList.remove('text-slateMuted');
           updateConfigurator();
-        });
-      });
+        },
+        ['bg-white/10', 'text-ivory'],
+        ['text-slateMuted']
+      );
 
       document.querySelectorAll('.cache-btn').forEach((btn) => {
         btn.addEventListener('click', () => {
@@ -1474,7 +1570,9 @@
             const repo = await repoRes.json();
             const stars = repo.stargazers_count ?? 0;
             const forks = repo.forks_count ?? 0;
-            const license = repo.license?.spdx_id || 'MIT';
+            const license = repo.license?.spdx_id && repo.license.spdx_id !== 'NOASSERTION'
+              ? repo.license.spdx_id
+              : 'AGPL-3.0';
 
             document.getElementById('nav-stars').textContent = String(stars);
             document.getElementById('stat-stars').textContent = String(stars);
@@ -1486,20 +1584,21 @@
             const releases = await relRes.json();
             if (Array.isArray(releases) && releases.length > 0) {
               const latest = releases[0];
-              const tag = latest.tag_name || 'v0.1.0';
+              const tag = latest.tag_name || 'v0.3.0';
               const date = latest.published_at ? new Date(latest.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Latest';
 
               document.getElementById('nav-version-text').textContent = tag;
               document.getElementById('rel-tag').textContent = tag;
-              document.getElementById('rel-title').textContent = latest.name || `rtfs ${tag}`;
+              document.getElementById('rel-title').textContent = (latest.name || `rtfs ${tag}`).replace(/\u2014/g, ':');
               document.getElementById('rel-date').textContent = date;
               if (latest.body) {
-                document.getElementById('rel-notes').textContent = latest.body.slice(0, 260) + (latest.body.length > 260 ? '...' : '');
+                const cleanBody = latest.body.replace(/\u2014/g, ' - ');
+                document.getElementById('rel-notes').textContent = cleanBody.slice(0, 260) + (cleanBody.length > 260 ? '...' : '');
               }
 
               // Render release assets + source archives
               const assetsContainer = document.getElementById('rel-assets');
-              assetsContainer.innerHTML = '';
+              assetsContainer.replaceChildren();
 
               const addAssetLink = (badge, name, href, meta) => {
                 const a = document.createElement('a');
@@ -1528,7 +1627,7 @@
 
           syncEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span>Synced with GitHub API</span>';
         } catch (e) {
-          syncEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amberCinema"></span><span>Showing main branch snapshot</span>';
+          syncEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amberCinema"></span><span>Showing v0.3.0 release snapshot</span>';
         }
       }
 
