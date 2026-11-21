@@ -18,9 +18,9 @@ class TVWritingProvider(BaseProvider):
     BASE_URL = "https://sites.google.com/site/tvwriting"
 
     async def search(self, query: str) -> list[SearchResult]:
-        cached = self.cache.get("search:tvwriting", query.lower()) if self.cache else None
+        cached = await self._get_cached_search(query)
         if cached is not None:
-            return [SearchResult.model_validate(item) for item in cached]
+            return cached
 
         html_text = await self.http.get_text(
             self.BASE_URL,
@@ -69,15 +69,13 @@ class TVWritingProvider(BaseProvider):
 
         results.sort(key=lambda r: r.score, reverse=True)
         top = results[:15]
-        if self.cache and top:
-            self.cache.set("search:tvwriting", query.lower(), [r.model_dump() for r in top])
+        await self._set_cached_search(query, top)
         return top
 
     async def fetch_raw(self, result: SearchResult) -> RawScript:
-        if self.cache:
-            cached = self.cache.get("raw:tvwriting", result.url)
-            if cached is not None:
-                return RawScript.model_validate(cached)
+        cached = await self._get_cached_raw(result.url)
+        if cached is not None:
+            return cached
 
         target_url = result.url
         if not target_url.lower().split("?")[0].endswith(".pdf"):
@@ -105,6 +103,5 @@ class TVWritingProvider(BaseProvider):
                 url=target_url,
             ),
         )
-        if self.cache:
-            self.cache.set("raw:tvwriting", result.url, raw.model_dump())
+        await self._set_cached_raw(result.url, raw)
         return raw

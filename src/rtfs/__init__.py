@@ -1,4 +1,12 @@
 from rtfs.core.aggregator import ScriptAggregator
+from rtfs.core.cache import (
+    CacheBackend,
+    DiskCacheBackend,
+    MemoryCacheBackend,
+    NullCacheBackend,
+    RedisCacheBackend,
+    create_cache,
+)
 from rtfs.core.models import (
     Action,
     Dialogue,
@@ -15,8 +23,13 @@ from rtfs.exporters.stats_exp import ScriptStats, compute_stats
 
 __all__ = [
     "Action",
+    "CacheBackend",
     "Dialogue",
+    "DiskCacheBackend",
+    "MemoryCacheBackend",
+    "NullCacheBackend",
     "RawScript",
+    "RedisCacheBackend",
     "Scene",
     "ScriptAggregator",
     "ScriptDocument",
@@ -25,6 +38,7 @@ __all__ = [
     "SearchResult",
     "Transition",
     "compute_stats",
+    "create_cache",
     "export_fountain",
     "export_json",
     "export_txt",

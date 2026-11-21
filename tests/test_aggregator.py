@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 from rtfs.core.aggregator import ScriptAggregator
-from rtfs.core.cache import ScriptCache
+from rtfs.core.cache import MemoryCacheBackend
 from rtfs.core.http import HttpClient
 from rtfs.core.models import RawScript, ScriptMetadata, SearchResult
 from rtfs.providers.base import BaseProvider
@@ -41,9 +39,9 @@ class FakeFailingProvider(BaseProvider):
         raise RuntimeError("Cannot fetch")
 
 
-async def test_aggregator_resilience_and_priority_ranking(tmp_path: Path) -> None:
+async def test_aggregator_resilience_and_priority_ranking() -> None:
     http = HttpClient()
-    cache = ScriptCache(cache_dir=tmp_path / "cache")
+    cache = MemoryCacheBackend()
 
     dummy_raw = RawScript(
         content="<pre>INT. ROOM - DAY\n\n                    NEO\n          Hello.</pre>",
@@ -137,4 +135,4 @@ async def test_aggregator_resilience_and_priority_ranking(tmp_path: Path) -> Non
     assert len(doc.scenes) == 1
 
     await agg.close()
-    cache.close()
+    await http.close()

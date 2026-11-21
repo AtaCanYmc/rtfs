@@ -10,6 +10,7 @@
 
 - [Quick Start](#quick-start)
 - [Architecture](#architecture)
+- [Caching](#caching)
 - [Repository Layout](#repository-layout)
 - [CLI Reference](#cli-reference)
 - [Python SDK](#python-sdk)
@@ -56,7 +57,7 @@ flowchart LR
     AGG --> P2["TVWritingProvider (PDF)"]
     AGG --> P3["IMSDbProvider (HTML)"]
     AGG --> P4["SubsLikeScriptProvider (Text)"]
-    P1 & P2 & P3 & P4 --> RAW["RawScript + DiskCache"]
+    P1 & P2 & P3 & P4 --> RAW["RawScript + CacheBackend"]
     RAW --> PDF["PdfScreenplayParser"]
     RAW --> HTML["HtmlScreenplayParser"]
     RAW --> TXT["TranscriptParser"]
@@ -71,6 +72,39 @@ flowchart LR
 1. **PDF Coordinate Clustering (`PdfScreenplayParser`)**: Extracts text spans and bounding boxes via PyMuPDF `page.get_text("dict")`. Strips headers above `y0 < 50`, footers below `y1 > 740`, page numbers, revision stamps, and continuation markers. Groups horizontal `x0` offsets within an 8pt tolerance to classify action margins, dialogue columns, parentheticals, character cues, and right-aligned transitions. Consecutive lines in the same column merge when vertical delta is under `1.5x` line height.
 2. **HTML Indentation & Tag Parsing (`HtmlScreenplayParser`)**: Extracts `<td class="scrtext"><pre>` blocks from IMSDb documents. Handles both `<b>`-delimited character cues and whitespace-indented scripts through 1D margin clustering.
 3. **Transcript Normalization (`TranscriptParser`)**: Parses `SPEAKER: line` patterns and bracketed stage directions from HTML or plain-text transcripts into `ScriptDocument` scenes.
+
+## Caching
+
+`rtfs` uses a pluggable async `CacheBackend` protocol operating strictly on `bytes`. By default, responses cache locally on disk at `~/.cache/rtfs` using `DiskCacheBackend`.
+
+### Supported Cache URIs
+
+| URI Pattern | Backend Class | Description |
+| :--- | :--- | :--- |
+| `disk://~/.cache/rtfs` | `DiskCacheBackend` | Default SQLite-backed disk cache offloaded via `asyncio.to_thread`. |
+| `redis://localhost:6379/0` | `RedisCacheBackend` | Async Redis cache (`rediss://` also supported). Requires `pip install rtfs[redis]`. |
+| `memory://` | `MemoryCacheBackend` | Ephemeral in-memory dictionary with monotonic TTL expiration. |
+| `none://` | `NullCacheBackend` | No-op cache backend (equivalent to `--no-cache`). |
+
+### Configuring Cache via Environment or CLI
+
+```bash
+# Override via environment variable
+export RTFS_CACHE_URL="redis://localhost:6379/0"
+rtfs search "The Matrix"
+
+# Override per command via --cache-url
+rtfs get "The Matrix" --cache-url "disk:///tmp/rtfs-cache"
+
+# Disable caching for a single invocation
+rtfs stats "The Matrix" --no-cache
+```
+
+To use the Redis backend, install the optional `redis` extra:
+
+```bash
+pip install "rtfs[redis]"
+```
 
 ## Repository Layout
 
@@ -93,7 +127,14 @@ rtfs/
 │       │   └── main.py
 │       ├── core/
 │       │   ├── aggregator.py
-│       │   ├── cache.py
+│       │   ├── cache/
+│       │   │   ├── __init__.py
+│       │   │   ├── base.py
+│       │   │   ├── disk.py
+│       │   │   ├── factory.py
+│       │   │   ├── memory.py
+│       │   │   ├── null.py
+│       │   │   └── redis.py
 │       │   ├── http.py
 │       │   └── models.py
 │       ├── exporters/
@@ -115,6 +156,7 @@ rtfs/
     ├── fixtures/
     │   └── sample_imsdb.html
     ├── test_aggregator.py
+    ├── test_cache.py
     ├── test_exporters.py
     └── test_parsers.py
 ```
@@ -126,24 +168,38 @@ rtfs/
 | `rtfs search` | `<query>` | Required | Title query string to match across providers. |
 | `rtfs search` | `--source`, `-s` | `all` | Filter by provider: `all`, `imsdb`, `scriptslug`, `tvwriting`, `subslikescript`. |
 | `rtfs search` | `--allow-transcript` | `False` | Include fallback subtitle transcripts from `subslikescript`. |
+| `rtfs search` | `--cache-url` | `None` | Cache backend URI (`disk://`, `redis://`, `memory://`, `none://`). Overrides `RTFS_CACHE_URL`. |
+| `rtfs search` | `--no-cache` | `False` | Disable caching (`none://`). Takes precedence over `--cache-url`. |
 | `rtfs get` | `<query_or_url>` | Required | Title query string or direct script URL. |
 | `rtfs get` | `--format`, `-f` | `fountain` | Output format: `json`, `fountain`, `txt`. |
 | `rtfs get` | `--output`, `-o` | `None` | Destination file path. Writes to `stdout` when omitted. |
 | `rtfs get` | `--source`, `-s` | `all` | Restrict search to a single provider. |
 | `rtfs get` | `--allow-transcript` | `False` | Fall back to transcript sources when screenplay sources miss. |
+| `rtfs get` | `--cache-url` | `None` | Cache backend URI. Overrides `RTFS_CACHE_URL`. |
+| `rtfs get` | `--no-cache` | `False` | Disable caching (`none://`). |
 | `rtfs stats` | `<query_or_url>` | Required | Title query string or direct script URL to analyze. |
 | `rtfs stats` | `--source`, `-s` | `all` | Restrict search to a single provider. |
 | `rtfs stats` | `--allow-transcript` | `False` | Allow transcript sources for statistics calculation. |
+| `rtfs stats` | `--cache-url` | `None` | Cache backend URI. Overrides `RTFS_CACHE_URL`. |
+| `rtfs stats` | `--no-cache` | `False` | Disable caching (`none://`). |
 
 ## Python SDK
 
 ```python
 import asyncio
-from rtfs import ScriptAggregator, compute_stats, export_fountain, export_json
+from rtfs import (
+    MemoryCacheBackend,
+    ScriptAggregator,
+    compute_stats,
+    export_fountain,
+    export_json,
+)
 
 
 async def main() -> None:
-    async with ScriptAggregator() as agg:
+    # Pass a CacheBackend instance, a URI string ("redis://localhost:6379/0"), or None
+    cache = MemoryCacheBackend(default_ttl=3600)
+    async with ScriptAggregator(cache=cache) as agg:
         results = await agg.search("The Matrix", allow_transcript=False)
         for item in results[:3]:
             print(f"{item.title} [{item.source}] score={item.score}")
@@ -167,9 +223,9 @@ asyncio.run(main())
 
 Subtitle transcripts lack scene headings, action paragraphs, parentheticals, and character modifiers. `rtfs` prioritizes shooting scripts and production drafts from `scriptslug`, `tvwriting`, and `imsdb`. Pass `--allow-transcript` or `allow_transcript=True` when a transcript is acceptable.
 
-### Where are downloaded PDFs and HTML pages cached?
+### How do I implement a custom cache backend?
 
-`ScriptCache` stores responses in a SQLite-backed directory at `~/.cache/rtfs` with a default TTL of 7 days. To clear the cache programmatically, call `ScriptCache().clear()`.
+Implement the four async methods of `CacheBackend` (`get`, `set`, `delete`, `close`) operating on `bytes`, and pass your instance to `ScriptAggregator(cache=MyCustomCache())`. All Pydantic serialization uses JSON and base64 encoding at the provider boundary rather than `pickle`.
 
 ### Why is `rtfs` licensed under AGPL-3.0-or-later?
 

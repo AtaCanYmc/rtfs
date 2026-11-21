@@ -19,9 +19,9 @@ class SubsLikeScriptProvider(BaseProvider):
     BASE_URL = "https://subslikescript.com"
 
     async def search(self, query: str) -> list[SearchResult]:
-        cached = self.cache.get("search:subslikescript", query.lower()) if self.cache else None
+        cached = await self._get_cached_search(query)
         if cached is not None:
-            return [SearchResult.model_validate(item) for item in cached]
+            return cached
 
         html_text = await self.http.get_text(
             f"{self.BASE_URL}/search",
@@ -69,20 +69,17 @@ class SubsLikeScriptProvider(BaseProvider):
 
         results.sort(key=lambda r: r.score, reverse=True)
         top = results[:15]
-        if self.cache and top:
-            self.cache.set("search:subslikescript", query.lower(), [r.model_dump() for r in top])
+        await self._set_cached_search(query, top)
         return top
 
     async def fetch_raw(self, result: SearchResult) -> RawScript:
-        if self.cache:
-            cached = self.cache.get("raw:subslikescript", result.url)
-            if cached is not None:
-                return RawScript.model_validate(cached)
+        cached = await self._get_cached_raw(result.url)
+        if cached is not None:
+            return cached
 
         page_html = await self.http.get_text(result.url)
         tree = HTMLParser(page_html)
 
-        # If result is a TV series index page, resolve first episode transcript page
         script_div = tree.css_first("div.full-script")
         target_url = result.url
         if script_div is None and "/series/" in result.url:
@@ -108,6 +105,5 @@ class SubsLikeScriptProvider(BaseProvider):
                 url=target_url,
             ),
         )
-        if self.cache:
-            self.cache.set("raw:subslikescript", result.url, raw.model_dump())
+        await self._set_cached_raw(result.url, raw)
         return raw

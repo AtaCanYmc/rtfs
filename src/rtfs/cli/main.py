@@ -22,8 +22,19 @@ console = Console()
 err_console = Console(stderr=True)
 
 
-async def _run_search(query: str, source: str, allow_transcript: bool) -> None:
-    async with ScriptAggregator() as agg:
+def _resolve_cache_url(cache_url: str | None, no_cache: bool) -> str | None:
+    if no_cache:
+        return "none://"
+    return cache_url
+
+
+async def _run_search(
+    query: str,
+    source: str,
+    allow_transcript: bool,
+    cache_url: str | None,
+) -> None:
+    async with ScriptAggregator(cache=cache_url) as agg:
         results = await agg.search(query, source=source, allow_transcript=allow_transcript)
 
     if not results:
@@ -67,11 +78,23 @@ def search_cmd(
         bool,
         typer.Option("--allow-transcript", help="Include transcript fallback sources"),
     ] = False,
+    cache_url: Annotated[
+        str | None,
+        typer.Option(
+            "--cache-url",
+            help="Cache URI (disk://, redis://, memory://, none://); overrides RTFS_CACHE_URL",
+        ),
+    ] = None,
+    no_cache: Annotated[
+        bool,
+        typer.Option("--no-cache", help="Disable caching (shorthand for none://)"),
+    ] = False,
 ) -> None:
     """Search across script providers and rank results."""
     try:
-        asyncio.run(_run_search(query, source, allow_transcript))
-    except ValueError as exc:
+        resolved_cache = _resolve_cache_url(cache_url, no_cache)
+        asyncio.run(_run_search(query, source, allow_transcript, resolved_cache))
+    except (ValueError, ImportError) as exc:
         err_console.print(f"[red]Error:[/red] {exc}")
         raise typer.Exit(code=2) from exc
 
@@ -82,12 +105,13 @@ async def _run_get(
     output: Path | None,
     source: str,
     allow_transcript: bool,
+    cache_url: str | None,
 ) -> None:
     fmt_lower = fmt.lower()
     if fmt_lower not in {"json", "fountain", "txt"}:
         raise ValueError("Invalid format. Choose from: json, fountain, txt")
 
-    async with ScriptAggregator() as agg:
+    async with ScriptAggregator(cache=cache_url) as agg:
         doc = await agg.get(query_or_url, source=source, allow_transcript=allow_transcript)
 
     if fmt_lower == "json":
@@ -130,11 +154,23 @@ def get_cmd(
         bool,
         typer.Option("--allow-transcript", help="Allow transcript fallback sources"),
     ] = False,
+    cache_url: Annotated[
+        str | None,
+        typer.Option(
+            "--cache-url",
+            help="Cache URI (disk://, redis://, memory://, none://); overrides RTFS_CACHE_URL",
+        ),
+    ] = None,
+    no_cache: Annotated[
+        bool,
+        typer.Option("--no-cache", help="Disable caching (shorthand for none://)"),
+    ] = False,
 ) -> None:
     """Fetch, parse, and export a screenplay or transcript."""
     try:
-        asyncio.run(_run_get(query_or_url, fmt, output, source, allow_transcript))
-    except (LookupError, ValueError) as exc:
+        resolved_cache = _resolve_cache_url(cache_url, no_cache)
+        asyncio.run(_run_get(query_or_url, fmt, output, source, allow_transcript, resolved_cache))
+    except (LookupError, ValueError, ImportError) as exc:
         err_console.print(f"[red]Error:[/red] {exc}")
         raise typer.Exit(code=1) from exc
 
@@ -143,8 +179,9 @@ async def _run_stats(
     query_or_url: str,
     source: str,
     allow_transcript: bool,
+    cache_url: str | None,
 ) -> None:
-    async with ScriptAggregator() as agg:
+    async with ScriptAggregator(cache=cache_url) as agg:
         doc = await agg.get(query_or_url, source=source, allow_transcript=allow_transcript)
 
     stats = compute_stats(doc)
@@ -193,11 +230,23 @@ def stats_cmd(
         bool,
         typer.Option("--allow-transcript", help="Allow transcript fallback sources"),
     ] = False,
+    cache_url: Annotated[
+        str | None,
+        typer.Option(
+            "--cache-url",
+            help="Cache URI (disk://, redis://, memory://, none://); overrides RTFS_CACHE_URL",
+        ),
+    ] = None,
+    no_cache: Annotated[
+        bool,
+        typer.Option("--no-cache", help="Disable caching (shorthand for none://)"),
+    ] = False,
 ) -> None:
     """Compute and display scene and character dialogue analytics."""
     try:
-        asyncio.run(_run_stats(query_or_url, source, allow_transcript))
-    except (LookupError, ValueError) as exc:
+        resolved_cache = _resolve_cache_url(cache_url, no_cache)
+        asyncio.run(_run_stats(query_or_url, source, allow_transcript, resolved_cache))
+    except (LookupError, ValueError, ImportError) as exc:
         err_console.print(f"[red]Error:[/red] {exc}")
         raise typer.Exit(code=1) from exc
 

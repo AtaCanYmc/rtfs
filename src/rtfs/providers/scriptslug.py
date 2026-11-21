@@ -21,9 +21,9 @@ class ScriptSlugProvider(BaseProvider):
     ASSETS_BASE = "https://assets.scriptslug.com/live/pdf/scripts"
 
     async def search(self, query: str) -> list[SearchResult]:
-        cached = self.cache.get("search:scriptslug", query.lower()) if self.cache else None
+        cached = await self._get_cached_search(query)
         if cached is not None:
-            return [SearchResult.model_validate(item) for item in cached]
+            return cached
 
         results: list[SearchResult] = []
         seen_urls: set[str] = set()
@@ -81,7 +81,6 @@ class ScriptSlugProvider(BaseProvider):
                 )
             )
 
-        # Also support direct slug probing if HTML search yields nothing (e.g. client-rendered)
         if not results:
             slug = re.sub(r"[^a-z0-9]+", "-", query.lower()).strip("-")
             if slug:
@@ -104,15 +103,13 @@ class ScriptSlugProvider(BaseProvider):
 
         results.sort(key=lambda r: r.score, reverse=True)
         top = results[:15]
-        if self.cache and top:
-            self.cache.set("search:scriptslug", query.lower(), [r.model_dump() for r in top])
+        await self._set_cached_search(query, top)
         return top
 
     async def fetch_raw(self, result: SearchResult) -> RawScript:
-        if self.cache:
-            cached = self.cache.get("raw:scriptslug", result.url)
-            if cached is not None:
-                return RawScript.model_validate(cached)
+        cached = await self._get_cached_raw(result.url)
+        if cached is not None:
+            return cached
 
         pdf_url = result.url
         if not pdf_url.endswith(".pdf"):
@@ -149,6 +146,5 @@ class ScriptSlugProvider(BaseProvider):
                 url=pdf_url,
             ),
         )
-        if self.cache:
-            self.cache.set("raw:scriptslug", result.url, raw.model_dump())
+        await self._set_cached_raw(result.url, raw)
         return raw

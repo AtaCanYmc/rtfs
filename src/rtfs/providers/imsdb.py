@@ -17,7 +17,6 @@ class IMSDbProvider(BaseProvider):
 
     @staticmethod
     def _slug_to_script_url(href: str) -> str:
-        # Convert "/Movie Scripts/The Matrix Script.html" -> "https://imsdb.com/scripts/Matrix,-The.html"
         m = re.search(r"/Movie Scripts/(.+?)\s+Script\.html", href, re.IGNORECASE)
         if m:
             title = m.group(1).strip()
@@ -30,14 +29,13 @@ class IMSDbProvider(BaseProvider):
         return urljoin(IMSDbProvider.BASE_URL, href)
 
     async def search(self, query: str) -> list[SearchResult]:
-        cached = self.cache.get("search:imsdb", query.lower()) if self.cache else None
+        cached = await self._get_cached_search(query)
         if cached is not None:
-            return [SearchResult.model_validate(item) for item in cached]
+            return cached
 
         results: list[SearchResult] = []
         seen_urls: set[str] = set()
 
-        # IMSDb POST search or index fallback
         try:
             resp = await self.http.request(
                 "POST",
@@ -76,21 +74,18 @@ class IMSDbProvider(BaseProvider):
 
         results.sort(key=lambda r: r.score, reverse=True)
         top = results[:15]
-        if self.cache and top:
-            self.cache.set("search:imsdb", query.lower(), [r.model_dump() for r in top])
+        await self._set_cached_search(query, top)
         return top
 
     async def fetch_raw(self, result: SearchResult) -> RawScript:
-        if self.cache:
-            cached = self.cache.get("raw:imsdb", result.url)
-            if cached is not None:
-                return RawScript.model_validate(cached)
+        cached = await self._get_cached_raw(result.url)
+        if cached is not None:
+            return cached
 
         page_html = await self.http.get_text(result.url)
         script_url = result.url
         writers = list(result.writers)
 
-        # If result.url is a landing page (/Movie Scripts/...), find the actual /scripts/... link
         if "/scripts/" not in result.url:
             tree = HTMLParser(page_html)
             for link in tree.css("a"):
@@ -125,6 +120,5 @@ class IMSDbProvider(BaseProvider):
                 url=script_url,
             ),
         )
-        if self.cache:
-            self.cache.set("raw:imsdb", result.url, raw.model_dump())
+        await self._set_cached_raw(result.url, raw)
         return raw

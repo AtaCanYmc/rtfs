@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 from rapidfuzz import fuzz
 
-from rtfs.core.cache import ScriptCache
+from rtfs.core.cache import CacheBackend, create_cache
 from rtfs.core.http import HttpClient
 from rtfs.core.models import RawScript, ScriptDocument, SearchResult
 from rtfs.parsers.base import BaseParser
@@ -32,12 +32,15 @@ class ScriptAggregator:
     def __init__(
         self,
         http: HttpClient | None = None,
-        cache: ScriptCache | None = None,
+        cache: CacheBackend | str | None = None,
         providers: dict[str, BaseProvider] | None = None,
     ) -> None:
         self._owns_http = http is None
         self.http = http or HttpClient()
-        self.cache = cache if cache is not None else ScriptCache()
+        self._owns_cache = cache is None or isinstance(cache, str)
+        self.cache: CacheBackend = (
+            create_cache(cache) if (cache is None or isinstance(cache, str)) else cache
+        )
         self.providers: dict[str, BaseProvider] = providers or {
             "imsdb": IMSDbProvider(self.http, self.cache),
             "scriptslug": ScriptSlugProvider(self.http, self.cache),
@@ -181,6 +184,7 @@ class ScriptAggregator:
     async def close(self) -> None:
         if self._owns_http:
             await self.http.close()
+        await self.cache.close()
 
     async def __aenter__(self) -> ScriptAggregator:
         return self
