@@ -13,7 +13,7 @@ from rtfs.core.cache import (
     encode_search_results,
     make_cache_key,
 )
-from rtfs.core.http import HttpClient, validate_public_http_url
+from rtfs.core.http import HttpClient, host_matches, validate_public_http_url
 from rtfs.core.models import RawScript, SearchResult
 
 
@@ -40,9 +40,7 @@ class BaseProvider(ABC):
         except ValueError:
             return None
         host = (urlparse(resolved).hostname or "").lower()
-        if self.allowed_hosts and not any(
-            host == allowed or host.endswith(f".{allowed}") for allowed in self.allowed_hosts
-        ):
+        if self.allowed_hosts and not host_matches(host, *self.allowed_hosts):
             return None
         return resolved
 

@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from rapidfuzz import fuzz
 
 from rtfs.core.cache import CacheBackend, create_cache
-from rtfs.core.http import HttpClient
+from rtfs.core.http import HttpClient, host_matches
 from rtfs.core.models import RawScript, ScriptDocument, SearchResult
 from rtfs.parsers.base import BaseParser
 from rtfs.parsers.html_screenplay import HtmlScreenplayParser
@@ -105,21 +105,21 @@ class ScriptAggregator:
 
     def _result_from_url(self, url: str) -> SearchResult:
         parsed = urlparse(url)
-        host = parsed.netloc.lower()
+        host = (parsed.hostname or "").lower()
         path = parsed.path
         slug = path.rstrip("/").split("/")[-1] or "Direct Script"
         title = slug.replace(".html", "").replace(".pdf", "").replace("-", " ").strip()
 
-        if "imsdb.com" in host:
+        if host_matches(host, "imsdb.com"):
             source = "imsdb"
             fmt = "screenplay"
-        elif "scriptslug.com" in host:
+        elif host_matches(host, "scriptslug.com"):
             source = "scriptslug"
             fmt = "screenplay"
-        elif "tvwriting" in host or "sites.google.com" in host:
+        elif host_matches(host, "sites.google.com", "drive.google.com", "docs.google.com"):
             source = "tvwriting"
             fmt = "screenplay"
-        elif "subslikescript.com" in host:
+        elif host_matches(host, "subslikescript.com"):
             source = "subslikescript"
             fmt = "transcript"
         else:

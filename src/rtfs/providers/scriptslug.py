@@ -87,7 +87,7 @@ class ScriptSlugProvider(BaseProvider):
                 candidate_url = f"{self.BASE_URL}/script/{slug}"
                 try:
                     page = await self.http.get_text(candidate_url)
-                    if ".pdf" in page or "assets.scriptslug.com" in page:
+                    if self._extract_pdf_url_from_html(page) is not None:
                         results.append(
                             SearchResult(
                                 title=query.title(),
@@ -106,6 +106,20 @@ class ScriptSlugProvider(BaseProvider):
         await self._set_cached_search(query, top)
         return top
 
+    def _extract_pdf_url_from_html(self, page_html: str) -> str | None:
+        tree = HTMLParser(page_html)
+        for link in tree.css("a"):
+            href = link.attributes.get("href") or ""
+            if ".pdf" in href.lower():
+                candidate = self.resolve_allowed_url(self.BASE_URL, href)
+                if candidate:
+                    return candidate
+        for m in re.finditer(r"https?://[^\s\"'<>]+\.pdf(?:\?[^\s\"'<>]+)?", page_html):
+            candidate = self.resolve_allowed_url(self.BASE_URL, m.group(0))
+            if candidate:
+                return candidate
+        return None
+
     async def fetch_raw(self, result: SearchResult) -> RawScript:
         cached = await self._get_cached_raw(result.url)
         if cached is not None:
@@ -114,21 +128,7 @@ class ScriptSlugProvider(BaseProvider):
         pdf_url = result.url
         if not pdf_url.endswith(".pdf"):
             page_html = await self.http.get_text(result.url)
-            tree = HTMLParser(page_html)
-            found_pdf: str | None = None
-            for link in tree.css("a"):
-                href = link.attributes.get("href") or ""
-                if ".pdf" in href:
-                    candidate = self.resolve_allowed_url(self.BASE_URL, href)
-                    if candidate:
-                        found_pdf = candidate
-                        break
-            if not found_pdf:
-                for m in re.finditer(r"https?://[^\s\"'<>]+\.pdf(?:\?[^\s\"'<>]+)?", page_html):
-                    candidate = self.resolve_allowed_url(self.BASE_URL, m.group(0))
-                    if candidate:
-                        found_pdf = candidate
-                        break
+            found_pdf = self._extract_pdf_url_from_html(page_html)
             if not found_pdf:
                 slug = result.url.rstrip("/").split("/")[-1]
                 found_pdf = f"{self.ASSETS_BASE}/{slug}.pdf"

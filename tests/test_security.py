@@ -7,7 +7,7 @@ import fitz
 import pytest
 
 from rtfs.core.cache import DiskCacheBackend, NullCacheBackend
-from rtfs.core.http import HttpClient, validate_public_http_url
+from rtfs.core.http import HttpClient, host_matches, validate_public_http_url
 from rtfs.core.models import RawScript, ScriptMetadata
 from rtfs.parsers.pdf_screenplay import PdfScreenplayParser
 from rtfs.providers.imsdb import IMSDbProvider
@@ -144,3 +144,16 @@ async def test_disk_cache_directory_permissions(tmp_path: Path) -> None:
     mode = stat.S_IMODE(cache_dir.stat().st_mode)
     assert mode == 0o700
     await cache.close()
+
+
+def test_host_matches_rejects_substring_spoofing() -> None:
+    assert host_matches("imsdb.com", "imsdb.com") is True
+    assert host_matches("www.imsdb.com", "imsdb.com") is True
+    assert host_matches("assets.scriptslug.com", "scriptslug.com") is True
+
+    # Spoofed prefix/suffix domains that would pass substring `in` checks must fail
+    assert host_matches("evil-imsdb.com", "imsdb.com") is False
+    assert host_matches("imsdb.com.attacker.org", "imsdb.com") is False
+    assert host_matches("subslikescript.com.evil.net", "subslikescript.com") is False
+    assert host_matches("", "imsdb.com") is False
+

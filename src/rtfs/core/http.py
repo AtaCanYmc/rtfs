@@ -22,6 +22,17 @@ BLOCKED_HOSTNAMES = {"localhost", "localhost.localdomain", "metadata.google.inte
 BLOCKED_HOST_SUFFIXES = (".local", ".internal", ".localhost")
 
 
+def host_matches(hostname: str, *allowed_domains: str) -> bool:
+    """Return True if hostname exactly equals or is a subdomain of any allowed domain."""
+    clean = hostname.lower().strip(".")
+    if not clean:
+        return False
+    return any(
+        clean == domain.lower().strip(".") or clean.endswith(f".{domain.lower().strip('.')}")
+        for domain in allowed_domains
+    )
+
+
 def validate_public_http_url(url: str) -> str:
     """Validate that a URL uses http/https and targets a public host."""
     parsed = urlparse(url)
