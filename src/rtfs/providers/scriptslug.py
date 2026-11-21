@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Literal
-from urllib.parse import urljoin
+from typing import ClassVar, Literal
 
 from rapidfuzz import fuzz
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
@@ -19,6 +18,7 @@ class ScriptSlugProvider(BaseProvider):
     format = "screenplay"
     BASE_URL = "https://www.scriptslug.com"
     ASSETS_BASE = "https://assets.scriptslug.com/live/pdf/scripts"
+    allowed_hosts: ClassVar[set[str]] = {"scriptslug.com"}
 
     async def search(self, query: str) -> list[SearchResult]:
         cached = await self._get_cached_search(query)
@@ -38,8 +38,8 @@ class ScriptSlugProvider(BaseProvider):
             href = link.attributes.get("href") or ""
             if "/script/" not in href:
                 continue
-            url = urljoin(self.BASE_URL, href)
-            if url in seen_urls:
+            url = self.resolve_allowed_url(self.BASE_URL, href)
+            if not url or url in seen_urls:
                 continue
 
             raw_text = " ".join((link.text() or "").split()).strip()
@@ -119,12 +119,16 @@ class ScriptSlugProvider(BaseProvider):
             for link in tree.css("a"):
                 href = link.attributes.get("href") or ""
                 if ".pdf" in href:
-                    found_pdf = urljoin(self.BASE_URL, href)
-                    break
+                    candidate = self.resolve_allowed_url(self.BASE_URL, href)
+                    if candidate:
+                        found_pdf = candidate
+                        break
             if not found_pdf:
-                m = re.search(r"https?://[^\s\"'<>]+\.pdf(?:\?[^\s\"'<>]+)?", page_html)
-                if m:
-                    found_pdf = m.group(0)
+                for m in re.finditer(r"https?://[^\s\"'<>]+\.pdf(?:\?[^\s\"'<>]+)?", page_html):
+                    candidate = self.resolve_allowed_url(self.BASE_URL, m.group(0))
+                    if candidate:
+                        found_pdf = candidate
+                        break
             if not found_pdf:
                 slug = result.url.rstrip("/").split("/")[-1]
                 found_pdf = f"{self.ASSETS_BASE}/{slug}.pdf"

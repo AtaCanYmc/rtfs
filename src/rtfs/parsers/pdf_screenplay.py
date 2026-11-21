@@ -38,36 +38,45 @@ class PdfScreenplayParser(BaseParser):
         header_cutoff: float = 50.0,
         footer_cutoff: float = 740.0,
         cluster_tolerance: float = 8.0,
+        max_pages: int = 500,
     ) -> None:
         self.header_cutoff = header_cutoff
         self.footer_cutoff = footer_cutoff
         self.cluster_tolerance = cluster_tolerance
+        self.max_pages = max_pages
 
     def _extract_lines(self, pdf_bytes: bytes) -> list[PdfLine]:
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         extracted: list[PdfLine] = []
-
-        for page_idx, page in enumerate(doc):
-            page_dict = page.get_text("dict")
-            page_lines: list[PdfLine] = []
-            for block in page_dict.get("blocks", []):
-                if block.get("type") != 0:
-                    continue
-                for line in block.get("lines", []):
-                    bbox = line.get("bbox", (0.0, 0.0, 0.0, 0.0))
-                    x0, y0, x1, y1 = float(bbox[0]), float(bbox[1]), float(bbox[2]), float(bbox[3])
-                    if y0 < self.header_cutoff or y1 > self.footer_cutoff:
+        try:
+            for page_idx, page in enumerate(doc):
+                if page_idx >= self.max_pages:
+                    break
+                page_dict = page.get_text("dict")
+                page_lines: list[PdfLine] = []
+                for block in page_dict.get("blocks", []):
+                    if block.get("type") != 0:
                         continue
-                    spans = line.get("spans", [])
-                    text = "".join(span.get("text", "") for span in spans).strip()
-                    if not text or is_noise_line(text):
-                        continue
-                    page_lines.append(PdfLine(page_idx, x0, y0, x1, y1, text))
+                    for line in block.get("lines", []):
+                        bbox = line.get("bbox", (0.0, 0.0, 0.0, 0.0))
+                        x0, y0, x1, y1 = (
+                            float(bbox[0]),
+                            float(bbox[1]),
+                            float(bbox[2]),
+                            float(bbox[3]),
+                        )
+                        if y0 < self.header_cutoff or y1 > self.footer_cutoff:
+                            continue
+                        spans = line.get("spans", [])
+                        text = "".join(span.get("text", "") for span in spans).strip()
+                        if not text or is_noise_line(text):
+                            continue
+                        page_lines.append(PdfLine(page_idx, x0, y0, x1, y1, text))
 
-            page_lines.sort(key=lambda ln: (round(ln.y0, 1), ln.x0))
-            extracted.extend(page_lines)
-
-        doc.close()
+                page_lines.sort(key=lambda ln: (round(ln.y0, 1), ln.x0))
+                extracted.extend(page_lines)
+        finally:
+            doc.close()
         return extracted
 
     def _classify_line(

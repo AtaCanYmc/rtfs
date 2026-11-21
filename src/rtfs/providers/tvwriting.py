@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from urllib.parse import urljoin
+from typing import ClassVar
 
 from rapidfuzz import fuzz
 from selectolax.lexbor import LexborHTMLParser as HTMLParser
@@ -16,6 +16,11 @@ class TVWritingProvider(BaseProvider):
     name = "tvwriting"
     format = "screenplay"
     BASE_URL = "https://sites.google.com/site/tvwriting"
+    allowed_hosts: ClassVar[set[str]] = {
+        "sites.google.com",
+        "drive.google.com",
+        "docs.google.com",
+    }
 
     async def search(self, query: str) -> list[SearchResult]:
         cached = await self._get_cached_search(query)
@@ -45,8 +50,8 @@ class TVWritingProvider(BaseProvider):
             if score < 45.0:
                 continue
 
-            url = urljoin(self.BASE_URL + "/", href)
-            if url in seen_urls:
+            url = self.resolve_allowed_url(self.BASE_URL + "/", href)
+            if not url or url in seen_urls:
                 continue
             seen_urls.add(url)
 
@@ -84,8 +89,10 @@ class TVWritingProvider(BaseProvider):
             for link in tree.css("a"):
                 href = link.attributes.get("href") or ""
                 if ".pdf" in href.lower():
-                    target_url = urljoin(self.BASE_URL + "/", href)
-                    break
+                    candidate = self.resolve_allowed_url(self.BASE_URL + "/", href)
+                    if candidate:
+                        target_url = candidate
+                        break
 
         pdf_bytes = await self.http.get_bytes(target_url)
         raw = RawScript(

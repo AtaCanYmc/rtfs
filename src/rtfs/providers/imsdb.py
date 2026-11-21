@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from typing import ClassVar
 from urllib.parse import quote, urljoin
 
 from rapidfuzz import fuzz
@@ -14,6 +15,7 @@ class IMSDbProvider(BaseProvider):
     name = "imsdb"
     format = "screenplay"
     BASE_URL = "https://imsdb.com"
+    allowed_hosts: ClassVar[set[str]] = {"imsdb.com"}
 
     @staticmethod
     def _slug_to_script_url(href: str) -> str:
@@ -57,8 +59,8 @@ class IMSDbProvider(BaseProvider):
                 score = float(fuzz.WRatio(query.lower(), title.lower()))
                 if score < 45.0:
                     continue
-                url = urljoin(self.BASE_URL, href)
-                if url in seen_urls:
+                url = self.resolve_allowed_url(self.BASE_URL, href)
+                if not url or url in seen_urls:
                     continue
                 seen_urls.add(url)
                 results.append(
@@ -91,10 +93,21 @@ class IMSDbProvider(BaseProvider):
             for link in tree.css("a"):
                 href = link.attributes.get("href") or ""
                 if "/scripts/" in href and href.endswith(".html"):
-                    script_url = urljoin(self.BASE_URL, quote(href, safe="/:,.-_"))
-                    break
+                    candidate = self.resolve_allowed_url(
+                        self.BASE_URL,
+                        quote(href, safe="/:,.-_"),
+                    )
+                    if candidate:
+                        script_url = candidate
+                        break
             else:
-                script_url = self._slug_to_script_url(result.url)
+                fallback = self.resolve_allowed_url(
+                    self.BASE_URL,
+                    self._slug_to_script_url(result.url),
+                )
+                if not fallback:
+                    raise ValueError(f"Disallowed IMSDb script target for '{result.url}'")
+                script_url = fallback
 
             for link in tree.css("a"):
                 href = link.attributes.get("href") or ""

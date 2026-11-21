@@ -18,6 +18,11 @@ class DiskCacheBackend:
         default_ttl: int | None = DEFAULT_TTL,
     ) -> None:
         self.path = Path(path).expanduser()
+        self.path.mkdir(parents=True, exist_ok=True, mode=0o700)
+        try:
+            self.path.chmod(0o700)
+        except OSError:
+            pass
         self.default_ttl = default_ttl
         self._cache = Cache(str(self.path))
 

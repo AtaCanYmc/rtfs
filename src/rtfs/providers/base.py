@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Literal
+from typing import ClassVar, Literal
+from urllib.parse import urljoin, urlparse
 
 from rtfs.core.cache import (
     CacheBackend,
@@ -12,13 +13,14 @@ from rtfs.core.cache import (
     encode_search_results,
     make_cache_key,
 )
-from rtfs.core.http import HttpClient
+from rtfs.core.http import HttpClient, validate_public_http_url
 from rtfs.core.models import RawScript, SearchResult
 
 
 class BaseProvider(ABC):
     name: str = "base"
     format: Literal["screenplay", "transcript"] = "screenplay"
+    allowed_hosts: ClassVar[set[str]] = set()
 
     def __init__(
         self,
@@ -30,6 +32,19 @@ class BaseProvider(ABC):
             self.cache: CacheBackend | None = create_cache(cache)
         else:
             self.cache = cache
+
+    def resolve_allowed_url(self, base_url: str, href: str) -> str | None:
+        """Resolve a candidate href against base_url and ensure it belongs to allowed_hosts."""
+        try:
+            resolved = validate_public_http_url(urljoin(base_url, href))
+        except ValueError:
+            return None
+        host = (urlparse(resolved).hostname or "").lower()
+        if self.allowed_hosts and not any(
+            host == allowed or host.endswith(f".{allowed}") for allowed in self.allowed_hosts
+        ):
+            return None
+        return resolved
 
     async def _get_cached_search(self, query: str) -> list[SearchResult] | None:
         if self.cache is None:
