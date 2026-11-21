@@ -43,4 +43,4 @@ __all__ = [
     "export_json",
     "export_txt",
 ]
-__version__ = "0.1.0"
+__version__ = "0.1.1"

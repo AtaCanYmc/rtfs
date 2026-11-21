@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "rtfs"
-version = "0.1.0"
+version = "0.1.1"
 description = "Multi-Source Movie & TV Script CLI + Python SDK"
 readme = "README.md"
 requires-python = ">=3.11"
