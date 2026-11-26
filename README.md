@@ -88,22 +88,7 @@ rtfs stats "The Matrix"
 
 `rtfs` separates upstream HTTP retrieval from structural parsing. Every provider returns a `RawScript` payload containing raw bytes or strings alongside `ScriptMetadata`. Specialized parsers transform `RawScript` into a canonical `ScriptDocument` AST before handing it to exporters or the progressive-disclosure MCP layer.
 
-```mermaid
-flowchart LR
-    CLI["CLI / SDK / FastMCP"] --> AGG["ScriptAggregator"]
-    AGG --> P1["ScriptSlugProvider (PDF)"]
-    AGG --> P2["TVWritingProvider (PDF)"]
-    AGG --> P3["IMSDbProvider (HTML)"]
-    AGG --> P4["SubsLikeScriptProvider (Text)"]
-    P1 & P2 & P3 & P4 --> RAW["RawScript + CacheBackend"]
-    RAW --> PDF["PdfScreenplayParser"]
-    RAW --> HTML["HtmlScreenplayParser"]
-    RAW --> TXT["TranscriptParser"]
-    PDF & HTML & TXT --> AST["ScriptDocument AST"]
-    AST --> EXP1["JSON Exporter"]
-    AST --> EXP2["Fountain Exporter"]
-    AST --> EXP3["Stats Exporter"]
-```
+![rtfs architecture pipeline](assets/diagrams/rtfs-pipeline.svg)
 
 ### Parsing Mechanics
 

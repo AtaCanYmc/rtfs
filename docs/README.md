@@ -16,46 +16,4 @@ This directory contains runnable examples and API reference guides for every mod
 
 ## Architecture Overview
 
-```mermaid
-flowchart TD
-    subgraph Entrypoints
-        CLI["rtfs.cli.main (Typer CLI)"]
-        SDK["rtfs (Python SDK)"]
-        MCP["rtfs.mcp.server (FastMCP)"]
-    end
-
-    subgraph Core["rtfs.core"]
-        AGG["aggregator.py (ScriptAggregator, filter_scenes, parse_file)"]
-        HTTP["http.py (HttpClient, PinnedAsyncNetworkBackend)"]
-        CACHE["cache/ (Disk, Redis, Memory, Null)"]
-        MODELS["models.py (ScriptDocument, Scene, Action, Dialogue, Transition)"]
-    end
-
-    subgraph Providers["rtfs.providers"]
-        P_SLUG["scriptslug.py"]
-        P_TV["tvwriting.py"]
-        P_IMSDB["imsdb.py"]
-        P_SUBS["subslikescript.py"]
-    end
-
-    subgraph Parsers["rtfs.parsers"]
-        PAR_PDF["pdf_screenplay.py"]
-        PAR_FDX["fdx.py"]
-        PAR_HTML["html_screenplay.py"]
-        PAR_TXT["transcript.py"]
-    end
-
-    subgraph Exporters["rtfs.exporters"]
-        EXP_FTN["fountain_exp.py"]
-        EXP_FDX["fdx_exp.py"]
-        EXP_JSON["json_exp.py"]
-        EXP_STATS["stats_exp.py"]
-    end
-
-    CLI & SDK & MCP --> AGG
-    AGG --> Providers
-    Providers --> HTTP & CACHE
-    AGG --> Parsers
-    Parsers --> MODELS
-    MODELS --> Exporters
-```
+![rtfs module architecture](../assets/diagrams/rtfs-architecture.svg)

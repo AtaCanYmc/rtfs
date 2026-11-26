@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 960 396" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="rtfs-pipeline-title rtfs-pipeline-desc" id="rtfs-pipeline-root">
+        <title id="rtfs-pipeline-title">rtfs Screenplay Pipeline</title>
+        <desc id="rtfs-pipeline-desc">Data flow from CLI, Python SDK, and FastMCP entrypoints through ScriptAggregator, multi-source providers, cache-backed raw payloads, format parsers, the canonical ScriptDocument AST, and exporters.</desc>
+        <defs>
+      <style>@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500;600&amp;family=Noto+Serif:ital@0;1&amp;family=Noto+Sans+KR:wght@400;500;600&amp;family=Noto+Serif+KR:wght@400&amp;family=Noto+Sans+TC:wght@400;500;600&amp;family=Noto+Serif+TC:wght@400&amp;display=swap');
+      #rtfs-pipeline-root { --color-paper:   #08080A;
+      --color-paper-2: #101013;
+      --color-ink:     #F2EFE9;
+      --color-muted:   #8A8A93;
+      --color-accent:  #E5A93C;
+      --color-link:    #739FDF;
+      --font-sans:     'Inter', 'Geist', system-ui, -apple-system, sans-serif;
+      --font-serif:    'Instrument Serif', Georgia, serif;
+      --font-mono:     'Geist Mono', ui-monospace, SFMono-Regular, monospace; }
+      #rtfs-pipeline-root { font-family: var(--font-sans); color: var(--color-ink); }
+      #rtfs-pipeline-root .diagram-container { width: 100%; overflow-x: auto; }
+      @media print {
+#rtfs-pipeline-root .diagram-container { overflow-x: visible; }
+}</style>
+          <marker id="rtfs-pipeline-arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#8A8A93"/></marker>
+          <marker id="rtfs-pipeline-arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#E5A93C"/></marker>
+          <marker id="rtfs-pipeline-arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#739FDF"/></marker>
+        </defs>
+
+        <!-- Background -->
+        <rect width="100%" height="100%" fill="#08080A"/>
+
+        <!-- Zones (drawn first) -->
+        <!-- Zone 1: INGEST -->
+        <rect x="220" y="64" width="216" height="248" rx="8" fill="#f2efe9" stroke="#f2efe9" stroke-width="0.8" fill-opacity="0.02" stroke-opacity="0.10"/>
+        <rect x="292" y="68" width="72" height="12" rx="2" fill="#08080A"/>
+        <text x="328" y="77" fill="#8A8A93" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">INGEST</text>
+
+        <!-- Zone 2: PARSE -->
+        <rect x="468" y="64" width="224" height="248" rx="8" fill="#f2efe9" stroke="#f2efe9" stroke-width="0.8" fill-opacity="0.02" stroke-opacity="0.10"/>
+        <rect x="544" y="68" width="72" height="12" rx="2" fill="#08080A"/>
+        <text x="580" y="77" fill="#8A8A93" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">PARSE</text>
+
+        <!-- Zone 3: EMIT -->
+        <rect x="724" y="64" width="212" height="248" rx="8" fill="#f2efe9" stroke="#f2efe9" stroke-width="0.8" fill-opacity="0.02" stroke-opacity="0.10"/>
+        <rect x="796" y="68" width="68" height="12" rx="2" fill="#08080A"/>
+        <text x="830" y="77" fill="#8A8A93" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">EMIT</text>
+
+        <!-- Arrows (drawn before nodes) -->
+        <!-- Entrypoints -> ScriptAggregator -->
+        <line x1="176" y1="142" x2="240" y2="142" stroke="#8A8A93" stroke-width="1.2" marker-end="url(#rtfs-pipeline-arrow)"/>
+        <rect x="186" y="122" width="44" height="12" rx="2" fill="#08080A"/>
+        <text x="208" y="131" fill="#8A8A93" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">QUERY</text>
+
+        <!-- ScriptAggregator -> Providers (external HTTP) -->
+        <line x1="328" y1="176" x2="328" y2="224" stroke="#739FDF" stroke-width="1.2" marker-end="url(#rtfs-pipeline-arrow-link)"/>
+        <rect x="336" y="194" width="36" height="12" rx="2" fill="#08080A"/>
+        <text x="354" y="203" fill="#739FDF" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">HTTP</text>
+
+        <!-- Providers -> RawScript + Cache -->
+        <line x1="416" y1="258" x2="488" y2="258" stroke="#8A8A93" stroke-width="1.2" marker-end="url(#rtfs-pipeline-arrow)"/>
+        <rect x="428" y="238" width="48" height="12" rx="2" fill="#08080A"/>
+        <text x="452" y="247" fill="#8A8A93" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">CACHE</text>
+
+        <!-- RawScript + Cache -> Parsers -->
+        <line x1="580" y1="224" x2="580" y2="176" stroke="#8A8A93" stroke-width="1.2" marker-end="url(#rtfs-pipeline-arrow)"/>
+        <rect x="588" y="194" width="52" height="12" rx="2" fill="#08080A"/>
+        <text x="614" y="203" fill="#8A8A93" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">DECODE</text>
+
+        <!-- ScriptAggregator -> Parsers (dashed cache hit / local file) -->
+        <line x1="416" y1="142" x2="488" y2="142" stroke="#8A8A93" stroke-width="1" stroke-dasharray="5,4" marker-end="url(#rtfs-pipeline-arrow)"/>
+        <rect x="424" y="122" width="56" height="12" rx="2" fill="#08080A"/>
+        <text x="452" y="131" fill="#8A8A93" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">HIT/FILE</text>
+
+        <!-- Parsers -> ScriptDocument AST (accent) -->
+        <line x1="672" y1="142" x2="744" y2="142" stroke="#E5A93C" stroke-width="1.4" marker-end="url(#rtfs-pipeline-arrow-accent)"/>
+        <rect x="690" y="122" width="36" height="12" rx="2" fill="#08080A"/>
+        <text x="708" y="131" fill="#E5A93C" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">AST</text>
+
+        <!-- ScriptDocument AST -> Exporters (accent) -->
+        <line x1="830" y1="176" x2="830" y2="224" stroke="#E5A93C" stroke-width="1.4" marker-end="url(#rtfs-pipeline-arrow-accent)"/>
+        <rect x="838" y="194" width="40" height="12" rx="2" fill="#08080A"/>
+        <text x="858" y="203" fill="#E5A93C" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">EMIT</text>
+
+        <!-- Nodes -->
+        <!-- 1. Entrypoints -->
+        <rect x="24" y="108" width="152" height="68" rx="6" fill="#08080A"/>
+        <rect x="24" y="108" width="152" height="68" rx="6" fill="#101013" stroke="#f2efe9" stroke-width="1" stroke-opacity="0.16"/>
+        <rect x="32" y="114" width="40" height="12" rx="2" fill="none" stroke="#8a8a93" stroke-width="0.8" stroke-opacity="0.40"/>
+        <text x="52" y="123" fill="#8A8A93" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">INPUT</text>
+        <text x="100" y="144" fill="#F2EFE9" font-size="12" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Entrypoints</text>
+        <text x="100" y="160" fill="#8A8A93" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">CLI · SDK · FastMCP</text>
+
+        <!-- 2. ScriptAggregator (FOCAL #1) -->
+        <rect x="240" y="108" width="176" height="68" rx="6" fill="#08080A"/>
+        <rect x="240" y="108" width="176" height="68" rx="6" fill="#e5a93c" stroke="#E5A93C" stroke-width="1.2" fill-opacity="0.10"/>
+        <rect x="248" y="114" width="40" height="12" rx="2" fill="none" stroke="#e5a93c" stroke-width="0.8" stroke-opacity="0.40"/>
+        <text x="268" y="123" fill="#E5A93C" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">CORE</text>
+        <text x="328" y="144" fill="#F2EFE9" font-size="12" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">ScriptAggregator</text>
+        <text x="328" y="160" fill="#8A8A93" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Fan-out search &amp; rank</text>
+
+        <!-- 3. Providers (external) -->
+        <rect x="240" y="224" width="176" height="68" rx="6" fill="#08080A"/>
+        <rect x="240" y="224" width="176" height="68" rx="6" fill="#101013" stroke="#739fdf" stroke-width="1" stroke-opacity="0.45"/>
+        <rect x="248" y="230" width="52" height="12" rx="2" fill="none" stroke="#739fdf" stroke-width="0.8" stroke-opacity="0.40"/>
+        <text x="274" y="239" fill="#739FDF" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">SOURCES</text>
+        <text x="328" y="260" fill="#F2EFE9" font-size="12" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Providers</text>
+        <text x="328" y="276" fill="#8A8A93" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Slug · TVW · IMSDb · Subs</text>
+
+        <!-- 4. RawScript + Cache -->
+        <rect x="488" y="224" width="184" height="68" rx="6" fill="#08080A"/>
+        <rect x="488" y="224" width="184" height="68" rx="6" fill="#101013" stroke="#f2efe9" stroke-width="1" stroke-opacity="0.16"/>
+        <rect x="496" y="230" width="44" height="12" rx="2" fill="none" stroke="#8a8a93" stroke-width="0.8" stroke-opacity="0.40"/>
+        <text x="518" y="239" fill="#8A8A93" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">STORE</text>
+        <text x="580" y="260" fill="#F2EFE9" font-size="12" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">RawScript + Cache</text>
+        <text x="580" y="276" fill="#8A8A93" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Disk · Redis · Mem · Null</text>
+
+        <!-- 5. Parsers -->
+        <rect x="488" y="108" width="184" height="68" rx="6" fill="#08080A"/>
+        <rect x="488" y="108" width="184" height="68" rx="6" fill="#101013" stroke="#f2efe9" stroke-width="1" stroke-opacity="0.16"/>
+        <rect x="496" y="114" width="48" height="12" rx="2" fill="none" stroke="#8a8a93" stroke-width="0.8" stroke-opacity="0.40"/>
+        <text x="520" y="123" fill="#8A8A93" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">PARSER</text>
+        <text x="580" y="144" fill="#F2EFE9" font-size="12" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Parsers</text>
+        <text x="580" y="160" fill="#8A8A93" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">PDF x0 · FDX · HTML · Text</text>
+
+        <!-- 6. ScriptDocument AST (FOCAL #2) -->
+        <rect x="744" y="108" width="172" height="68" rx="6" fill="#08080A"/>
+        <rect x="744" y="108" width="172" height="68" rx="6" fill="#e5a93c" stroke="#E5A93C" stroke-width="1.2" fill-opacity="0.10"/>
+        <rect x="752" y="114" width="44" height="12" rx="2" fill="none" stroke="#e5a93c" stroke-width="0.8" stroke-opacity="0.40"/>
+        <text x="774" y="123" fill="#E5A93C" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">MODEL</text>
+        <text x="830" y="144" fill="#F2EFE9" font-size="12" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">ScriptDocument AST</text>
+        <text x="830" y="160" fill="#8A8A93" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Pydantic v2 IR</text>
+
+        <!-- 7. Exporters -->
+        <rect x="744" y="224" width="172" height="68" rx="6" fill="#08080A"/>
+        <rect x="744" y="224" width="172" height="68" rx="6" fill="#101013" stroke="#f2efe9" stroke-width="1" stroke-opacity="0.16"/>
+        <rect x="752" y="230" width="48" height="12" rx="2" fill="none" stroke="#8a8a93" stroke-width="0.8" stroke-opacity="0.40"/>
+        <text x="776" y="239" fill="#8A8A93" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.08em">OUTPUT</text>
+        <text x="830" y="260" fill="#F2EFE9" font-size="12" font-weight="600" font-family="'Inter', system-ui, sans-serif" text-anchor="middle">Exporters</text>
+        <text x="830" y="276" fill="#8A8A93" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">FTN · FDX · JSON · Stats</text>
+
+        <!-- Legend -->
+        <line x1="24" y1="344" x2="936" y2="344" stroke="#f2efe9" stroke-width="0.8" stroke-opacity="0.10"/>
+        <text x="24" y="368" fill="#8A8A93" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.14em">LEGEND</text>
+
+        <rect x="112" y="358" width="16" height="12" rx="2" fill="#e5a93c" stroke="#E5A93C" stroke-width="1.2" fill-opacity="0.10"/>
+        <text x="136" y="368" fill="#F2EFE9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Core / canonical IR</text>
+
+        <rect x="304" y="358" width="16" height="12" rx="2" fill="#101013" stroke="#739fdf" stroke-width="1" stroke-opacity="0.45"/>
+        <text x="328" y="368" fill="#F2EFE9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">External HTTP fetch</text>
+
+        <line x1="496" y1="364" x2="528" y2="364" stroke="#8A8A93" stroke-width="1" stroke-dasharray="5,4"/>
+        <text x="536" y="368" fill="#F2EFE9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Cache hit or local parse</text>
+
+        <line x1="728" y1="364" x2="760" y2="364" stroke="#E5A93C" stroke-width="1.4"/>
+        <text x="768" y="368" fill="#F2EFE9" font-size="9" font-family="'Geist Mono', ui-monospace, monospace">Canonical emission</text>
+      </svg>
