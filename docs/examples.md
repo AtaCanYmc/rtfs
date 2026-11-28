@@ -84,3 +84,71 @@ Output:
 +ALICE: Did you bring the encrypted drive?
  BOB: Right here.
 ```
+
+## 4. Print `ScriptDocument` JSON Schema (`rtfs schema`)
+
+```bash
+rtfs schema
+```
+
+Output (abbreviated):
+
+```json
+{
+  "$defs": {
+    "Action": {
+      "properties": {
+        "type": {
+          "const": "action",
+          "default": "action",
+          "title": "Type",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": ["text"],
+      "title": "Action",
+      "type": "object"
+    }
+  }
+}
+```
+
+## 5. Character-Normalized Analytics (Python SDK)
+
+`compute_stats()` automatically merges character aliases such as `ALICE`, `ALICE (V.O.)`, and `ALICE (CONT'D)`:
+
+```python
+from rtfs.core.models import Dialogue, Scene, ScriptDocument, ScriptMetadata
+from rtfs.exporters.stats_exp import compute_stats
+
+doc = ScriptDocument(
+    metadata=ScriptMetadata(title="Diner", source="local", url="file://diner.fountain"),
+    scenes=[
+        Scene(
+            scene_number=1,
+            heading="INT. DINER - NIGHT",
+            elements=[
+                Dialogue(character="ALICE", lines="Did you bring the drive?"),
+                Dialogue(character="ALICE (V.O.)", lines="She knew he had it."),
+                Dialogue(character="ALICE (CONT'D)", lines="Put it on the table."),
+                Dialogue(character="BOB ^", lines="Right here."),
+            ],
+        )
+    ],
+)
+
+stats = compute_stats(doc)
+for c in stats.top_characters:
+    print(c.character, c.dialogue_turns, c.word_count)
+```
+
+Output:
+
+```text
+ALICE 3 15
+BOB 1 2
+```
