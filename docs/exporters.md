@@ -127,3 +127,19 @@ for char_stat in stats.top_characters:
         f"{char_stat.dialogue_turns} turns, {char_stat.word_count} words"
     )
 ```
+
+## Character Interaction Network & Scene Pacing
+
+`compute_stats()` also populates:
+
+- `stats.interactions`: symmetric co-occurrence matrix (`dict[str, dict[str, int]]`) counting how many scenes each pair of normalized characters spoke in together.
+- `stats.scene_pacing`: per-scene `ScenePacing` records (`scene_number`, `heading`, `dialogue_words`, `action_words`, `total_words`, `dialogue_density`).
+
+Render both as Mermaid diagrams (`flowchart LR` + `xychart-beta`):
+
+```python
+from rtfs.exporters.stats_exp import compute_stats, export_stats_mermaid
+
+stats = compute_stats(doc)
+print(export_stats_mermaid(stats))
+```

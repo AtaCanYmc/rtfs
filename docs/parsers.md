@@ -253,3 +253,12 @@ assert is_noise_line("BLUE REV. 03/12/99") is True
 centers = cluster_x_positions([72.0, 73.0, 144.0, 145.5, 216.0], tolerance=8.0)
 assert len(centers) == 3
 ```
+
+## Local Tesseract OCR (`pyrtfs[ocr]`)
+
+Install the optional OCR extra to parse image-only scanned PDFs with zero custom glue code:
+
+```bash
+pip install "pyrtfs[ocr]"
+rtfs parse ./scanned_script.pdf --ocr --format fountain
+```
