@@ -434,6 +434,7 @@
                 <button type="button" role="tab" aria-selected="false" data-pm="uv" class="pm-tab px-3 py-1.5 rounded text-[11px] font-mono transition-colors text-slateMuted hover:text-ivory">uv</button>
                 <button type="button" role="tab" aria-selected="false" data-pm="pip" class="pm-tab px-3 py-1.5 rounded text-[11px] font-mono transition-colors text-slateMuted hover:text-ivory">pip</button>
                 <button type="button" role="tab" aria-selected="false" data-pm="pipx" class="pm-tab px-3 py-1.5 rounded text-[11px] font-mono transition-colors text-slateMuted hover:text-ivory">pipx</button>
+                <button type="button" role="tab" aria-selected="false" data-pm="skills" class="pm-tab px-3 py-1.5 rounded text-[11px] font-mono transition-colors text-slateMuted hover:text-ivory">npx skills</button>
               </div>
               <span class="font-mono text-[10px] tracking-wider uppercase text-slateMuted hidden sm:inline">PyPI: pyrtfs // Tap: AtaCanYmc/tap</span>
             </div>
@@ -1152,7 +1153,8 @@
         brew: 'brew install AtaCanYmc/tap/rtfs',
         uv: 'uv tool install "pyrtfs[all]"',
         pip: 'pip install "pyrtfs[all]"',
-        pipx: 'pipx install "pyrtfs[all]"'
+        pipx: 'pipx install "pyrtfs[all]"',
+        skills: 'npx skills add AtaCanYmc/rtfs'
       };
       const heroCmdEl = document.getElementById('hero-install-cmd');
       const pmTabs = document.querySelectorAll('.pm-tab');
