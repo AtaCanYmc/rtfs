@@ -212,3 +212,47 @@ Script Overview: The Matrix (scriptslug)
 │   10 │ SWITCH      │             12 │   106 │
 └──────┴─────────────┴────────────────┴───────┘
 ```
+
+## 8. Live Filtered Fetch (`rtfs get --character --scene-range --format fountain`)
+
+Matches `MORPHEUS` including parenthetical variants such as `MORPHEUS (V.O.)`:
+
+```bash
+rtfs get "The Matrix" --character "MORPHEUS" --scene-range "1-40" --format fountain
+```
+
+Output (abbreviated):
+
+```fountain
+Title: The Matrix
+Source: scriptslug
+Draft date: 1999
+
+INT. HEART O' THE CITY HOTEL
+
+Trinity is on the phone, pacing. The other end is answered.
+
+MAN (V.O.)
+Operator.
+...
+TRINITY
+Are there any Agents?
+
+MORPHEUS (V.O.)
+Yes.
+```
+
+## 9. Live Streaming JSONL Export (`rtfs get --format jsonl`)
+
+```bash
+rtfs get "The Matrix" --scene-range "1-2" --format jsonl
+```
+
+Output (first 4 records):
+
+```json
+{"title": "The Matrix", "source": "scriptslug", "scene_number": 1, "heading": "PROLOGUE", "element_index": 0, "type": "action", "text": "by Larry and Andy Wachowski"}
+{"title": "The Matrix", "source": "scriptslug", "scene_number": 1, "heading": "PROLOGUE", "element_index": 1, "type": "transition", "text": "NUMBERED SHOOTING SCRIPT"}
+{"title": "The Matrix", "source": "scriptslug", "scene_number": 1, "heading": "PROLOGUE", "element_index": 2, "type": "action", "text": "March 29, 1998"}
+{"title": "The Matrix", "source": "scriptslug", "scene_number": 1, "heading": "PROLOGUE", "element_index": 3, "type": "transition", "text": "FADE IN:"}
+```
