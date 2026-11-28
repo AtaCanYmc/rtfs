@@ -61,3 +61,14 @@ print("PYODIDE_SAFE_OK")
     assert res.returncode == 0, f"STDERR:\n{res.stderr}"
     assert "PYODIDE_SAFE_OK" in res.stdout
     _ = builtins
+
+
+def test_rtfs_lazy_getattr_and_unknown_attribute() -> None:
+    import pytest
+
+    import rtfs
+
+    assert rtfs.ScriptDocument.__name__ == "ScriptDocument"
+    assert rtfs.export_json.__name__ == "export_json"
+    with pytest.raises(AttributeError, match="no_such_attr"):
+        _ = rtfs.no_such_attr
