@@ -29,6 +29,7 @@ app = create_app(cache_url="memory://")
 | Method | Path | Parameters / Body | Description |
 | :--- | :--- | :--- | :--- |
 | `GET` | `/health` | — | Returns `{"status": "ok"}`. |
+| `GET` | `/metrics` | — | Prometheus text exposition metrics (`rtfs_http_requests_total`, `rtfs_http_rate_limited_total`). |
 | `GET` | `/search` | `q`, `source=all`, `allow_transcript=false` | Searches configured providers and returns ranked `SearchResult` objects. |
 | `POST` | `/parse` | `{"query_or_url": "...", "source": "all", "allow_transcript": false}` | Fetches and parses a script into a `ScriptDocument` JSON payload. |
 | `GET` | `/stats` | `query_or_url`, `source=all` | Computes scene, dialogue/action, and normalized character statistics. |
@@ -52,5 +53,9 @@ docker run -d -p 8000:8000 -e RTFS_CACHE_URL=memory:// ghcr.io/atacanymc/rtfs:la
 | Variable / Status | Description |
 | :--- | :--- |
 | `RTFS_CACHE_URL` | Cache backend URI (`disk://~/.cache/rtfs`, `redis://redis:6379/0`, `memory://`, `none://`). |
+| `RTFS_API_KEYS` | Comma-separated API keys (`X-API-Key` or `Authorization: Bearer <key>`). Unset disables auth. |
+| `RTFS_RATE_LIMIT` | Per-client requests per minute (default: `60`, `0` disables rate limiting). |
 | `200 OK` | JSON payload (`list[SearchResult]`, `ScriptDocument`, or `ScriptStats`). |
+| `401 Unauthorized` | Missing or invalid API key when `RTFS_API_KEYS` is configured. |
 | `404 Not Found` | Returned by `/parse` and `/stats` when no matching script is found (`LookupError`). |
+| `429 Too Many Requests` | Client exceeded `RTFS_RATE_LIMIT` requests per minute. |
