@@ -8,6 +8,7 @@
 | :--- | :--- |
 | [Core Architecture](core.md) | `RTFSClient`, `ScriptAggregator`, Pydantic v2 AST models, caching, and SSRF/DNS-pinning security. |
 | [Parsers](parsers.md) | `PdfScreenplayParser` (dual-column & OCR hook), `FdxParser`, `FountainParser`, `HtmlScreenplayParser`, and `TranscriptParser`. |
+| [OCR & Scanned PDFs](ocr.md) | `ScannedPdfError`, `pyrtfs[ocr]` (`tesseract_ocr_hook`), `rtfs parse --ocr`, and custom OCR hooks. |
 | [Providers](providers.md) | Built-in sources (`imsdb`, `scriptslug`, `tvwriting`, `subslikescript`) and `rtfs.providers` entry-point plugins. |
 | [Exporters](exporters.md) | JSON, streaming JSONL, Fountain, Final Draft (`.fdx`), plain text, and character-normalized analytics. |
 | [CLI & MCP](cli-and-mcp.md) | Typer CLI commands (`search`, `get`, `parse`, `diff`, `batch`, `stats`, `schema`, `serve`, `mcp`) and FastMCP tools/resources. |
