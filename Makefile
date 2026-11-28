@@ -17,8 +17,9 @@ MCP_PORT ?= 8000
         mcp-stdio mcp-sse serve docker-up docker-down docs-serve cache-clear build clean
 
 help: ## Display available Make targets
-	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
+##@ Setup
 venv: ## Create local Python virtual environment (.venv)
 	@test -d .venv || $(UV) venv
 
@@ -34,6 +35,7 @@ install-mcp: venv ## Install rtfs with FastMCP server extra and dev dependencies
 install-all: venv ## Install rtfs with all optional extras (redis, mcp, dev)
 	$(UV) pip install -e ".[all,dev]" --python $(PYTHON)
 
+##@ Quality & Testing
 lint: ## Run Ruff linter across the repository
 	$(RUFF) check .
 
@@ -58,6 +60,7 @@ cov: ## Run pytest with terminal coverage report
 
 check: lint typecheck test ## Run all quality gates (ruff + mypy + pytest)
 
+##@ Servers & Docker
 mcp-stdio: ## Run the FastMCP server over stdio transport
 	$(RTFS) mcp --transport stdio
 
@@ -76,6 +79,7 @@ docker-down: ## Stop Docker Compose services
 docs-serve: ## Serve docs/ locally on port 8765
 	$(PYTHON) -m http.server 8765 --directory docs
 
+##@ Utilities
 cache-clear: ## Clear the local SQLite disk cache (~/.cache/rtfs)
 	rm -rf $(CACHE_DIR)
 	@echo "Cleared disk cache at $(CACHE_DIR)"
