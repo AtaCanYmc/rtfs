@@ -34,3 +34,9 @@ def test_render_prometheus_metrics_format() -> None:
     assert "# TYPE rtfs_http_requests_total counter" in text
     assert 'rtfs_http_requests_total{method="GET",path="/health",status="200"} 3' in text
     assert "rtfs_http_rate_limited_total 1" in text
+
+
+def test_api_security_edge_cases() -> None:
+    assert _parse_api_keys(None) == set()
+    unlimited = _SlidingWindowLimiter(max_requests=0)
+    assert unlimited.allow("1.2.3.4") is True

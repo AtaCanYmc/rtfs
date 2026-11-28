@@ -57,3 +57,19 @@ def test_default_embed_fn_raises_helpful_importerror_when_fastembed_missing() ->
     with patch("builtins.__import__", side_effect=fake_import):
         with pytest.raises(ImportError, match="pyrtfs\\[semantic\\]"):
             default_embed_fn(["hello"])
+
+
+def test_search_scenes_semantic_empty_and_zero_norm() -> None:
+    empty_doc = ScriptDocument(
+        metadata=ScriptMetadata(title="Empty", source="local", url="file://empty.fountain"),
+        scenes=[],
+    )
+    assert search_scenes_semantic(empty_doc, "rain", embed_fn=_fake_embed) == []
+
+    zero_doc = ScriptDocument(
+        metadata=ScriptMetadata(title="Zero", source="local", url="file://zero.fountain"),
+        scenes=[Scene(scene_number=1, heading="INT. ROOM - DAY", elements=[])],
+    )
+    hits = search_scenes_semantic(zero_doc, "unrelated", embed_fn=_fake_embed)
+    assert len(hits) == 1
+    assert hits[0]["score"] == 0.0

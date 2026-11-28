@@ -40,3 +40,19 @@ def test_launch_viewer_raises_helpful_importerror_when_textual_missing() -> None
     with patch("builtins.__import__", side_effect=fake_import):
         with pytest.raises(ImportError, match="pyrtfs\\[tui\\]"):
             launch_viewer(doc)
+
+
+def test_format_scene_markup_with_transition_and_parenthetical() -> None:
+    from rtfs.core.models import Transition
+
+    scene = Scene(
+        scene_number=2,
+        heading="EXT. ROOF - DAY",
+        elements=[
+            Dialogue(character="ALICE", parenthetical="whispering", lines="Go."),
+            Transition(text="CUT TO:"),
+        ],
+    )
+    rendered = format_scene_markup(scene)
+    assert "[italic](whispering)[/italic]" in rendered
+    assert "[dim]CUT TO:[/dim]" in rendered
