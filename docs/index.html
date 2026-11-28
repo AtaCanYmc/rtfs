@@ -832,6 +832,36 @@
                       <p class="text-xs text-slateMuted mt-0.5">Self-hosted REST microservice (<code class="font-mono text-[11px]">rtfs serve</code>) with /search, /parse, and /stats.</p>
                     </div>
                   </label>
+                  <label class="flex items-start gap-3 p-3 rounded border border-hairline bg-obsidian/60 hover:border-hairlineStrong cursor-pointer transition-colors">
+                    <input id="extra-ocr" type="checkbox" class="mt-0.5 accent-vermilion cursor-pointer" />
+                    <div class="flex-1">
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-ivory">Local Tesseract OCR <code class="font-mono text-xs text-amberCinema ml-1">pyrtfs[ocr]</code></span>
+                        <span class="font-mono text-[10px] text-slateMuted">pytesseract + Pillow</span>
+                      </div>
+                      <p class="text-xs text-slateMuted mt-0.5">Fallback OCR for scanned/image-only PDFs (<code class="font-mono text-[11px]">rtfs parse --ocr</code>).</p>
+                    </div>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 rounded border border-hairline bg-obsidian/60 hover:border-hairlineStrong cursor-pointer transition-colors">
+                    <input id="extra-semantic" type="checkbox" class="mt-0.5 accent-vermilion cursor-pointer" />
+                    <div class="flex-1">
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-ivory">Semantic Scene Search <code class="font-mono text-xs text-amberCinema ml-1">pyrtfs[semantic]</code></span>
+                        <span class="font-mono text-[10px] text-slateMuted">fastembed</span>
+                      </div>
+                      <p class="text-xs text-slateMuted mt-0.5">Local embedding search (<code class="font-mono text-[11px]">search_scenes_semantic</code>) capped at 10 scenes.</p>
+                    </div>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 rounded border border-hairline bg-obsidian/60 hover:border-hairlineStrong cursor-pointer transition-colors">
+                    <input id="extra-tui" type="checkbox" class="mt-0.5 accent-vermilion cursor-pointer" />
+                    <div class="flex-1">
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-ivory">Terminal TUI Reader <code class="font-mono text-xs text-amberCinema ml-1">pyrtfs[tui]</code></span>
+                        <span class="font-mono text-[10px] text-slateMuted">Textual</span>
+                      </div>
+                      <p class="text-xs text-slateMuted mt-0.5">Interactive keyboard scene viewer with character highlight and diff (<code class="font-mono text-[11px]">rtfs view</code>).</p>
+                    </div>
+                  </label>
                 </div>
               </div>
 
