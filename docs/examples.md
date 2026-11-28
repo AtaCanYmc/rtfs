@@ -341,3 +341,9 @@ rtfs get "The Matrix" --location "CONSTRUCT" --format jsonl | jq -r '.text'
 # Force content-type when parsing stdin/extensionless files
 rtfs parse ./raw_script --content-type fountain --format fdx --output ./out.fdx
 ```
+
+## 18. Environment & Extras Diagnostics (`rtfs doctor`)
+
+```bash
+rtfs doctor
+```

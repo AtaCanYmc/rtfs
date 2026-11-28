@@ -613,6 +613,43 @@ def view_cmd(
         raise typer.Exit(code=1) from exc
 
 
+@app.command("doctor")
+def doctor_cmd() -> None:
+    """Check Python, cache configuration, optional extras, and system binaries."""
+    import importlib.util
+    import os
+    import shutil
+    import sys
+
+    from rich.table import Table
+
+    table = Table(title="rtfs Doctor")
+    table.add_column("Check", style="bold")
+    table.add_column("Status")
+
+    py_ver = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+    table.add_row("Python", py_ver)
+    cache_val = os.environ.get("RTFS_CACHE_URL") or "disk://~/.cache/rtfs (default)"
+    table.add_row("RTFS_CACHE_URL", cache_val)
+
+    extras = [
+        ("mcp (pyrtfs[mcp])", "mcp"),
+        ("redis (pyrtfs[redis])", "redis"),
+        ("api (pyrtfs[api])", "fastapi"),
+        ("ocr (pyrtfs[ocr])", "pytesseract"),
+        ("semantic (pyrtfs[semantic])", "fastembed"),
+        ("tui (pyrtfs[tui])", "textual"),
+    ]
+    for label, mod in extras:
+        installed = importlib.util.find_spec(mod) is not None
+        table.add_row(label, "[green]installed[/green]" if installed else "[dim]missing[/dim]")
+
+    tess = shutil.which("tesseract")
+    tess_status = f"[green]{tess}[/green]" if tess else "[dim]not on PATH[/dim]"
+    table.add_row("tesseract binary", tess_status)
+    console.print(table)
+
+
 @app.command("mcp")
 def mcp_cmd(
     transport: Annotated[

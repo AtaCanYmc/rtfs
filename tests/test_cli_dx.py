@@ -33,3 +33,12 @@ def test_cli_parse_jsonl_format(tmp_path: Path) -> None:
     record = json.loads(result.stdout.strip())
     assert record["character"] == "ALICE"
     assert record["text"] == "Hello."
+
+
+def test_cli_doctor_command() -> None:
+    runner = CliRunner()
+    result = runner.invoke(app, ["doctor"])
+    assert result.exit_code == 0
+    assert "rtfs Doctor" in result.stdout
+    assert "RTFS_CACHE_URL" in result.stdout
+    assert "tesseract binary" in result.stdout

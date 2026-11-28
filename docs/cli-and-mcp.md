@@ -235,3 +235,11 @@ Example resource URIs:
 - `rtfs://script/scriptslug/the-matrix-1999/fountain`
 - `rtfs://script/scriptslug/the-matrix-1999/scenes/0/10`
 - `rtfs://script/scriptslug/the-matrix-1999/stats`
+
+## Environment Diagnostics (`rtfs doctor`)
+
+Inspect Python version, `RTFS_CACHE_URL`, installed optional extras (`mcp`, `redis`, `api`, `ocr`, `semantic`, `tui`), and `tesseract` binary availability:
+
+```bash
+rtfs doctor
+```
