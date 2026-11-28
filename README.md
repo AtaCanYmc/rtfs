@@ -4,6 +4,7 @@
   <p><strong>Read The F***ing Script — Multi-Source Screenplay CLI, Python SDK &amp; FastMCP Server</strong></p>
 
 [![CI](https://github.com/AtaCanYmc/rtfs/actions/workflows/ci.yml/badge.svg)](https://github.com/AtaCanYmc/rtfs/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/AtaCanYmc/rtfs/graph/badge.svg)](https://codecov.io/gh/AtaCanYmc/rtfs)
 [![Pages](https://github.com/AtaCanYmc/rtfs/actions/workflows/pages.yml/badge.svg)](https://atacanymc.github.io/rtfs/)
 [![PyPI](https://img.shields.io/pypi/v/pyrtfs.svg)](https://pypi.org/project/pyrtfs/)
 [![Homebrew](https://img.shields.io/badge/Homebrew-AtaCanYmc%2Ftap%2Frtfs-FBB040?logo=homebrew&logoColor=white)](https://github.com/AtaCanYmc/homebrew-tap/blob/main/Formula/rtfs.rb)
@@ -11,7 +12,7 @@
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 </div>
 
-`rtfs` is an asynchronous Python 3.11+ CLI, SDK, and FastMCP server that queries multiple screenplay archives, parses PDF and HTML layouts into a typed Pydantic v2 Abstract Syntax Tree, and exports to JSON, Fountain, or dialogue analytics.
+`rtfs` is an asynchronous Python 3.11+ CLI, SDK, FastMCP server, and optional HTTP API that queries multiple screenplay archives, parses PDF, FDX, Fountain, and HTML layouts into a typed Pydantic v2 Abstract Syntax Tree, and exports to JSON, streaming JSONL, Fountain, Final Draft (`.fdx`), or character-normalized dialogue analytics.
 
 Interactive Showcase & Release Hub: [https://atacanymc.github.io/rtfs/](https://atacanymc.github.io/rtfs/)
 
@@ -354,7 +355,10 @@ Detailed runnable examples for every package module live under [`docs/`](docs/RE
 - **[Providers](docs/providers.md)**: Direct provider usage (`ScriptSlugProvider`, `TVWritingProvider`, `IMSDbProvider`, `SubsLikeScriptProvider`), domain allowlists, stopword-safe title similarity, and custom provider authoring.
 - **[Parsers](docs/parsers.md)**: `PdfScreenplayParser` (with dual-column simultaneous dialogue detection), `FdxParser` (Final Draft `.fdx` XML), `HtmlScreenplayParser`, and `TranscriptParser`.
 - **[Exporters & Analytics](docs/exporters.md)**: `export_fountain` (`^` dual dialogue), `export_fdx` (`<DualDialogue>`), `export_json`, and `compute_stats`.
-- **[CLI & FastMCP Server](docs/cli-and-mcp.md)**: Full CLI command cookbook (`search`, `get`, `parse`, `batch`, `cache`, `stats`, `mcp`) and programmatic `MCPService` usage.
+- **[CLI & FastMCP Server](docs/cli-and-mcp.md)**: Full CLI command cookbook (`search`, `get`, `parse`, `diff`, `batch`, `cache`, `stats`, `schema`, `serve`, `mcp`) and programmatic `MCPService` usage.
+- **[HTTP API Server](docs/api.md)**: Optional `pyrtfs[api]` FastAPI server (`rtfs serve`) with `/health`, `/search`, `/parse`, and `/stats` endpoints.
+- **[AI Agent Skill & MCP Setup](docs/skills.md)**: Install the `rtfs` agent skill via `npx skills add AtaCanYmc/rtfs` or configure `claude_desktop_config.json`.
+- **[Recipes](docs/recipes.md)**: Copy-paste workflows for streaming JSONL corpora, `rtfs diff`, scanned PDF OCR hooks, and `rtfs.providers` plugins.
 
 ## FAQ
 
