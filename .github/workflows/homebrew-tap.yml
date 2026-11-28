@@ -1,0 +1,18 @@
+name: Homebrew Tap
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  bump-formula:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Bump rtfs formula in AtaCanYmc/homebrew-tap
+        uses: mislav/bump-homebrew-formula-action@v3
+        with:
+          formula-name: rtfs
+          homebrew-tap: AtaCanYmc/homebrew-tap
+          base-branch: main
+        env:
+          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}

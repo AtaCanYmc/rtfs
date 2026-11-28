@@ -1,0 +1,35 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-10-17/server.schema.json",
+  "name": "io.github.atacanymc/rtfs",
+  "description": "Multi-source movie & TV screenplay CLI, Python SDK, and progressive-disclosure FastMCP server.",
+  "repository": {
+    "url": "https://github.com/AtaCanYmc/rtfs",
+    "source": "github"
+  },
+  "version": "0.1.3",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "pyrtfs",
+      "version": "0.1.3",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "mcp"
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "RTFS_CACHE_URL",
+          "description": "Async cache backend URI (e.g. disk://~/.cache/rtfs or memory://)",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}
