@@ -201,6 +201,10 @@ def get_cmd(
         bool,
         typer.Option("--allow-transcript", help="Allow transcript fallback sources"),
     ] = False,
+    mermaid: Annotated[
+        bool,
+        typer.Option("--mermaid", help="Output character interaction & pacing Mermaid diagrams"),
+    ] = False,
     interactive: Annotated[
         bool,
         typer.Option(
@@ -442,6 +446,10 @@ def batch_cmd(
         bool,
         typer.Option("--allow-transcript", help="Allow transcript fallback sources"),
     ] = False,
+    mermaid: Annotated[
+        bool,
+        typer.Option("--mermaid", help="Output character interaction & pacing Mermaid diagrams"),
+    ] = False,
     cache_url: Annotated[
         str | None,
         typer.Option(
@@ -504,6 +512,10 @@ def stats_cmd(
     allow_transcript: Annotated[
         bool,
         typer.Option("--allow-transcript", help="Allow transcript fallback sources"),
+    ] = False,
+    mermaid: Annotated[
+        bool,
+        typer.Option("--mermaid", help="Output character interaction & pacing Mermaid diagrams"),
     ] = False,
     cache_url: Annotated[
         str | None,

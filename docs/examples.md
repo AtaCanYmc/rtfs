@@ -303,3 +303,17 @@ Requires `pyrtfs[api]`:
 ```bash
 rtfs serve --host 127.0.0.1 --port 8000
 ```
+
+## 14. Character Interaction Network & Pacing (`rtfs stats --mermaid`)
+
+```bash
+rtfs stats "The Matrix" --mermaid
+```
+
+## 15. Parse Scanned PDFs with Local Tesseract OCR (`rtfs parse --ocr`)
+
+Requires `pyrtfs[ocr]`:
+
+```bash
+rtfs parse ./scanned_script.pdf --ocr --format fountain
+```
