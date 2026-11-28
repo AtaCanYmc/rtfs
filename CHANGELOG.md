@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.1.4](https://github.com/AtaCanYmc/rtfs/compare/v0.1.3...v0.1.4) (2026-11-28)
+
+
+### Features
+
+* **api:** add API key auth, sliding-window rate limiter, and Prometheus /metrics ([dd635ad](https://github.com/AtaCanYmc/rtfs/commit/dd635ad758f3221f98327a5ec6fbd83be4a78700))
+* **cli:** add --mermaid flag to stats and document --mermaid/--ocr examples ([18506ad](https://github.com/AtaCanYmc/rtfs/commit/18506ad06440dbc3053dbaff325dadfd81059534))
+* **cli:** add rtfs doctor diagnostics command and docs ([d8581eb](https://github.com/AtaCanYmc/rtfs/commit/d8581eb2082db6ff0af89840b2a6d8b504777a69))
+* **mcp:** add diff_scripts tool and rtfs://script/.../stats resource ([f8b5b42](https://github.com/AtaCanYmc/rtfs/commit/f8b5b425aeab6995bed4891a0d94b4cee7b99288))
+* **ocr:** add pyrtfs[ocr] Tesseract adapter and --ocr CLI flag ([46b28d7](https://github.com/AtaCanYmc/rtfs/commit/46b28d7ba31034f961cbcf661362fd67b3a5ef7e))
+* **pages:** add ocr, semantic, and tui extras to downloads configurator ([805507a](https://github.com/AtaCanYmc/rtfs/commit/805507a6c52f1ebb40ebb3a442c331213da548d0))
+* **semantic:** add search_scenes_semantic (pyrtfs[semantic]) and MCP tool ([3d8c7d8](https://github.com/AtaCanYmc/rtfs/commit/3d8c7d8d91b05ce5112757c8e00d2f3f14362f15))
+* **stats:** add character interaction matrix, scene pacing, and Mermaid export ([f4489a5](https://github.com/AtaCanYmc/rtfs/commit/f4489a570ab4ea1987bec186996d5534098911c5))
+* **tui:** add rtfs view Textual reader (pyrtfs[tui]) with diff & character highlight ([944a8c6](https://github.com/AtaCanYmc/rtfs/commit/944a8c61c3b7031d1a4758b3184f93d67f361021))
+
+
+### Documentation
+
+* add CLI pipeline and filtering examples to examples.md ([5c86af1](https://github.com/AtaCanYmc/rtfs/commit/5c86af1ebd090352c42e4d2d2b1eb17dd0e0005b))
+* add docs/ocr.md for pyrtfs[ocr] and ScannedPdfError ([53b3c24](https://github.com/AtaCanYmc/rtfs/commit/53b3c248bb0b5dba62de522dc7ad20a87c1e4cb4))
+* add env/status reference to api.md and extras matrix to skills.md ([550888a](https://github.com/AtaCanYmc/rtfs/commit/550888a65595851d0b903d2932ba93920337a70d))
+* **api:** add Bruno collection for rtfs HTTP API endpoints ([2fe4cad](https://github.com/AtaCanYmc/rtfs/commit/2fe4cad8351d1190da55e69cd60fc7d30fcefe19))
+* **api:** document Bruno collection in docs/api.md ([0720c53](https://github.com/AtaCanYmc/rtfs/commit/0720c536e2c5cb266c82959f1b1369997711d15a))
+* document pyrtfs[ocr] and interaction/pacing analytics ([d5a46b6](https://github.com/AtaCanYmc/rtfs/commit/d5a46b65a877f57df6228a3f4246f25f128c85ce))
+* document rtfs view (pyrtfs[tui]) in cli-and-mcp.md and examples.md ([a50859f](https://github.com/AtaCanYmc/rtfs/commit/a50859fca1090e1f408327fe4a8138fe50936d0f))
+* document search_scenes_semantic (pyrtfs[semantic]) and Ollama recipe ([4da5e3d](https://github.com/AtaCanYmc/rtfs/commit/4da5e3de7f1cf350e0a29ce4ce1a540ab6ae54e3))
+* **mcp:** add FastMCP tool and resource examples to cli-and-mcp.md ([6fa658f](https://github.com/AtaCanYmc/rtfs/commit/6fa658f31c51eb392b19a96ca308670a9bb834af))
+
 ## [0.1.3](https://github.com/AtaCanYmc/rtfs/compare/v0.1.2...v0.1.3) (2026-11-28)
 
 
