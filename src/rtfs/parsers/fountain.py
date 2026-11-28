@@ -18,7 +18,7 @@ _TITLE_KEY_RE = re.compile(
 )
 _FORCED_HEADING_RE = re.compile(r"^\.(?!\.)(.+)$")
 _FORCED_TRANSITION_RE = re.compile(r"^>\s*(.+)$")
-_CHAR_CUED_RE = re.compile(r"^([A-Z0-9][A-Z0-9 .'\-()]+?)(?:\s*(\^))?$")
+_CHAR_CUED_RE = re.compile(r"^([A-ZÇĞİÖŞÜ0-9][A-ZÇĞİÖŞÜ0-9 .'\-()]+?)(?:\s*(\^))?$")
 
 
 class FountainParser(BaseParser):

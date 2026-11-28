@@ -14,7 +14,8 @@ from rtfs.core.models import (
 )
 
 SCENE_HEADING_RE = re.compile(
-    r"^(?:(?:\d+[A-Z]?\.?\s+)?)(INT\.?/EXT\.?|EXT\.?/INT\.?|I/E\.?|INT\.|EXT\.|INT\s|EXT\s)(.*)$",
+    r"^(?:(?:\d+[A-Z]?\.?\s+)?)(INT\.?/EXT\.?|EXT\.?/INT\.?|I/E\.?|INT\.|EXT\.|INT\s|EXT\s"
+    r"|İÇ\.?/DIŞ\.?|DIŞ\.?/İÇ\.?|İÇ\.|DIŞ\.|İÇ\s|DIŞ\s|IC\.|DIS\.)(.*)$",
     re.IGNORECASE,
 )
 

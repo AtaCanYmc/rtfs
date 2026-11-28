@@ -15,7 +15,7 @@ MAX_SCENE_RANGE = 10
 
 def _import_fastmcp() -> Any:
     try:
-        from mcp.server.fastmcp import FastMCP  # type: ignore[import-not-found]
+        from mcp.server.fastmcp import FastMCP  # type: ignore[import-not-found, attr-defined]
     except ImportError as exc:
         raise ImportError(
             "MCP server requires the mcp extra: pip install pyrtfs[mcp]"

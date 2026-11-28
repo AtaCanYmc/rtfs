@@ -60,9 +60,9 @@ def compute_stats(doc: ScriptDocument, top_n: int = 10) -> ScriptStats:
 
     for scene in doc.scenes:
         h = SCENE_NUM_PREFIX_RE.sub("", scene.heading.upper().strip())
-        if h.startswith("INT"):
+        if h.startswith(("INT", "İÇ", "IC")):
             int_scenes += 1
-        elif h.startswith("EXT"):
+        elif h.startswith(("EXT", "DIŞ", "DIS")):
             ext_scenes += 1
         else:
             other_scenes += 1

@@ -650,6 +650,22 @@ def doctor_cmd() -> None:
     console.print(table)
 
 
+@app.command("breakdown")
+def breakdown_cmd(
+    script_path: Annotated[Path, typer.Argument(help="Path to local script")],
+) -> None:
+    """Export production breakdown (locations, character continuity, ~1pg/min estimate)."""
+    try:
+        from rtfs.exporters.breakdown_exp import export_breakdown_json
+
+        client = RTFSClient(cache="none://")
+        doc = client.parse_local(script_path)
+        typer.echo(export_breakdown_json(doc))
+    except (FileNotFoundError, ValueError) as exc:
+        err_console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+
 @app.command("mcp")
 def mcp_cmd(
     transport: Annotated[

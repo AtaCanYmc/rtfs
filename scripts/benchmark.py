@@ -43,7 +43,9 @@ def bench_parsers() -> list[tuple[str, float, str]]:
         metadata=meta,
     )
     html_raw = RawScript(
-        content="<td class='scrtext'><pre><b>INT. LAB - NIGHT</b>\n\n<b>ALICE</b>\nReady?\n</pre></td>",
+        content=(
+            "<td class='scrtext'><pre><b>INT. LAB - NIGHT</b>\n\n<b>ALICE</b>\nReady?\n</pre></td>"
+        ),
         content_type="html",
         metadata=meta,
     )
