@@ -17,11 +17,13 @@ from rtfs.core.models import ScriptDocument, SearchResult
 from rtfs.exporters.fdx_exp import export_fdx
 from rtfs.exporters.fountain_exp import export_fountain, export_txt
 from rtfs.exporters.json_exp import export_json
+from rtfs.exporters.jsonl_exp import export_jsonl
 from rtfs.exporters.stats_exp import ScriptStats, compute_stats
 
-VALID_EXPORT_FORMATS = {"json", "fountain", "txt", "fdx"}
+VALID_EXPORT_FORMATS = {"json", "jsonl", "fountain", "txt", "fdx"}
 FORMAT_EXTENSIONS = {
     "json": ".json",
+    "jsonl": ".jsonl",
     "fountain": ".fountain",
     "txt": ".txt",
     "fdx": ".fdx",
@@ -45,6 +47,8 @@ def render_document(doc: ScriptDocument, fmt: str = "fountain") -> str:
         )
     if fmt_lower == "json":
         return export_json(doc)
+    if fmt_lower == "jsonl":
+        return export_jsonl(doc)
     if fmt_lower == "fountain":
         return export_fountain(doc)
     if fmt_lower == "fdx":

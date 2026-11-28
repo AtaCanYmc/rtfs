@@ -32,6 +32,30 @@ console = Console()
 err_console = Console(stderr=True)
 
 
+def _version_callback(value: bool) -> None:
+    if value:
+        from importlib.metadata import version
+
+        typer.echo(f"rtfs {version('pyrtfs')}")
+        raise typer.Exit()
+
+
+@app.callback()
+def main_callback(
+    version: Annotated[
+        bool,
+        typer.Option(
+            "--version",
+            "-V",
+            callback=_version_callback,
+            is_eager=True,
+            help="Show rtfs version and exit.",
+        ),
+    ] = False,
+) -> None:
+    """Multi-Source Movie & TV Script CLI + Python SDK."""
+
+
 def _resolve_cache_url(cache_url: str | None, no_cache: bool) -> str | None:
     return "none://" if no_cache else cache_url
 
@@ -516,6 +540,34 @@ def diff_cmd(
         else:
             err_console.print("[dim]No scene or dialogue differences found.[/dim]")
     except (FileNotFoundError, ValueError) as exc:
+        err_console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("schema")
+def schema_cmd() -> None:
+    """Print the ScriptDocument JSON Schema."""
+    import json
+
+    from rtfs.core.models import ScriptDocument
+
+    typer.echo(json.dumps(ScriptDocument.model_json_schema(), indent=2))
+
+
+@app.command("serve")
+def serve_cmd(
+    host: Annotated[str, typer.Option("--host", help="Bind host")] = "127.0.0.1",
+    port: Annotated[int, typer.Option("--port", help="Bind port")] = 8000,
+    cache_url: Annotated[str | None, typer.Option("--cache-url", help="Cache backend URI")] = None,
+) -> None:
+    """Start the optional FastAPI HTTP server (requires pyrtfs[api])."""
+    try:
+        import uvicorn
+
+        from rtfs.api.server import create_app
+
+        uvicorn.run(create_app(cache_url=cache_url), host=host, port=port)
+    except ImportError as exc:
         err_console.print(f"[red]Error:[/red] {exc}")
         raise typer.Exit(code=1) from exc
 
