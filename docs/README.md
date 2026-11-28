@@ -14,3 +14,4 @@
 | [HTTP API Server](api.md) | Optional `pyrtfs[api]` FastAPI server (`rtfs serve`), endpoints, and deployment. |
 | [AI Agent Skill & MCP](skills.md) | `npx skills` installation, manual skill symlinks, and `claude_desktop_config.json` setup. |
 | [Recipes](recipes.md) | Copy-paste workflows for ML/NLP JSONL corpora, OCR hooks, draft diffing, and custom provider plugins. |
+| [Examples](examples.md) | Verified CLI command runs and outputs for JSONL, FDX conversion, and `rtfs diff`. |
