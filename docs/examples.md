@@ -325,3 +325,19 @@ Requires `pyrtfs[tui]`:
 ```bash
 rtfs view ./draft_v1.fountain --character ALICE --diff ./draft_v2.fdx
 ```
+
+## 17. CLI Pipelines & Filtering Combinations
+
+```bash
+# Check installed version
+rtfs --version
+
+# Interactive candidate selection before downloading
+rtfs get "Dune" --interactive --format fountain --output dune.fountain
+
+# Filter by location substring and pipe JSONL into jq
+rtfs get "The Matrix" --location "CONSTRUCT" --format jsonl | jq -r '.text'
+
+# Force content-type when parsing stdin/extensionless files
+rtfs parse ./raw_script --content-type fountain --format fdx --output ./out.fdx
+```
