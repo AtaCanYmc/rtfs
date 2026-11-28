@@ -13,7 +13,7 @@ MCP_HOST ?= 127.0.0.1
 MCP_PORT ?= 8000
 
 .PHONY: help venv install install-redis install-mcp install-all \
-        lint format format-check typecheck test test-fast cov bench bruno-test check \
+        lint format format-check typecheck test test-fast cov bench bruno-test pyodide-test check \
         mcp-stdio mcp-sse serve docker-up docker-down docs-serve doctor cache-clear build clean
 
 help: ## Display available Make targets
@@ -64,6 +64,9 @@ bench: ## Run parser and cache latency benchmarks
 bruno-test: ## Run Bruno API collection tests against local rtfs serve
 	cd bruno && npx @usebruno/cli run --env local
 
+pyodide-test: ## Verify pure-Python Pyodide-safe imports without optional deps
+	$(PYTEST) tests/test_pyodide_safe.py -v
+
 check: lint typecheck test ## Run all quality gates (ruff + mypy + pytest)
 
 ##@ Servers & Docker
@@ -82,7 +85,7 @@ docker-up: ## Start rtfs-api + Redis in background via Docker Compose
 docker-down: ## Stop Docker Compose services
 	docker compose down
 
-docs-serve: ## Serve docs/ locally on port 8765
+docs-serve: ## Serve docs/ and Live WASM Playground locally on port 8765
 	$(PYTHON) -m http.server 8765 --directory docs
 
 ##@ Utilities
