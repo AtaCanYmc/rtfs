@@ -14,6 +14,15 @@ Use `rtfs` to search, fetch, parse, diff, and export movie and TV screenplays in
 - Streaming `.jsonl` records for NLP/ML datasets or comparing two script drafts with `rtfs diff`.
 - Querying bounded-context screenplay scenes via the FastMCP server (`rtfs mcp`).
 
+## Prerequisites & Installation
+
+Before running any `rtfs` command, verify it is available (`which rtfs` or `rtfs --version`). If `rtfs` is **not** installed on the device, **ask the user for confirmation before installing**, and offer the preferred method:
+
+- `uv tool install "pyrtfs[all]"` (recommended)
+- `pipx install "pyrtfs[all]"`
+- `pip install "pyrtfs[all]"`
+- `brew install AtaCanYmc/tap/rtfs`
+
 ## CLI Quick Reference
 
 ```bash
