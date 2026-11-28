@@ -317,3 +317,11 @@ Requires `pyrtfs[ocr]`:
 ```bash
 rtfs parse ./scanned_script.pdf --ocr --format fountain
 ```
+
+## 16. Interactive Terminal Viewer (`rtfs view`)
+
+Requires `pyrtfs[tui]`:
+
+```bash
+rtfs view ./draft_v1.fountain --character ALICE --diff ./draft_v2.fdx
+```

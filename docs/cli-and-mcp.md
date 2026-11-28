@@ -177,3 +177,17 @@ pip install "pyrtfs[semantic]"
 ```
 
 The FastMCP server exposes `search_scenes_semantic(query_or_url, query, top_k=5)` (capped at 10 scenes per call) to retrieve conceptually matching scenes without loading the full script into context.
+
+## Interactive Terminal Viewer (`rtfs view`)
+
+Install the optional TUI extra (`textual`):
+
+```bash
+pip install "pyrtfs[tui]"
+```
+
+Browse scenes with the keyboard, highlight a specific character's dialogue, and optionally inspect a side-by-side diff:
+
+```bash
+rtfs view ./draft_v1.fountain --character ALICE --diff ./draft_v2.fdx
+```
