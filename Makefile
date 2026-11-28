@@ -13,8 +13,8 @@ MCP_HOST ?= 127.0.0.1
 MCP_PORT ?= 8000
 
 .PHONY: help venv install install-redis install-mcp install-all \
-        lint format format-check typecheck test test-fast cov bruno-test check \
-        mcp-stdio mcp-sse serve docker-up docker-down docs-serve cache-clear build clean
+        lint format format-check typecheck test test-fast cov bench bruno-test check \
+        mcp-stdio mcp-sse serve docker-up docker-down docs-serve doctor cache-clear build clean
 
 help: ## Display available Make targets
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -58,6 +58,9 @@ test-fast: ## Run pytest suite stopping on first failure
 cov: ## Run pytest with terminal coverage report
 	$(PYTEST) --cov=rtfs --cov-report=term-missing -q
 
+bench: ## Run parser and cache latency benchmarks
+	$(PYTHON) scripts/benchmark.py
+
 bruno-test: ## Run Bruno API collection tests against local rtfs serve
 	cd bruno && npx @usebruno/cli run --env local
 
@@ -83,6 +86,9 @@ docs-serve: ## Serve docs/ locally on port 8765
 	$(PYTHON) -m http.server 8765 --directory docs
 
 ##@ Utilities
+doctor: ## Check Python, cache config, optional extras, and tesseract binary
+	$(RTFS) doctor
+
 cache-clear: ## Clear the local SQLite disk cache (~/.cache/rtfs)
 	rm -rf $(CACHE_DIR)
 	@echo "Cleared disk cache at $(CACHE_DIR)"
