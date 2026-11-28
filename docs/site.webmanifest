@@ -1,0 +1,15 @@
+{
+  "name": "rtfs — Screenplay CLI, SDK & MCP Server",
+  "short_name": "rtfs",
+  "start_url": "/rtfs/",
+  "display": "standalone",
+  "background_color": "#08080A",
+  "theme_color": "#08080A",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
