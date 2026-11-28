@@ -13,7 +13,7 @@ MCP_HOST ?= 127.0.0.1
 MCP_PORT ?= 8000
 
 .PHONY: help venv install install-redis install-mcp install-all \
-        lint format format-check typecheck test test-fast cov check \
+        lint format format-check typecheck test test-fast cov bruno-test check \
         mcp-stdio mcp-sse serve docker-up docker-down docs-serve cache-clear build clean
 
 help: ## Display available Make targets
@@ -57,6 +57,9 @@ test-fast: ## Run pytest suite stopping on first failure
 
 cov: ## Run pytest with terminal coverage report
 	$(PYTEST) --cov=rtfs --cov-report=term-missing -q
+
+bruno-test: ## Run Bruno API collection tests against local rtfs serve
+	cd bruno && npx @usebruno/cli run --env local
 
 check: lint typecheck test ## Run all quality gates (ruff + mypy + pytest)
 
