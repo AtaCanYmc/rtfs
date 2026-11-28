@@ -375,6 +375,20 @@ def create_mcp_server(
         """Full Fountain screenplay text resource for a given provider source and slug."""
         return await svc.get_full_fountain_resource(source=source, slug=slug)
 
+    @mcp.resource("rtfs://script/{source}/{slug}/scenes/{offset}/{limit}")
+    async def script_scenes_chunk_resource(
+        source: str,
+        slug: str,
+        offset: int,
+        limit: int,
+    ) -> str | dict[str, Any]:
+        """Paginated scene chunk resource for bounded-context LLM workflows."""
+        return await svc.get_scenes(
+            query_or_url=f"{source}:{slug}",
+            start_scene=max(1, offset + 1),
+            end_scene=max(1, offset + limit),
+        )
+
     return mcp
 
 

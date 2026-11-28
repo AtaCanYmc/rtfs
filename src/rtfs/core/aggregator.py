@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import re
+from importlib.metadata import entry_points
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlparse
@@ -37,7 +38,7 @@ SOURCE_PRIORITY_BONUS: dict[str, float] = {
 
 SCENE_RANGE_RE = re.compile(r"^\s*(\d+)(?:\s*-\s*(\d+))?\s*$")
 
-EXTENSION_TO_CONTENT_TYPE: dict[str, Literal["html", "pdf", "text", "fdx"]] = {
+EXTENSION_TO_CONTENT_TYPE: dict[str, Literal["html", "pdf", "text", "fdx", "fountain"]] = {
     ".pdf": "pdf",
     ".fdx": "fdx",
     ".fountain": "fountain",
@@ -208,12 +209,20 @@ class ScriptAggregator:
         self.cache: CacheBackend = (
             create_cache(cache) if (cache is None or isinstance(cache, str)) else cache
         )
-        self.providers: dict[str, BaseProvider] = providers or {
-            "imsdb": IMSDbProvider(self.http, self.cache),
-            "scriptslug": ScriptSlugProvider(self.http, self.cache),
-            "tvwriting": TVWritingProvider(self.http, self.cache),
-            "subslikescript": SubsLikeScriptProvider(self.http, self.cache),
-        }
+        if providers is not None:
+            self.providers = providers
+        else:
+            self.providers = {
+                "imsdb": IMSDbProvider(self.http, self.cache),
+                "scriptslug": ScriptSlugProvider(self.http, self.cache),
+                "tvwriting": TVWritingProvider(self.http, self.cache),
+                "subslikescript": SubsLikeScriptProvider(self.http, self.cache),
+            }
+            for ep in entry_points(group="rtfs.providers"):
+                cls = ep.load()
+                instance = cls(self.http, self.cache)
+                if isinstance(instance, BaseProvider):
+                    self.providers[ep.name] = instance
         self._parsers: dict[str, BaseParser] = _build_default_parsers()
 
     def _select_providers(

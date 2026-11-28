@@ -37,11 +37,11 @@
 
 ## v0.5.0 — Corpus, SDK & MCP Maturity
 
-- [ ] Streaming `JSONL` corpus exporter for large-scale NLP and ML ingestion pipelines.
-- [ ] Entry-point provider registry (`rtfs.providers`) for third-party screenplay sources.
-- [ ] MCP scene-chunk pagination and resource URIs for bounded-context LLM workflows.
-- [ ] Strict static type-checking (`mypy` / `pyright`) enforced in CI with `py.typed` distribution.
-- [ ] Optional HTTP/REST API server extra (`pyrtfs[api]`) for self-hosted microservice deployments.
+- [x] Streaming `JSONL` corpus exporter for large-scale NLP and ML ingestion pipelines.
+- [x] Entry-point provider registry (`rtfs.providers`) for third-party screenplay sources.
+- [x] MCP scene-chunk pagination and resource URIs for bounded-context LLM workflows.
+- [x] Strict static type-checking (`mypy` / `pyright`) enforced in CI with `py.typed` distribution.
+- [x] Optional HTTP/REST API server extra (`pyrtfs[api]`) for self-hosted microservice deployments.
 
 ## v1.0.0 — Production Stability
 

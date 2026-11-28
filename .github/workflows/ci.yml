@@ -33,6 +33,9 @@ jobs:
       - name: Run Ruff linter
         run: .venv/bin/ruff check .
 
+      - name: Run Mypy type checker
+        run: .venv/bin/mypy src/rtfs
+
       - name: Run Pytest suite with coverage
         run: .venv/bin/pytest -v --cov=rtfs --cov-report=xml
 
