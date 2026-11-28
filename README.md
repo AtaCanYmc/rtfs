@@ -386,6 +386,19 @@ make check
 .venv/bin/pytest -v
 ```
 
+## Benchmarks (Measured)
+
+Reproduce locally with `python scripts/benchmark.py` (Apple Silicon, Python 3.14):
+
+| Parser / Cache | Latency | Result |
+| :--- | :--- | :--- |
+| `FountainParser` (dual dialogue) | `0.006 ms/doc` | `1 scene(s) OK` |
+| `FdxParser` (Final Draft v5 XML) | `0.014 ms/doc` | `1 scene(s) OK` |
+| `HtmlScreenplayParser` (IMSDb HTML) | `0.029 ms/doc` | `1 scene(s) OK` |
+| `PdfScreenplayParser` (scanned PDF guard) | `0.749 ms/doc` | `ScannedPdfError OK` |
+| `memory://` cache | `0.0002 ms` write / `0.0002 ms` read | In-memory |
+| `disk://` (SQLite) cache | `0.1273 ms` write / `0.0323 ms` read | Persistent |
+
 ## License
 
 Copyright (c) 2026 AtaCanYmc. Distributed under the [GNU Affero General Public License v3.0 or later](LICENSE).
