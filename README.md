@@ -355,7 +355,7 @@ Detailed runnable examples for every package module live under [`docs/`](docs/RE
 - **[Providers](docs/providers.md)**: Direct provider usage (`ScriptSlugProvider`, `TVWritingProvider`, `IMSDbProvider`, `SubsLikeScriptProvider`), domain allowlists, stopword-safe title similarity, and custom provider authoring.
 - **[Parsers](docs/parsers.md)**: `PdfScreenplayParser` (with dual-column simultaneous dialogue detection), `FdxParser` (Final Draft `.fdx` XML), `HtmlScreenplayParser`, and `TranscriptParser`.
 - **[Exporters & Analytics](docs/exporters.md)**: `export_fountain` (`^` dual dialogue), `export_fdx` (`<DualDialogue>`), `export_json`, and `compute_stats`.
-- **[CLI & FastMCP Server](docs/cli-and-mcp.md)**: Full CLI command cookbook (`search`, `get`, `parse`, `diff`, `batch`, `cache`, `stats`, `schema`, `serve`, `mcp`) and programmatic `MCPService` usage.
+- **[CLI & FastMCP Server](docs/cli-and-mcp.md)**: Full CLI command cookbook (`search`, `get`, `parse`, `diff`, `view`, `breakdown`, `batch`, `cache`, `stats`, `schema`, `doctor`, `serve`, `mcp`) and programmatic `MCPService` usage.
 - **[HTTP API Server](docs/api.md)**: Optional `pyrtfs[api]` FastAPI server (`rtfs serve`) with `/health`, `/search`, `/parse`, and `/stats` endpoints.
 - **[AI Agent Skill & MCP Setup](docs/skills.md)**: Install the `rtfs` agent skill via `npx skills add AtaCanYmc/rtfs` or configure `claude_desktop_config.json`.
 - **[Recipes](docs/recipes.md)**: Copy-paste workflows for streaming JSONL corpora, `rtfs diff`, scanned PDF OCR hooks, and `rtfs.providers` plugins.

@@ -347,3 +347,11 @@ rtfs parse ./raw_script --content-type fountain --format fdx --output ./out.fdx
 ```bash
 rtfs doctor
 ```
+
+## 19. Production Breakdown & Turkish Screenplay Profile (`rtfs breakdown`)
+
+Supports Turkish scene headings (`İÇ.`, `DIŞ.`, `İÇ/DIŞ.`) and character parentheticals (`(DIŞ SES)`, `(TELEFONDA)`):
+
+```bash
+rtfs breakdown ./yerli_senaryo.fountain
+```
