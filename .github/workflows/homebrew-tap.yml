@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Bump rtfs formula in AtaCanYmc/homebrew-tap
-        uses: mislav/bump-homebrew-formula-action@v3
+        uses: mislav/bump-homebrew-formula-action@v4
         with:
           formula-name: rtfs
           homebrew-tap: AtaCanYmc/homebrew-tap
