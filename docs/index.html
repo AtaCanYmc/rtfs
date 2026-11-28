@@ -623,6 +623,10 @@
                 <span>rtfs mcp --transport stdio</span>
                 <span class="text-[10px] text-ivory/50">RUN</span>
               </button>
+              <button type="button" data-cmd="diff" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline bg-charcoal/50 text-xs font-mono text-slateMuted hover:text-ivory hover:border-hairline-strong transition-colors flex items-center justify-between">
+                <span>rtfs diff v1.fountain v2.fdx</span>
+                <span class="text-[10px] text-ivory/50">RUN</span>
+              </button>
             </div>
           </div>
 
@@ -630,7 +634,7 @@
           <div class="lg:col-span-8 reveal">
             <figure class="rounded-lg border border-hairline-strong bg-panel overflow-hidden shadow-2xl shadow-black/70">
               <figcaption class="flex items-center justify-between px-4 py-2.5 border-b border-hairline bg-charcoal">
-                <span class="font-mono text-[11px] uppercase tracking-wider text-slateMuted">STDOUT // RTFS CLI v0.1.1</span> <!-- x-release-please-version -->
+                <span class="font-mono text-[11px] uppercase tracking-wider text-slateMuted">STDOUT // RTFS CLI v0.5.0</span> <!-- x-release-please-version -->
                 <span id="term-status" class="font-mono text-[10px] text-emerald-400">READY</span>
               </figcaption>
               <pre id="term-screen" class="p-5 sm:p-6 font-mono text-[11.5px] sm:text-xs leading-[1.7] min-h-[370px] max-h-[420px] overflow-y-auto text-ivory/90 whitespace-pre"></pre>
@@ -812,6 +816,16 @@
                         <span class="font-mono text-[10px] text-slateMuted">redis.asyncio</span>
                       </div>
                       <p class="text-xs text-slateMuted mt-0.5">Distributed async caching for multi-worker pipelines and shared teams.</p>
+                    </div>
+                  </label>
+                  <label class="flex items-start gap-3 p-3 rounded border border-hairline bg-obsidian/60 hover:border-hairlineStrong cursor-pointer transition-colors">
+                    <input id="extra-api" type="checkbox" class="mt-0.5 accent-vermilion cursor-pointer" />
+                    <div class="flex-1">
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-ivory">HTTP API Server <code class="font-mono text-xs text-amberCinema ml-1">pyrtfs[api]</code></span>
+                        <span class="font-mono text-[10px] text-slateMuted">FastAPI + Uvicorn</span>
+                      </div>
+                      <p class="text-xs text-slateMuted mt-0.5">Self-hosted REST microservice (<code class="font-mono text-[11px]">rtfs serve</code>) with /search, /parse, and /stats.</p>
                     </div>
                   </label>
                 </div>
