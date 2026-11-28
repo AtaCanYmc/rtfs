@@ -46,3 +46,11 @@ Or pull the published GHCR image directly:
 ```bash
 docker run -d -p 8000:8000 -e RTFS_CACHE_URL=memory:// ghcr.io/atacanymc/rtfs:latest
 ```
+
+## Environment Variables & Error Responses
+
+| Variable / Status | Description |
+| :--- | :--- |
+| `RTFS_CACHE_URL` | Cache backend URI (`disk://~/.cache/rtfs`, `redis://redis:6379/0`, `memory://`, `none://`). |
+| `200 OK` | JSON payload (`list[SearchResult]`, `ScriptDocument`, or `ScriptStats`). |
+| `404 Not Found` | Returned by `/parse` and `/stats` when no matching script is found (`LookupError`). |

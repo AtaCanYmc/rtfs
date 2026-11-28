@@ -52,3 +52,15 @@ brew install AtaCanYmc/tap/rtfs
   }
 }
 ```
+
+## Optional Extras Matrix
+
+| Extra | Install | Enables |
+| :--- | :--- | :--- |
+| `mcp` | `pip install "pyrtfs[mcp]"` | `rtfs mcp` FastMCP server (`stdio` / `sse`) |
+| `redis` | `pip install "pyrtfs[redis]"` | `redis://` and `rediss://` async cache backends |
+| `api` | `pip install "pyrtfs[api]"` | `rtfs serve` FastAPI HTTP server |
+| `ocr` | `pip install "pyrtfs[ocr]"` | `rtfs parse --ocr` local Tesseract OCR |
+| `semantic` | `pip install "pyrtfs[semantic]"` | `search_scenes_semantic` (`fastembed`) |
+| `tui` | `pip install "pyrtfs[tui]"` | `rtfs view` interactive Textual reader |
+| `all` | `pip install "pyrtfs[all]"` | All optional extras above |
