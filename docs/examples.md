@@ -152,3 +152,63 @@ Output:
 ALICE 3 15
 BOB 1 2
 ```
+
+## 6. Live Multi-Provider Search (`rtfs search`)
+
+```bash
+rtfs search "Interstellar"
+```
+
+Output (abbreviated):
+
+```text
+                         Search Results: 'Interstellar'
+┏━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━┓
+┃ Index ┃ Title                      ┃ Type  ┃ Source     ┃ Format     ┃ Score ┃
+┡━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━┩
+│     1 │ Interstellar (2014)        │ movie │ scriptslug │ screenplay │ 112.0 │
+│     2 │ Interstellar               │ movie │ imsdb      │ screenplay │ 107.0 │
+│     3 │ ER                         │ tv    │ tvwriting  │ screenplay │ 102.0 │
+│     4 │ The Interpreter (2005)     │ movie │ scriptslug │ screenplay │  81.6 │
+│     5 │ Winters Tale (2014)        │ movie │ scriptslug │ screenplay │  78.7 │
+└───────┴────────────────────────────┴───────┴────────────┴────────────┴───────┘
+```
+
+## 7. Live Script Analytics (`rtfs stats`)
+
+```bash
+rtfs stats "The Matrix"
+```
+
+Output:
+
+```text
+Script Overview: The Matrix (scriptslug)
+┏━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┓
+┃ Metric                  ┃      Value ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━┩
+│ Format                  │ screenplay │
+│ Total Scenes            │        225 │
+│ INT. Scenes             │        180 │
+│ EXT. Scenes             │         44 │
+│ INT / EXT Ratio         │       4.09 │
+│ Dialogue Words          │      15872 │
+│ Action Words            │       6202 │
+│ Dialogue / Action Ratio │       2.56 │
+└─────────────────────────┴────────────┘
+            Top Speaking Characters
+┏━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┳━━━━━━━┓
+┃ Rank ┃ Character   ┃ Dialogue Turns ┃ Words ┃
+┡━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━╇━━━━━━━┩
+│    1 │ NEO         │            219 │  3083 │
+│    2 │ MORPHEUS    │            181 │  4482 │
+│    3 │ TRINITY     │            133 │  1698 │
+│    4 │ TANK        │             70 │   949 │
+│    5 │ AGENT SMITH │             68 │  1612 │
+│    6 │ CYPHER      │             66 │  1471 │
+│    7 │ ORACLE      │             23 │   461 │
+│    8 │ MOUSE       │             16 │   264 │
+│    9 │ APOC        │             13 │   113 │
+│   10 │ SWITCH      │             12 │   106 │
+└──────┴─────────────┴────────────────┴───────┘
+```
