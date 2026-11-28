@@ -191,3 +191,47 @@ Browse scenes with the keyboard, highlight a specific character's dialogue, and 
 ```bash
 rtfs view ./draft_v1.fountain --character ALICE --diff ./draft_v2.fdx
 ```
+
+## FastMCP Tool & Resource Examples
+
+```python
+from rtfs.mcp.server import create_mcp_server
+
+mcp = create_mcp_server(cache_url="disk://~/.cache/rtfs")
+```
+
+Example tool calls from an MCP client:
+
+```json
+{
+  "tool": "get_script_overview",
+  "arguments": { "query_or_url": "The Matrix" }
+}
+```
+
+```json
+{
+  "tool": "search_scenes_semantic",
+  "arguments": {
+    "query_or_url": "The Matrix",
+    "query": "training simulation fight",
+    "top_k": 5
+  }
+}
+```
+
+```json
+{
+  "tool": "diff_scripts",
+  "arguments": {
+    "query_or_url_a": "scriptslug:dune-2021",
+    "query_or_url_b": "imsdb:Dune"
+  }
+}
+```
+
+Example resource URIs:
+
+- `rtfs://script/scriptslug/the-matrix-1999/fountain`
+- `rtfs://script/scriptslug/the-matrix-1999/scenes/0/10`
+- `rtfs://script/scriptslug/the-matrix-1999/stats`
