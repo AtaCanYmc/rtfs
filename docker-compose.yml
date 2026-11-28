@@ -1,0 +1,19 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+
+  rtfs-api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - redis
+    environment:
+      RTFS_CACHE_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+
+volumes:
+  redis_data:
