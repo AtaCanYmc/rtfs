@@ -370,6 +370,18 @@ def create_mcp_server(
         """Compute scene counts, INT/EXT breakdown, dialogue/action ratio, and character stats."""
         return await svc.get_script_stats(query_or_url=query_or_url)
 
+    @mcp.tool()
+    async def search_scenes_semantic(
+        query_or_url: str,
+        query: str,
+        top_k: int = 5,
+    ) -> list[dict[str, Any]]:
+        """Semantic scene search (e.g. 'argument in the rain'), capped at 10 scenes."""
+        from rtfs.core.semantic import search_scenes_semantic as _semantic_search
+
+        doc = await svc._resolve_document(query_or_url=query_or_url)
+        return _semantic_search(doc, query, top_k=top_k)
+
     @mcp.resource("rtfs://script/{source}/{slug}/fountain")
     async def script_fountain_resource(source: str, slug: str) -> str:
         """Full Fountain screenplay text resource for a given provider source and slug."""
