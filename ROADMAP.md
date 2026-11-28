@@ -27,3 +27,24 @@
 - [x] Final Draft (`.fdx`) XML parser (`FdxParser`) and exporter (`export_fdx`) with `<DualDialogue>` support and XXE/entity-expansion hardening.
 - [x] Batch export command (`rtfs batch queries.txt --output-dir ./corpus`) with `--concurrency` semaphore limits.
 - [x] DNS resolution pinning in `HttpClient` (`PinnedAsyncNetworkBackend` / `PinnedAsyncHTTPTransport`) to defend against time-of-check to time-of-use (TOCTOU) DNS rebinding.
+
+## v0.4.0 — Parser & Format Depth
+
+- [ ] Fountain input parser (`FountainParser`) enabling round-trip `.fountain` to `.fdx` and `.json` conversion.
+- [ ] Scanned/image-only PDF detection with structured diagnostics and an optional OCR hook.
+- [ ] Character alias and parenthetical normalization (`V.O.`, `O.S.`, `CONT'D`) across `stats` and `--character` filters.
+- [ ] Draft comparison command (`rtfs diff <script_a> <script_b>`) for scene-level and dialogue-level diffs.
+
+## v0.5.0 — Corpus, SDK & MCP Maturity
+
+- [ ] Streaming `JSONL` corpus exporter for large-scale NLP and ML ingestion pipelines.
+- [ ] Entry-point provider registry (`rtfs.providers`) for third-party screenplay sources.
+- [ ] MCP scene-chunk pagination and resource URIs for bounded-context LLM workflows.
+- [ ] Strict static type-checking (`mypy` / `pyright`) enforced in CI with `py.typed` distribution.
+- [ ] Optional HTTP/REST API server extra (`pyrtfs[api]`) for self-hosted microservice deployments.
+
+## v1.0.0 — Production Stability
+
+- [ ] Frozen `RTFSClient` SDK and `ScriptDocument` v1 schema with semantic versioning guarantees.
+- [ ] Versioned `ScriptDocument` JSON Schema (`rtfs schema`) for downstream validation.
+- [ ] Golden-file regression suite covering PDF, FDX, HTML, and Fountain edge cases.

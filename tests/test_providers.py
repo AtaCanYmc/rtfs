@@ -184,3 +184,106 @@ def test_title_similarity_handles_articles_and_rejects_stopword_false_positives(
     # Unrelated titles that only share "The" must not get an 85.5 WRatio boost
     assert compute_title_similarity("The Matrix", "The Honourable Woman") < 45.0
 
+
+async def test_scriptslug_sitemap_and_fallback_paths() -> None:
+    http = AsyncMock(spec=HttpClient)
+    cache = MemoryCacheBackend()
+
+    sitemap_xml = """<?xml version="1.0" encoding="UTF-8"?>
+    <urlset>
+      <url><loc>https://www.scriptslug.com/script/dune-2021</loc></url>
+      <url><loc>https://www.scriptslug.com/script/dune-2021</loc></url>
+    </urlset>
+    """
+    http.get_text.return_value = sitemap_xml
+
+    provider = ScriptSlugProvider(http, cache)
+    results = await provider.search("Dune")
+    assert len(results) == 1
+    assert results[0].title == "Dune"
+    assert results[0].year == 2021
+
+    # Second search hits cache
+    cached = await provider.search("Dune")
+    assert len(cached) == 1
+    assert http.get_text.call_count == 1
+
+
+async def test_scriptslug_search_fallback_to_direct_slug_and_assets_pdf() -> None:
+    http = AsyncMock(spec=HttpClient)
+    cache = MemoryCacheBackend()
+
+    # 1. sitemap fails, 2. /scripts?search= fails, 3. direct /script/arrival succeeds
+    inline_html = (
+        '<script>var pdf = "https://assets.scriptslug.com/live/pdf/scripts/arrival.pdf";</script>'
+    )
+    http.get_text.side_effect = [
+        RuntimeError("sitemap 404"),
+        RuntimeError("search 500"),
+        inline_html,
+        "<html><body>No pdf link here</body></html>",
+    ]
+    http.get_bytes.return_value = b"%PDF-1.4 fallback-bytes"
+
+    provider = ScriptSlugProvider(http, cache)
+    results = await provider.search("Arrival")
+    assert len(results) == 1
+    assert results[0].url == "https://www.scriptslug.com/script/arrival"
+
+    # fetch_raw falls back to ASSETS_BASE/{slug}.pdf when HTML has no PDF link
+    raw = await provider.fetch_raw(results[0])
+    assert raw.content == b"%PDF-1.4 fallback-bytes"
+    assert raw.metadata.url == "https://assets.scriptslug.com/live/pdf/scripts/arrival.pdf"
+
+    # Second fetch_raw hits cache
+    raw_cached = await provider.fetch_raw(results[0])
+    assert raw_cached.metadata.url == raw.metadata.url
+    assert http.get_bytes.call_count == 1
+
+
+async def test_tvwriting_resolves_non_pdf_page_and_rejects_invalid_pdf() -> None:
+    import pytest
+
+    http = AsyncMock(spec=HttpClient)
+    cache = MemoryCacheBackend()
+
+    search_html = """
+    <html><body>
+      <a href="">Empty</a>
+      <a href="/other/page.html">Unrelated</a>
+      <a href="/tvwriting/pilot">Completely Different Show</a>
+      <a href="/tvwriting/breaking-bad-1x01">Breaking Bad 1x01</a>
+    </body></html>
+    """
+    detail_html = """
+    <html><body>
+      <a href="https://sites.google.com/site/tvwriting/breaking-bad-1x01.pdf">PDF</a>
+    </body></html>
+    """
+    http.get_text.side_effect = [search_html, detail_html]
+    http.get_bytes.return_value = b"%PDF-1.4 valid"
+
+    provider = TVWritingProvider(http, cache)
+    results = await provider.search("Breaking Bad")
+    assert len(results) == 1
+    assert results[0].season == 1
+    assert results[0].episode == 1
+
+    # Search cache hit
+    cached = await provider.search("Breaking Bad")
+    assert len(cached) == 1
+
+    raw = await provider.fetch_raw(results[0])
+    assert raw.content == b"%PDF-1.4 valid"
+
+    # fetch_raw cache hit
+    raw_cached = await provider.fetch_raw(results[0])
+    assert raw_cached.content == b"%PDF-1.4 valid"
+
+    # Invalid PDF payload raises ValueError
+    http.get_bytes.return_value = b"<html>Not a PDF</html>"
+    other = results[0].model_copy(update={"url": "https://sites.google.com/site/tvwriting/bad.pdf"})
+    with pytest.raises(ValueError, match="valid PDF payload"):
+        await provider.fetch_raw(other)
+
+
