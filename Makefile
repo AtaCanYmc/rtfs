@@ -3,6 +3,7 @@ SHELL := /bin/bash
 
 PYTHON ?= .venv/bin/python
 RUFF ?= .venv/bin/ruff
+MYPY ?= .venv/bin/mypy
 PYTEST ?= .venv/bin/pytest
 RTFS ?= .venv/bin/rtfs
 UV ?= uv
@@ -12,8 +13,8 @@ MCP_HOST ?= 127.0.0.1
 MCP_PORT ?= 8000
 
 .PHONY: help venv install install-redis install-mcp install-all \
-        lint format format-check test test-fast check \
-        mcp-stdio mcp-sse cache-clear build clean
+        lint format format-check typecheck test test-fast cov check \
+        mcp-stdio mcp-sse serve docker-up docker-down docs-serve cache-clear build clean
 
 help: ## Display available Make targets
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n\nTargets:\n"} /^[a-zA-Z0-9_-]+:.*?##/ { printf "  \033[36m%-16s\033[0m %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
@@ -43,19 +44,37 @@ format: ## Auto-fix lint issues and format code with Ruff
 format-check: ## Check code formatting without modifying files
 	$(RUFF) format --check .
 
+typecheck: ## Run Mypy static type checker on src/rtfs
+	$(MYPY) src/rtfs
+
 test: ## Run full pytest suite with verbose output
 	$(PYTEST) -v
 
 test-fast: ## Run pytest suite stopping on first failure
 	$(PYTEST) -x -q
 
-check: lint test ## Run all quality gates (ruff check + pytest)
+cov: ## Run pytest with terminal coverage report
+	$(PYTEST) --cov=rtfs --cov-report=term-missing -q
+
+check: lint typecheck test ## Run all quality gates (ruff + mypy + pytest)
 
 mcp-stdio: ## Run the FastMCP server over stdio transport
 	$(RTFS) mcp --transport stdio
 
 mcp-sse: ## Run the FastMCP server over SSE transport (MCP_HOST, MCP_PORT)
 	$(RTFS) mcp --transport sse --host $(MCP_HOST) --port $(MCP_PORT)
+
+serve: ## Run the optional FastAPI HTTP server (pyrtfs[api])
+	$(RTFS) serve --host $(MCP_HOST) --port $(MCP_PORT)
+
+docker-up: ## Start rtfs-api + Redis in background via Docker Compose
+	docker compose up -d
+
+docker-down: ## Stop Docker Compose services
+	docker compose down
+
+docs-serve: ## Serve docs/ locally on port 8765
+	$(PYTHON) -m http.server 8765 --directory docs
 
 cache-clear: ## Clear the local SQLite disk cache (~/.cache/rtfs)
 	rm -rf $(CACHE_DIR)
