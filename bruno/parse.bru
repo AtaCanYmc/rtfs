@@ -1,0 +1,30 @@
+meta {
+  name: Parse Script
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/parse
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-API-Key: {{apiKey}}
+}
+
+body:json {
+  {
+    "query_or_url": "The Matrix",
+    "source": "all",
+    "allow_transcript": false
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.metadata.title: isString
+  res.body.scenes: isArray
+}

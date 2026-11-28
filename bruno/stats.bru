@@ -1,0 +1,21 @@
+meta {
+  name: Script Stats
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/stats?query_or_url=The%20Matrix&source=all
+  body: none
+  auth: none
+}
+
+headers {
+  X-API-Key: {{apiKey}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.total_scenes: isNumber
+  res.body.top_characters: isArray
+}
