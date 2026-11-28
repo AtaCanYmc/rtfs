@@ -256,3 +256,50 @@ Output (first 4 records):
 {"title": "The Matrix", "source": "scriptslug", "scene_number": 1, "heading": "PROLOGUE", "element_index": 2, "type": "action", "text": "March 29, 1998"}
 {"title": "The Matrix", "source": "scriptslug", "scene_number": 1, "heading": "PROLOGUE", "element_index": 3, "type": "transition", "text": "FADE IN:"}
 ```
+
+## 10. Inspect & Clear Cache (`rtfs cache`)
+
+```bash
+rtfs cache info
+```
+
+Output:
+
+```text
+                 Cache Info
+┏━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Property     ┃                     Value ┃
+┡━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Backend      │                      disk │
+│ Location     │ /Users/atacan/.cache/rtfs │
+│ Entries      │                        10 │
+│ Size (bytes) │                    845435 │
+└──────────────┴───────────────────────────┘
+```
+
+Clear all cached entries:
+
+```bash
+rtfs cache clear
+```
+
+## 11. Batch Export (`rtfs batch`)
+
+```bash
+printf "The Matrix\nArrival\n" > queries.txt
+rtfs batch queries.txt --output-dir ./corpus --format jsonl --concurrency 2
+```
+
+## 12. Start the FastMCP Server (`rtfs mcp`)
+
+```bash
+rtfs mcp --transport stdio
+```
+
+## 13. Start the HTTP API Server (`rtfs serve`)
+
+Requires `pyrtfs[api]`:
+
+```bash
+rtfs serve --host 127.0.0.1 --port 8000
+```
