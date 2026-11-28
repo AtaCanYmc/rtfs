@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.1.3](https://github.com/AtaCanYmc/rtfs/compare/v0.1.2...v0.1.3) (2026-11-28)
+
+
+### Features
+
+* **cli:** add --version/-V, schema, serve, and jsonl export format ([c5d6c4c](https://github.com/AtaCanYmc/rtfs/commit/c5d6c4cf754fda7cbac173262c8920ed4d37ac3e))
+* implement v0.4.0 (FountainParser, scanned PDF OCR hook, character normalization, rtfs diff) ([19d06a7](https://github.com/AtaCanYmc/rtfs/commit/19d06a7636be3d7869304827342d974ae3a2c346))
+* implement v0.5.0 (JSONL exporter, entry-point providers, MCP pagination, mypy CI, pyrtfs[api]) ([afa1cf1](https://github.com/AtaCanYmc/rtfs/commit/afa1cf14cb58ff3f16614b2e530db394433d87a4))
+* **pages:** add dark/light mode and SEO/AEO metadata (robots.txt, sitemap.xml, llms.txt, JSON-LD) ([b3afa84](https://github.com/AtaCanYmc/rtfs/commit/b3afa8401080d73c2c24d006a8e77453f10f5fb8))
+* **pages:** add npx skills install tab to hero bar ([c04e36e](https://github.com/AtaCanYmc/rtfs/commit/c04e36ee7fba36b38341be284114c0be19200661))
+* **pages:** add SVG favicon, webmanifest, and theme-color meta ([503c8fc](https://github.com/AtaCanYmc/rtfs/commit/503c8fcd0954879e481cd4e77c37575530840486))
+* **pages:** showcase v0.5.0 CLI diff, MCP scene pagination, and pyrtfs[api] ([2d300be](https://github.com/AtaCanYmc/rtfs/commit/2d300be3fae6cd18486c19578f20b88afbfb8be9))
+
+
+### Documentation
+
+* add api.md, recipes.md, and update docs index ([7fc9513](https://github.com/AtaCanYmc/rtfs/commit/7fc95131bf16ac4f69f9a2eab17705c5ccc83a15))
+* add cache, batch, mcp, and serve CLI examples ([0f10aff](https://github.com/AtaCanYmc/rtfs/commit/0f10aff816b2b4775514c5e9fc89c8825edc0fcc))
+* add live filtered Fountain and JSONL get examples ([f49057d](https://github.com/AtaCanYmc/rtfs/commit/f49057d370cb39e9450616a703c9a5f7ad31c7de))
+* add live search and stats examples with real data ([b68f8b0](https://github.com/AtaCanYmc/rtfs/commit/b68f8b0b26ff3189abbf44ec71f39da383f59e22))
+* add use-cases.md with usage patterns and best practices ([8a8ce74](https://github.com/AtaCanYmc/rtfs/commit/8a8ce74c6cda215b344cbf590c72f01ee8ecfb09))
+* add verified CLI examples in docs/examples.md ([690c1f2](https://github.com/AtaCanYmc/rtfs/commit/690c1f261966e59007acce85a4a58fb1063a8854))
+* expand examples.md with rtfs schema and character-normalized stats ([9494f4d](https://github.com/AtaCanYmc/rtfs/commit/9494f4d77693b77e8d9fd3cc8f9746ff738cfa2f))
+* **readme:** add codecov badge, v0.4.0/v0.5.0 overview, and new docs links ([7a44438](https://github.com/AtaCanYmc/rtfs/commit/7a444385f06573274127b2e0b4a5e5f95a29ff24))
+* **skills:** add AI agent skill folder (skills/rtfs/SKILL.md) and setup guide ([7ca4f0e](https://github.com/AtaCanYmc/rtfs/commit/7ca4f0ee163da3cff5c484ba62f60127988907fc))
+* **skills:** prompt user before installing rtfs if missing ([1c51527](https://github.com/AtaCanYmc/rtfs/commit/1c51527b3def0af066965c92aff466c064f09b31))
+* upgrade architecture diagrams to branded SVG ([a121582](https://github.com/AtaCanYmc/rtfs/commit/a1215822386fe83edd213c94df4f4c758506affb))
+
 ## [0.1.2](https://github.com/AtaCanYmc/rtfs/compare/v0.1.1...v0.1.2) (2026-11-21)
 
 
