@@ -588,6 +588,31 @@ def serve_cmd(
         raise typer.Exit(code=1) from exc
 
 
+@app.command("view")
+def view_cmd(
+    script_path: Annotated[Path, typer.Argument(help="Path to local script")],
+    diff: Annotated[
+        Path | None,
+        typer.Option("--diff", help="Optional second script for diff"),
+    ] = None,
+    character: Annotated[
+        str | None,
+        typer.Option("--character", help="Highlight dialogue by character"),
+    ] = None,
+) -> None:
+    """Open an interactive terminal screenplay viewer (requires pyrtfs[tui])."""
+    try:
+        from rtfs.cli.tui import launch_viewer
+
+        client = RTFSClient(cache="none://")
+        doc = client.parse_local(script_path)
+        diff_doc = client.parse_local(diff) if diff is not None else None
+        launch_viewer(doc, diff_doc=diff_doc, highlight_character=character)
+    except (FileNotFoundError, ValueError, ImportError) as exc:
+        err_console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+
 @app.command("mcp")
 def mcp_cmd(
     transport: Annotated[
