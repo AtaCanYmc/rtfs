@@ -228,6 +228,20 @@ def build_scenes_from_tagged_blocks(
     return scenes
 
 
+_CHAR_MODIFIER_RE = re.compile(r"\s*(?:\([^)]*\)|\^)\s*$")
+
+
+def normalize_character_name(name: str) -> str:
+    """Strip trailing parentheticals (V.O., O.S., CONT'D) and dual markers."""
+    cleaned = name.strip()
+    while True:
+        updated = _CHAR_MODIFIER_RE.sub("", cleaned).strip()
+        if updated == cleaned:
+            break
+        cleaned = updated
+    return " ".join(cleaned.split()).upper()
+
+
 class BaseParser(ABC):
     @abstractmethod
     def parse(self, raw: RawScript) -> ScriptDocument:

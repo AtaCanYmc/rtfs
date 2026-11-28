@@ -38,7 +38,7 @@ class RawScript(BaseModel):
     model_config = ConfigDict(strict=True)
 
     content: bytes | str
-    content_type: Literal["html", "pdf", "text", "fdx"]
+    content_type: Literal["html", "pdf", "text", "fdx", "fountain"]
     metadata: ScriptMetadata
 
 

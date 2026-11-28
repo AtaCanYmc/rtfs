@@ -16,8 +16,9 @@ from rtfs.core.models import (
     ScriptMetadata,
     SearchResult,
 )
-from rtfs.parsers.base import BaseParser
+from rtfs.parsers.base import BaseParser, normalize_character_name
 from rtfs.parsers.fdx import FdxParser
+from rtfs.parsers.fountain import FountainParser
 from rtfs.parsers.html_screenplay import HtmlScreenplayParser
 from rtfs.parsers.pdf_screenplay import PdfScreenplayParser
 from rtfs.parsers.transcript import TranscriptParser
@@ -39,11 +40,11 @@ SCENE_RANGE_RE = re.compile(r"^\s*(\d+)(?:\s*-\s*(\d+))?\s*$")
 EXTENSION_TO_CONTENT_TYPE: dict[str, Literal["html", "pdf", "text", "fdx"]] = {
     ".pdf": "pdf",
     ".fdx": "fdx",
+    ".fountain": "fountain",
     ".xml": "fdx",
     ".html": "html",
     ".htm": "html",
     ".txt": "text",
-    ".fountain": "text",
 }
 
 
@@ -71,7 +72,11 @@ def filter_scenes(
     scene_range: str | tuple[int, int] | None = None,
 ) -> ScriptDocument:
     """Filter scenes in a ScriptDocument using logical AND across character, location, and range."""
-    char_q = character.strip().lower() if character and character.strip() else None
+    char_q = (
+        normalize_character_name(character).lower()
+        if character and character.strip()
+        else None
+    )
     loc_q = location.strip().lower() if location and location.strip() else None
 
     bounds: tuple[int, int] | None = None
@@ -98,7 +103,8 @@ def filter_scenes(
 
         if char_q is not None:
             has_char = any(
-                isinstance(el, Dialogue) and char_q in el.character.lower()
+                isinstance(el, Dialogue)
+                and char_q in normalize_character_name(el.character).lower()
                 for el in scene.elements
             )
             if not has_char:
@@ -115,6 +121,7 @@ def _build_default_parsers() -> dict[str, BaseParser]:
         "html": HtmlScreenplayParser(),
         "text": TranscriptParser(),
         "fdx": FdxParser(),
+        "fountain": FountainParser(),
     }
 
 
@@ -122,7 +129,7 @@ def parse_file(
     path: str | Path,
     *,
     title: str | None = None,
-    content_type: Literal["html", "pdf", "text", "fdx"] | None = None,
+    content_type: Literal["html", "pdf", "text", "fdx", "fountain"] | None = None,
     media_type: Literal["movie", "tv"] = "movie",
 ) -> ScriptDocument:
     """Parse a local screenplay/transcript file (.pdf, .fdx, .html, .txt) without network calls."""
@@ -308,7 +315,7 @@ class ScriptAggregator:
         path: str | Path,
         *,
         title: str | None = None,
-        content_type: Literal["html", "pdf", "text", "fdx"] | None = None,
+        content_type: Literal["html", "pdf", "text", "fdx", "fountain"] | None = None,
         media_type: Literal["movie", "tv"] = "movie",
     ) -> ScriptDocument:
         return parse_file(

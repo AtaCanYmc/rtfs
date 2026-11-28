@@ -30,10 +30,10 @@
 
 ## v0.4.0 — Parser & Format Depth
 
-- [ ] Fountain input parser (`FountainParser`) enabling round-trip `.fountain` to `.fdx` and `.json` conversion.
-- [ ] Scanned/image-only PDF detection with structured diagnostics and an optional OCR hook.
-- [ ] Character alias and parenthetical normalization (`V.O.`, `O.S.`, `CONT'D`) across `stats` and `--character` filters.
-- [ ] Draft comparison command (`rtfs diff <script_a> <script_b>`) for scene-level and dialogue-level diffs.
+- [x] Fountain input parser (`FountainParser`) enabling round-trip `.fountain` to `.fdx` and `.json` conversion.
+- [x] Scanned/image-only PDF detection with structured diagnostics and an optional OCR hook.
+- [x] Character alias and parenthetical normalization (`V.O.`, `O.S.`, `CONT'D`) across `stats` and `--character` filters.
+- [x] Draft comparison command (`rtfs diff <script_a> <script_b>`) for scene-level and dialogue-level diffs.
 
 ## v0.5.0 — Corpus, SDK & MCP Maturity
 

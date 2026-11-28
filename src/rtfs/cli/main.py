@@ -270,8 +270,9 @@ def parse_cmd(
             raise ValueError("Invalid format. Choose from: json, fountain, txt, fdx")
 
         explicit_type = content_type.lower().strip() if content_type else None
-        if explicit_type is not None and explicit_type not in {"pdf", "fdx", "html", "text"}:
-            raise ValueError("Invalid content-type. Choose from: pdf, fdx, html, text")
+        valid_types = {"pdf", "fdx", "html", "text", "fountain"}
+        if explicit_type is not None and explicit_type not in valid_types:
+            raise ValueError("Invalid content-type. Choose from: pdf, fdx, html, text, fountain")
 
         client = RTFSClient(cache="none://")
         doc = client.parse_local(
@@ -493,6 +494,28 @@ def stats_cmd(
         resolved = _resolve_cache_url(cache_url, no_cache)
         asyncio.run(_run_stats(query_or_url, source, allow_transcript, resolved))
     except (LookupError, ValueError, ImportError) as exc:
+        err_console.print(f"[red]Error:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+
+
+@app.command("diff")
+def diff_cmd(
+    script_a: Annotated[Path, typer.Argument(help="Path to first local script")],
+    script_b: Annotated[Path, typer.Argument(help="Path to second local script")],
+) -> None:
+    """Compare two local scripts at the scene and dialogue level."""
+    try:
+        client = RTFSClient(cache="none://")
+        doc_a = client.parse_local(script_a)
+        doc_b = client.parse_local(script_b)
+        from rtfs.core.diff import diff_documents
+
+        output = diff_documents(doc_a, doc_b)
+        if output:
+            typer.echo(output)
+        else:
+            err_console.print("[dim]No scene or dialogue differences found.[/dim]")
+    except (FileNotFoundError, ValueError) as exc:
         err_console.print(f"[red]Error:[/red] {exc}")
         raise typer.Exit(code=1) from exc
 

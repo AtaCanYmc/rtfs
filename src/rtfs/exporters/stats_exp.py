@@ -5,6 +5,7 @@ from collections import Counter
 from dataclasses import dataclass
 
 from rtfs.core.models import Action, Dialogue, ScriptDocument
+from rtfs.parsers.base import normalize_character_name
 
 SCENE_NUM_PREFIX_RE = re.compile(r"^\d+[A-Z]?\.?\s*")
 
@@ -55,8 +56,9 @@ def compute_stats(doc: ScriptDocument, top_n: int = 10) -> ScriptStats:
             if isinstance(elem, Dialogue):
                 words = len(elem.lines.split())
                 dialogue_words += words
-                char_turns[elem.character] += 1
-                char_words[elem.character] += words
+                char_name = normalize_character_name(elem.character)
+                char_turns[char_name] += 1
+                char_words[char_name] += words
             elif isinstance(elem, Action):
                 action_words += len(elem.text.split())
 

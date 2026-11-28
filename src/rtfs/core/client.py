@@ -148,7 +148,7 @@ class RTFSClient:
         file_path: str | Path,
         *,
         title: str | None = None,
-        content_type: Literal["html", "pdf", "text", "fdx"] | None = None,
+        content_type: Literal["html", "pdf", "text", "fdx", "fountain"] | None = None,
         character: str | None = None,
         location: str | None = None,
         scene_range: str | tuple[int, int] | None = None,

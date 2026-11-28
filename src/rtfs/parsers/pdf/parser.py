@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import Any
+
+import pymupdf
 
 from rtfs.core.models import Dialogue, RawScript, SceneElement, ScriptDocument
 from rtfs.parsers.base import (
@@ -24,6 +27,18 @@ from rtfs.parsers.pdf.extract import (
 )
 
 
+class ScannedPdfError(ValueError):
+    """Raised when a PDF contains images but no extractable text."""
+
+    def __init__(self, page_count: int, image_count: int) -> None:
+        self.page_count = page_count
+        self.image_count = image_count
+        super().__init__(
+            f"Scanned/image-only PDF detected ({page_count} pages, {image_count} images, "
+            "0 extractable text lines). Provide an ocr_hook or run OCR before parsing."
+        )
+
+
 class PdfScreenplayParser(BaseParser):
     """Coordinate-clustering PDF screenplay parser using PyMuPDF."""
 
@@ -34,12 +49,14 @@ class PdfScreenplayParser(BaseParser):
         cluster_tolerance: float = 8.0,
         max_pages: int = 500,
         span_gap_threshold: float | None = None,
+        ocr_hook: Callable[[bytes], str] | None = None,
     ) -> None:
         self.header_cutoff = header_cutoff
         self.footer_cutoff = footer_cutoff
         self.cluster_tolerance = cluster_tolerance
         self.max_pages = max_pages
         self.span_gap_threshold = span_gap_threshold
+        self.ocr_hook = ocr_hook
 
     def _split_line_spans(
         self, line: dict[str, Any]
@@ -109,6 +126,18 @@ class PdfScreenplayParser(BaseParser):
         )
         lines = self._extract_lines(pdf_bytes)
         if not lines:
+            if self.ocr_hook is not None:
+                from rtfs.parsers.transcript import TranscriptParser
+
+                ocr_text = self.ocr_hook(pdf_bytes)
+                return TranscriptParser().parse(
+                    RawScript(content=ocr_text, content_type="text", metadata=raw.metadata)
+                )
+            with pymupdf.open(stream=pdf_bytes, filetype="pdf") as pdf_doc:
+                page_count = len(pdf_doc)
+                image_count = sum(len(page.get_images()) for page in pdf_doc)
+            if page_count > 0 and image_count > 0:
+                raise ScannedPdfError(page_count=page_count, image_count=image_count)
             return ScriptDocument(metadata=raw.metadata, scenes=[])
 
         page_groups: dict[int, list[int]] = {}
