@@ -63,3 +63,17 @@ my_archive = "my_package.provider:MyArchiveProvider"
 ```
 
 `ScriptAggregator` discovers and loads registered `rtfs.providers` entry points automatically on initialization.
+
+## 5. Semantic Scene Search with Custom Embeddings (e.g. Ollama)
+
+```python
+from rtfs.core.semantic import search_scenes_semantic
+
+def ollama_embed(texts: list[str]) -> list[list[float]]:
+    # Call local Ollama /api/embed and return list of float vectors
+    ...
+
+hits = search_scenes_semantic(doc, "argument in the rain", top_k=5, embed_fn=ollama_embed)
+for hit in hits:
+    print(hit["scene_number"], hit["heading"], hit["score"])
+```

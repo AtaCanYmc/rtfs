@@ -167,3 +167,13 @@ async def main() -> None:
 
 asyncio.run(main())
 ```
+
+## Semantic Scene Search (`search_scenes_semantic`)
+
+Install the optional semantic extra (`fastembed`):
+
+```bash
+pip install "pyrtfs[semantic]"
+```
+
+The FastMCP server exposes `search_scenes_semantic(query_or_url, query, top_k=5)` (capped at 10 scenes per call) to retrieve conceptually matching scenes without loading the full script into context.
