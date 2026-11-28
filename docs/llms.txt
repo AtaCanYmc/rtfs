@@ -1,0 +1,22 @@
+# rtfs (pyrtfs)
+
+> Multi-source movie & TV screenplay CLI, Python SDK, and FastMCP server with PyMuPDF x0-coordinate AST parsing and Final Draft (.fdx) / Fountain export.
+
+## Core Capabilities
+- **Search & Fetch**: Parallel search across IMSDb, ScriptSlug, TVWriting, and SubsLikeScript with RapidFuzz ranking.
+- **Screenplay AST**: Strict Pydantic v2 `ScriptDocument` model (`Scene`, `Action`, `Dialogue`, `Transition`) with dual-column simultaneous dialogue detection.
+- **Exporters**: JSON AST, Fountain (`.fountain`), Final Draft (`.fdx`), plain text, and character/scene analytics.
+- **MCP Server**: Progressive-disclosure FastMCP server (`rtfs mcp`) with bounded-context tools for AI agents.
+- **Security**: SSRF protection, host allowlists, DNS resolution pinning, and XXE-hardened XML parsing.
+
+## Installation
+- `pip install pyrtfs` (or `pip install "pyrtfs[all]"`)
+- `uv tool install pyrtfs`
+- `brew install AtaCanYmc/tap/rtfs`
+
+## Documentation
+- [Core Architecture](https://github.com/AtaCanYmc/rtfs/blob/main/docs/core.md)
+- [Parsers](https://github.com/AtaCanYmc/rtfs/blob/main/docs/parsers.md)
+- [Providers](https://github.com/AtaCanYmc/rtfs/blob/main/docs/providers.md)
+- [Exporters](https://github.com/AtaCanYmc/rtfs/blob/main/docs/exporters.md)
+- [CLI & MCP](https://github.com/AtaCanYmc/rtfs/blob/main/docs/cli-and-mcp.md)

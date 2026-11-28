@@ -5,11 +5,53 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>rtfs: Read The F***ing Script | Screenplay CLI, SDK &amp; MCP Server</title>
   <meta name="description" content="Open-source multi-source movie &amp; TV screenplay fetcher, PyMuPDF x0-coordinate AST parser, Final Draft (.fdx) / Fountain exporter, and token-efficient FastMCP server." />
+  <link rel="canonical" href="https://atacanymc.github.io/rtfs/" />
+
+  <!-- Open Graph & Twitter Card -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="rtfs" />
+  <meta property="og:title" content="rtfs: Read The F***ing Script | Screenplay CLI, SDK &amp; MCP Server" />
+  <meta property="og:description" content="Open-source multi-source movie &amp; TV screenplay fetcher, PyMuPDF x0-coordinate AST parser, Final Draft (.fdx) / Fountain exporter, and token-efficient FastMCP server." />
+  <meta property="og:url" content="https://atacanymc.github.io/rtfs/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="rtfs: Read The F***ing Script | Screenplay CLI, SDK &amp; MCP Server" />
+  <meta name="twitter:description" content="Open-source multi-source movie &amp; TV screenplay fetcher, PyMuPDF x0-coordinate AST parser, Final Draft (.fdx) / Fountain exporter, and token-efficient FastMCP server." />
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "rtfs",
+      "alternateName": "pyrtfs",
+      "description": "Multi-source movie and TV screenplay CLI, Python SDK, and FastMCP server with PyMuPDF x0-coordinate AST parsing and Final Draft (.fdx) / Fountain export.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "macOS, Linux, Windows",
+      "programmingLanguage": "Python",
+      "license": "https://www.gnu.org/licenses/agpl-3.0.html",
+      "url": "https://atacanymc.github.io/rtfs/",
+      "codeRepository": "https://github.com/AtaCanYmc/rtfs",
+      "author": {
+        "@type": "Person",
+        "name": "AtaCanYmc"
+      }
+    }
+  </script>
 
   <!-- Fonts: Instrument Serif (Editorial Display), Inter (UI), JetBrains Mono (Code & Screenplay) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Theme initialization (prevent flash) -->
+  <script>
+    (function () {
+      const saved = localStorage.getItem('rtfs-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDark = saved ? saved === 'dark' : prefersDark;
+      document.documentElement.classList.toggle('dark', isDark);
+    })();
+  </script>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -19,17 +61,17 @@
       theme: {
         extend: {
           colors: {
-            obsidian: '#08080A',
-            panel: '#0B0B0E',
-            sheet: '#101013',
-            charcoal: '#111114',
-            elevated: '#16161A',
-            ivory: '#F2EFE9',
-            slateMuted: '#8A8A93',
-            vermilion: '#FF3B30',
-            amberCinema: '#E5A93C',
-            hairline: 'rgba(255, 255, 255, 0.08)',
-            hairlineStrong: 'rgba(255, 255, 255, 0.16)',
+            obsidian: 'rgb(var(--rgb-obsidian) / <alpha-value>)',
+            panel: 'rgb(var(--rgb-panel) / <alpha-value>)',
+            sheet: 'rgb(var(--rgb-sheet) / <alpha-value>)',
+            charcoal: 'rgb(var(--rgb-charcoal) / <alpha-value>)',
+            elevated: 'rgb(var(--rgb-elevated) / <alpha-value>)',
+            ivory: 'rgb(var(--rgb-ivory) / <alpha-value>)',
+            slateMuted: 'rgb(var(--rgb-slate-muted) / <alpha-value>)',
+            vermilion: 'rgb(var(--rgb-vermilion) / <alpha-value>)',
+            amberCinema: 'rgb(var(--rgb-amber) / <alpha-value>)',
+            hairline: 'var(--color-hairline)',
+            hairlineStrong: 'var(--color-hairline-strong)',
           },
           fontFamily: {
             serif: ['"Instrument Serif"', 'Georgia', 'serif'],
@@ -44,7 +86,44 @@
   <style>
     /* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V5 · macrostructure: editorial-workbench · theme: Midnight · contrast: pass (40–41) · nav: N2 · footer: Ft2 · slop: pass (42–45) · honest: pass (46) · chrome: pass (47) · tokens: pass (48) · responsive: pass (49) · icons: pass (30) · mobile: pass (34, 49, 50–57) */
     :root {
+      color-scheme: light;
+      --rgb-obsidian: 250 249 246;
+      --rgb-panel: 244 242 237;
+      --rgb-sheet: 255 255 255;
+      --rgb-charcoal: 238 235 229;
+      --rgb-elevated: 230 226 218;
+      --rgb-ivory: 24 24 27;
+      --rgb-slate-muted: 82 82 91;
+      --rgb-vermilion: 220 38 38;
+      --rgb-amber: 180 83 9;
+      --color-obsidian: #FAF9F6;
+      --color-panel: #F4F2ED;
+      --color-sheet: #FFFFFF;
+      --color-charcoal: #EEEBE5;
+      --color-elevated: #E6E2DA;
+      --color-ivory: #18181B;
+      --color-slate-muted: #52525B;
+      --color-vermilion: #DC2626;
+      --color-amber: #B45309;
+      --color-hairline: rgba(0, 0, 0, 0.08);
+      --color-hairline-strong: rgba(0, 0, 0, 0.16);
+      --scrollbar-thumb: rgba(0, 0, 0, 0.22);
+      --scrollbar-track: #FAF9F6;
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+
+    :root.dark {
       color-scheme: dark;
+      --rgb-obsidian: 8 8 10;
+      --rgb-panel: 11 11 14;
+      --rgb-sheet: 16 16 19;
+      --rgb-charcoal: 17 17 20;
+      --rgb-elevated: 22 22 26;
+      --rgb-ivory: 242 239 233;
+      --rgb-slate-muted: 138 138 147;
+      --rgb-vermilion: 255 59 48;
+      --rgb-amber: 229 169 60;
       --color-obsidian: #08080A;
       --color-panel: #0B0B0E;
       --color-sheet: #101013;
@@ -54,10 +133,10 @@
       --color-slate-muted: #8A8A93;
       --color-vermilion: #FF3B30;
       --color-amber: #E5A93C;
+      --color-hairline: rgba(255, 255, 255, 0.08);
+      --color-hairline-strong: rgba(255, 255, 255, 0.16);
       --scrollbar-thumb: rgba(255, 255, 255, 0.24);
       --scrollbar-track: #08080A;
-      scrollbar-width: thin;
-      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
     }
 
     html, body {
@@ -278,9 +357,9 @@
         </a>
         <div class="hidden md:flex items-center gap-2.5 pl-4 border-l border-hairline font-mono text-[11px] tracking-wider text-slateMuted">
           <span id="nav-scene" class="text-ivory/80">SCENE 01 / 05</span>
-          <span class="text-white/20">//</span>
+          <span class="text-ivory/30">//</span>
           <span id="nav-timecode" class="tabular-nums text-amberCinema/90">00:00:00:00</span>
-          <span class="text-white/25 hidden xl:inline">24FPS</span>
+          <span class="text-ivory/35 hidden xl:inline">24FPS</span>
         </div>
       </div>
 
@@ -293,8 +372,18 @@
         <a href="#downloads" class="hover:text-ivory transition-colors py-2 whitespace-nowrap">Downloads</a>
       </nav>
 
-      <!-- Right: Live GitHub Stats & Link -->
+      <!-- Right: Theme Toggle, Live GitHub Stats & Link -->
       <div class="flex items-center gap-2.5">
+        <button id="theme-toggle" type="button" aria-label="Toggle color theme" aria-pressed="true"
+                class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-hairline bg-charcoal hover:border-hairlineStrong text-slateMuted hover:text-ivory transition-colors">
+          <svg id="theme-icon-sun" class="w-4 h-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg id="theme-icon-moon" class="w-4 h-4 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
         <a href="#downloads" id="nav-version-badge" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-hairline bg-charcoal hover:border-hairline-strong font-mono text-[11px] text-slateMuted hover:text-ivory transition-colors whitespace-nowrap">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
           <span id="nav-version-text">v0.1.1</span> <!-- x-release-please-version -->
@@ -320,9 +409,9 @@
           <!-- Monospace Screenplay Eyebrow -->
           <div class="inline-flex items-center gap-3 mb-7 font-mono text-[11px] sm:text-xs tracking-[0.16em] uppercase text-slateMuted">
             <span class="text-vermilion font-semibold">FADE IN:</span>
-            <span class="text-white/20">//</span>
+            <span class="text-ivory/30">//</span>
             <span>OPEN-SOURCE SCREENPLAY ENGINE</span>
-            <span class="hidden sm:inline text-white/20">//</span>
+            <span class="hidden sm:inline text-ivory/30">//</span>
             <span class="hidden sm:inline text-amberCinema/90">PYTHON 3.11+</span>
           </div>
 
@@ -448,7 +537,7 @@
           <div class="border-b lg:border-b-0 lg:border-r border-hairline flex flex-col">
             <div class="flex items-center justify-between px-4 py-2.5 border-b border-hairline bg-charcoal/50 font-mono text-[11px] text-slateMuted">
               <span id="sp-source-label">SOURCE: scriptslug // PDF (US Letter, Courier 12pt)</span>
-              <span class="text-white/30">PAGE 01</span>
+              <span class="text-ivory/50">PAGE 01</span>
             </div>
 
             <div id="screenplay-canvas" class="screenplay-sheet show-x0 p-6 sm:p-8 min-h-[430px] overflow-x-auto text-[12px] sm:text-[13px] leading-[1.65] text-ivory/90">
@@ -524,15 +613,15 @@
               </button>
               <button type="button" data-cmd="stats" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline bg-charcoal/50 text-xs font-mono text-slateMuted hover:text-ivory hover:border-hairline-strong transition-colors flex items-center justify-between">
                 <span>rtfs stats "pulp-fiction"</span>
-                <span class="text-[10px] text-white/30">RUN</span>
+                <span class="text-[10px] text-ivory/50">RUN</span>
               </button>
               <button type="button" data-cmd="get" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline bg-charcoal/50 text-xs font-mono text-slateMuted hover:text-ivory hover:border-hairline-strong transition-colors flex items-center justify-between">
                 <span>rtfs get "severance" --format fdx</span>
-                <span class="text-[10px] text-white/30">RUN</span>
+                <span class="text-[10px] text-ivory/50">RUN</span>
               </button>
               <button type="button" data-cmd="mcp" class="term-preset w-full text-left px-3.5 py-2.5 rounded-md border border-hairline bg-charcoal/50 text-xs font-mono text-slateMuted hover:text-ivory hover:border-hairline-strong transition-colors flex items-center justify-between">
                 <span>rtfs mcp --transport stdio</span>
-                <span class="text-[10px] text-white/30">RUN</span>
+                <span class="text-[10px] text-ivory/50">RUN</span>
               </button>
             </div>
           </div>
@@ -602,8 +691,8 @@
             </p>
             <div class="font-mono text-[11px] p-3 rounded border border-hairline bg-obsidian/80 text-slateMuted space-y-1">
               <div><span class="text-vermilion">RawScript</span>(pdf | html | fdx | text)</div>
-              <div class="pl-4 text-white/30">|--&gt; <span class="text-ivory">ScriptDocument</span> (Pydantic v2 AST)</div>
-              <div class="pl-4 text-white/30">`--&gt; <span class="text-amberCinema">JSON · Fountain · FDX · Stats</span></div>
+              <div class="pl-4 text-ivory/50">|--&gt; <span class="text-ivory">ScriptDocument</span> (Pydantic v2 AST)</div>
+              <div class="pl-4 text-ivory/50">`--&gt; <span class="text-amberCinema">JSON · Fountain · FDX · Stats</span></div>
             </div>
           </div>
 
@@ -770,7 +859,7 @@
                     <span class="font-mono text-[10px] uppercase tracking-widest text-slateMuted">Environment Variable</span>
                     <button type="button" data-copy-target="cfg-env-out" aria-label="Copy environment variable" class="copy-trigger px-2 py-1 font-mono text-[10px] text-amberCinema hover:text-ivory transition-colors">Copy</button>
                   </div>
-                  <div class="p-3 rounded border border-hairline bg-obsidian font-mono text-xs text-emerald-300/90 overflow-x-auto">
+                  <div class="p-3 rounded border border-hairline bg-obsidian font-mono text-xs text-emerald-700 dark:text-emerald-300/90 overflow-x-auto">
                     <code id="cfg-env-out"></code>
                   </div>
                 </div>
@@ -890,7 +979,7 @@
         <div>
           <span class="text-ivory">rtfs</span>: Read The F***ing Script. Crafted by <a href="https://github.com/AtaCanYmc" target="_blank" rel="noopener noreferrer" class="text-ivory hover:text-amberCinema transition-colors underline decoration-white/20 underline-offset-4">Ata Can Yaymacı</a>.
         </div>
-        <div class="text-white/30">ZERO-BUILD GITHUB PAGES HUB // 24FPS</div>
+        <div class="text-ivory/50">ZERO-BUILD GITHUB PAGES HUB // 24FPS</div>
       </div>
     </div>
   </footer>
@@ -1427,7 +1516,7 @@
           b.classList.toggle('text-slateMuted', !isActive);
           const badge = b.querySelector('span:last-child');
           if (badge) {
-            badge.className = isActive ? 'text-[10px] text-amberCinema' : 'text-[10px] text-white/30';
+            badge.className = isActive ? 'text-[10px] text-amberCinema' : 'text-[10px] text-ivory/50';
           }
         });
 
@@ -1629,6 +1718,20 @@
         } catch (e) {
           syncEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amberCinema"></span><span>Showing v0.1.1 release snapshot</span>'; // x-release-please-version
         }
+      }
+
+      // Theme toggle handler
+      const themeToggleBtn = document.getElementById('theme-toggle');
+      if (themeToggleBtn) {
+        const syncThemeAria = () => {
+          themeToggleBtn.setAttribute('aria-pressed', String(document.documentElement.classList.contains('dark')));
+        };
+        syncThemeAria();
+        themeToggleBtn.addEventListener('click', () => {
+          const isDark = document.documentElement.classList.toggle('dark');
+          localStorage.setItem('rtfs-theme', isDark ? 'dark' : 'light');
+          syncThemeAria();
+        });
       }
 
       syncGitHub();
