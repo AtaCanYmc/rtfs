@@ -382,6 +382,18 @@ def create_mcp_server(
         doc = await svc._resolve_document(query_or_url=query_or_url)
         return _semantic_search(doc, query, top_k=top_k)
 
+    @mcp.tool()
+    async def diff_scripts(
+        query_or_url_a: str,
+        query_or_url_b: str,
+    ) -> str:
+        """Compare two scripts at the scene and normalized dialogue level."""
+        from rtfs.core.diff import diff_documents
+
+        doc_a = await svc._resolve_document(query_or_url=query_or_url_a)
+        doc_b = await svc._resolve_document(query_or_url=query_or_url_b)
+        return diff_documents(doc_a, doc_b) or "No scene or dialogue differences found."
+
     @mcp.resource("rtfs://script/{source}/{slug}/fountain")
     async def script_fountain_resource(source: str, slug: str) -> str:
         """Full Fountain screenplay text resource for a given provider source and slug."""
@@ -400,6 +412,11 @@ def create_mcp_server(
             start_scene=max(1, offset + 1),
             end_scene=max(1, offset + limit),
         )
+
+    @mcp.resource("rtfs://script/{source}/{slug}/stats")
+    async def script_stats_resource(source: str, slug: str) -> dict[str, Any]:
+        """Scene, character, interaction matrix, and pacing analytics resource."""
+        return await svc.get_script_stats(query_or_url=f"{source}:{slug}")
 
     return mcp
 
