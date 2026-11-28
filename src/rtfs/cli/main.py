@@ -286,6 +286,10 @@ def parse_cmd(
         str | None,
         typer.Option("--scene-range", help="Filter 1-indexed scene range (e.g. '1-5' or '3')"),
     ] = None,
+    ocr: Annotated[
+        bool,
+        typer.Option("--ocr", help="Enable Tesseract OCR for scanned PDFs (pyrtfs[ocr])"),
+    ] = False,
 ) -> None:
     """Parse a local screenplay file (.pdf, .fdx, .html, .txt) offline without provider lookup."""
     try:

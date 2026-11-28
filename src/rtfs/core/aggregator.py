@@ -116,9 +116,14 @@ def filter_scenes(
     return ScriptDocument(metadata=doc.metadata, scenes=matched)
 
 
-def _build_default_parsers() -> dict[str, BaseParser]:
+def _build_default_parsers(ocr: bool = False) -> dict[str, BaseParser]:
+    ocr_hook = None
+    if ocr:
+        from rtfs.parsers.pdf.ocr import tesseract_ocr_hook
+
+        ocr_hook = tesseract_ocr_hook
     return {
-        "pdf": PdfScreenplayParser(),
+        "pdf": PdfScreenplayParser(ocr_hook=ocr_hook),
         "html": HtmlScreenplayParser(),
         "text": TranscriptParser(),
         "fdx": FdxParser(),
@@ -132,6 +137,7 @@ def parse_file(
     title: str | None = None,
     content_type: Literal["html", "pdf", "text", "fdx", "fountain"] | None = None,
     media_type: Literal["movie", "tv"] = "movie",
+    ocr: bool = False,
 ) -> ScriptDocument:
     """Parse a local screenplay/transcript file (.pdf, .fdx, .html, .txt) without network calls."""
     file_path = Path(path)
@@ -148,7 +154,7 @@ def parse_file(
                 f"Supported: {', '.join(sorted(EXTENSION_TO_CONTENT_TYPE))}"
             )
 
-    parsers = _build_default_parsers()
+    parsers = _build_default_parsers(ocr=ocr)
     parser = parsers.get(resolved_type)
     if parser is None:
         raise ValueError(f"Unsupported content_type: {resolved_type}")

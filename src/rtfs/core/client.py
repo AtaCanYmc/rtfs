@@ -156,10 +156,11 @@ class RTFSClient:
         character: str | None = None,
         location: str | None = None,
         scene_range: str | tuple[int, int] | None = None,
+        ocr: bool = False,
     ) -> ScriptDocument:
         if isinstance(scene_range, str) and scene_range.strip():
             parse_scene_range(scene_range)
-        doc = parse_file(file_path, title=title, content_type=content_type)
+        doc = parse_file(file_path, title=title, content_type=content_type, ocr=ocr)
         return filter_scenes(
             doc,
             character=character,
