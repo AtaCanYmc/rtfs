@@ -390,7 +390,7 @@
         </button>
         <a href="#downloads" id="nav-version-badge" class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-hairline bg-charcoal hover:border-hairline-strong font-mono text-[11px] text-slateMuted hover:text-ivory transition-colors whitespace-nowrap">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          <span id="nav-version-text">v0.1.4</span> <!-- x-release-please-version -->
+          <span id="nav-version-text">v0.1.5</span> <!-- x-release-please-version -->
         </a>
         <a href="https://github.com/AtaCanYmc/rtfs" target="_blank" rel="noopener noreferrer"
            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border border-hairline-strong bg-charcoal hover:bg-elevated text-xs font-medium text-ivory transition-colors whitespace-nowrap">
@@ -643,7 +643,7 @@
           <div class="lg:col-span-8 reveal">
             <figure class="rounded-lg border border-hairline-strong bg-panel overflow-hidden shadow-2xl shadow-black/70">
               <figcaption class="flex items-center justify-between px-4 py-2.5 border-b border-hairline bg-charcoal">
-                <span class="font-mono text-[11px] uppercase tracking-wider text-slateMuted">STDOUT // RTFS CLI v0.1.4</span> <!-- x-release-please-version -->
+                <span class="font-mono text-[11px] uppercase tracking-wider text-slateMuted">STDOUT // RTFS CLI v0.1.5</span> <!-- x-release-please-version -->
                 <span id="term-status" class="font-mono text-[10px] text-emerald-400">READY</span>
               </figcaption>
               <pre id="term-screen" class="p-5 sm:p-6 font-mono text-[11.5px] sm:text-xs leading-[1.7] min-h-[370px] max-h-[420px] overflow-y-auto text-ivory/90 whitespace-pre"></pre>
@@ -943,12 +943,12 @@
             <div class="rounded-lg border border-hairline-strong bg-charcoal/60 overflow-hidden">
               <div class="px-6 py-4 border-b border-hairline bg-charcoal flex items-center justify-between">
                 <span class="font-mono text-xs uppercase tracking-wider text-ivory">Latest Release</span>
-                <span id="rel-tag" class="font-mono text-[11px] px-2 py-0.5 rounded bg-vermilion/15 border border-vermilion/30 text-vermilion">v0.1.4</span> <!-- x-release-please-version -->
+                <span id="rel-tag" class="font-mono text-[11px] px-2 py-0.5 rounded bg-vermilion/15 border border-vermilion/30 text-vermilion">v0.1.5</span> <!-- x-release-please-version -->
               </div>
 
               <div class="p-6">
                 <div class="flex items-baseline justify-between gap-4 mb-2">
-                  <h3 id="rel-title" class="font-serif text-2xl text-ivory">rtfs v0.1.4</h3> <!-- x-release-please-version -->
+                  <h3 id="rel-title" class="font-serif text-2xl text-ivory">rtfs v0.1.5</h3> <!-- x-release-please-version -->
                   <span id="rel-date" class="font-mono text-[11px] text-slateMuted shrink-0">Active</span>
                 </div>
                 <p id="rel-notes" class="text-xs text-slateMuted leading-relaxed mb-6">
@@ -1727,7 +1727,7 @@
             const releases = await relRes.json();
             if (Array.isArray(releases) && releases.length > 0) {
               const latest = releases[0];
-              const tag = latest.tag_name || 'v0.1.4'; // x-release-please-version
+              const tag = latest.tag_name || 'v0.1.5'; // x-release-please-version
               const date = latest.published_at ? new Date(latest.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Latest';
 
               document.getElementById('nav-version-text').textContent = tag;
@@ -1770,7 +1770,7 @@
 
           syncEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span><span>Synced with GitHub API</span>';
         } catch (e) {
-          syncEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amberCinema"></span><span>Showing v0.1.4 release snapshot</span>'; // x-release-please-version
+          syncEl.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amberCinema"></span><span>Showing v0.1.5 release snapshot</span>'; // x-release-please-version
         }
       }
 
