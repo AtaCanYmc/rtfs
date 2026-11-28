@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.1.5](https://github.com/AtaCanYmc/rtfs/compare/v0.1.4...v0.1.5) (2026-11-28)
+
+
+### Features
+
+* add Turkish screenplay profile (İÇ./DIŞ.) and rtfs breakdown command ([8a6b3b9](https://github.com/AtaCanYmc/rtfs/commit/8a6b3b9b0538bde4041acf672321094a99e0c18c))
+* **pages:** add rtfs breakdown preset to terminal showcase ([8590eac](https://github.com/AtaCanYmc/rtfs/commit/8590eac47b31ac7e59e906704adde104ef68e9b1))
+* **playground:** add Pyodide WASM Live Web Playground and lazy rtfs.__init__ ([2e40f51](https://github.com/AtaCanYmc/rtfs/commit/2e40f51188e59ba437d011f066d84faba8f9172f))
+
+
+### Bug Fixes
+
+* **pages:** use upload-pages-artifact@v3 and deploy-pages@v4 ([afa403e](https://github.com/AtaCanYmc/rtfs/commit/afa403ead78a140e9f6f354773b770bf4a12a0d3))
+* **security:** add explicit read-only permissions to homebrew-tap.yml (CodeQL [#6](https://github.com/AtaCanYmc/rtfs/issues/6)) ([6624a95](https://github.com/AtaCanYmc/rtfs/commit/6624a955f328acc4ee5f27f4c6a8f09aa0c017a2))
+
+
+### Documentation
+
+* add Live Web Playground to docs/README.md and sitemap.xml ([66c210a](https://github.com/AtaCanYmc/rtfs/commit/66c210a26cf5d44deddb7ae6b0ee535eaf57a89e))
+* add measured parser/cache benchmarks and plugin developer kit ([e84eb52](https://github.com/AtaCanYmc/rtfs/commit/e84eb52173f389863c1ed8c50baf243f7a1943d9))
+* document multi-arch GHCR (ocr+api+redis) and MCP server.json ([15f562c](https://github.com/AtaCanYmc/rtfs/commit/15f562cd7fd16158c94e383a0e48188382064e5e))
+* document rtfs breakdown, doctor, view, and Turkish profile ([443b996](https://github.com/AtaCanYmc/rtfs/commit/443b996a5bfad28983dd90d3776d0e0485abc670))
+
 ## [0.1.4](https://github.com/AtaCanYmc/rtfs/compare/v0.1.3...v0.1.4) (2026-11-28)
 
 
