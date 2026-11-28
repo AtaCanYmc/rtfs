@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rtfs Live Web Playground | Pyodide WASM Screenplay Parser</title>
+  <meta name="description" content="100% client-side screenplay AST parser, FDX/Fountain exporter, and analytics playground powered by Pyodide WebAssembly." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="theme-color" content="#08080A" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    (function () {
+      const saved = localStorage.getItem('rtfs-theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.classList.toggle('dark', saved ? saved === 'dark' : prefersDark);
+    })();
+  </script>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            obsidian: 'rgb(var(--rgb-obsidian) / <alpha-value>)',
+            panel: 'rgb(var(--rgb-panel) / <alpha-value>)',
+            sheet: 'rgb(var(--rgb-sheet) / <alpha-value>)',
+            charcoal: 'rgb(var(--rgb-charcoal) / <alpha-value>)',
+            elevated: 'rgb(var(--rgb-elevated) / <alpha-value>)',
+            ivory: 'rgb(var(--rgb-ivory) / <alpha-value>)',
+            slateMuted: 'rgb(var(--rgb-slate-muted) / <alpha-value>)',
+            vermilion: 'rgb(var(--rgb-vermilion) / <alpha-value>)',
+            amberCinema: 'rgb(var(--rgb-amber) / <alpha-value>)',
+            hairline: 'var(--color-hairline)',
+            hairlineStrong: 'var(--color-hairline-strong)',
+          },
+          fontFamily: {
+            serif: ['"Instrument Serif"', 'Georgia', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    :root {
+      color-scheme: light;
+      --rgb-obsidian: 250 249 246;
+      --rgb-panel: 244 242 237;
+      --rgb-sheet: 255 255 255;
+      --rgb-charcoal: 238 235 229;
+      --rgb-elevated: 230 226 218;
+      --rgb-ivory: 24 24 27;
+      --rgb-slate-muted: 82 82 91;
+      --rgb-vermilion: 220 38 38;
+      --rgb-amber: 180 83 9;
+      --color-hairline: rgba(0, 0, 0, 0.08);
+      --color-hairline-strong: rgba(0, 0, 0, 0.16);
+    }
+    :root.dark {
+      color-scheme: dark;
+      --rgb-obsidian: 8 8 10;
+      --rgb-panel: 11 11 14;
+      --rgb-sheet: 16 16 19;
+      --rgb-charcoal: 17 17 20;
+      --rgb-elevated: 22 22 26;
+      --rgb-ivory: 242 239 233;
+      --rgb-slate-muted: 138 138 147;
+      --rgb-vermilion: 255 59 48;
+      --rgb-amber: 229 169 60;
+      --color-hairline: rgba(255, 255, 255, 0.08);
+      --color-hairline-strong: rgba(255, 255, 255, 0.16);
+    }
+    html, body { background-color: rgb(var(--rgb-obsidian)); color: rgb(var(--rgb-ivory)); }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+</head>
+<body class="font-sans min-h-screen flex flex-col">
+  <header class="sticky top-0 z-40 bg-obsidian/85 backdrop-blur-md border-b border-hairline">
+    <div class="max-w-[1360px] mx-auto px-5 sm:px-8 h-14 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="font-mono text-sm font-semibold tracking-tight text-ivory hover:text-vermilion transition-colors">rtfs</a>
+        <span class="text-ivory/30">/</span>
+        <span class="font-mono text-xs text-slateMuted">Live Web Playground (Pyodide WASM)</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="pyodide-badge" class="font-mono text-[11px] px-2.5 py-1 rounded border border-hairline bg-charcoal text-slateMuted">Instant Preview</span>
+        <button id="theme-toggle" type="button" aria-label="Toggle color theme" class="w-8 h-8 rounded-md border border-hairline bg-charcoal hover:border-hairlineStrong flex items-center justify-center text-slateMuted hover:text-ivory">
+          <svg class="w-4 h-4 hidden dark:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+          <svg class="w-4 h-4 block dark:hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-[1360px] w-full mx-auto px-5 sm:px-8 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Left: Input Editor & File Drop -->
+    <section class="lg:col-span-5 flex flex-col gap-3">
+      <div class="flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-1.5">
+          <button type="button" data-sample="fountain" class="sample-btn px-2.5 py-1 rounded text-xs font-mono border border-hairlineStrong bg-charcoal text-ivory">Fountain</button>
+          <button type="button" data-sample="fdx" class="sample-btn px-2.5 py-1 rounded text-xs font-mono border border-hairline bg-panel text-slateMuted hover:text-ivory">FDX v5</button>
+          <button type="button" data-sample="tr" class="sample-btn px-2.5 py-1 rounded text-xs font-mono border border-hairline bg-panel text-slateMuted hover:text-ivory">Turkish</button>
+        </div>
+        <div class="flex items-center gap-2">
+          <select id="input-format" class="px-2 py-1 rounded text-xs font-mono border border-hairline bg-charcoal text-ivory">
+            <option value="fountain">.fountain</option>
+            <option value="fdx">.fdx</option>
+            <option value="txt">.txt</option>
+          </select>
+          <button id="run-btn" type="button" class="px-3 py-1 rounded text-xs font-mono font-semibold bg-vermilion text-white hover:opacity-90">Run Pyodide</button>
+        </div>
+      </div>
+
+      <div id="drop-zone" class="relative flex-1 flex flex-col rounded-lg border border-hairlineStrong bg-sheet overflow-hidden">
+        <textarea id="script-input" spellcheck="false" class="w-full flex-1 min-h-[380px] p-4 bg-transparent font-mono text-xs leading-relaxed text-ivory focus:outline-none resize-y"></textarea>
+        <div class="px-4 py-2 border-t border-hairline bg-panel flex items-center justify-between text-[11px] font-mono text-slateMuted">
+          <span>Drop .fountain, .fdx, .txt (100% in-browser) or .pdf</span>
+          <label class="text-amberCinema hover:underline cursor-pointer">
+            Upload File
+            <input id="file-input" type="file" accept=".fountain,.fdx,.html,.txt,.pdf" class="hidden" />
+          </label>
+        </div>
+      </div>
+
+      <details class="rounded-lg border border-hairline bg-panel p-3 text-xs">
+        <summary class="font-mono text-slateMuted cursor-pointer">Optional Backend URL (rtfs serve) for .pdf / OCR</summary>
+        <div class="mt-2 flex items-center gap-2">
+          <input id="backend-url" type="url" value="http://127.0.0.1:8000" class="flex-1 px-2.5 py-1.5 rounded border border-hairline bg-sheet font-mono text-xs text-ivory" />
+        </div>
+        <p class="mt-1.5 text-[11px] text-slateMuted">.fountain, .fdx, .html, and .txt run 100% locally in-browser via Pyodide with zero backend.</p>
+      </details>
+
+      <div id="error-banner" class="hidden rounded-md border border-vermilion/50 bg-vermilion/10 px-3 py-2 font-mono text-xs text-vermilion"></div>
+    </section>
+
+    <!-- Right: Tabbed Output View -->
+    <section class="lg:col-span-7 flex flex-col rounded-lg border border-hairlineStrong bg-panel overflow-hidden">
+      <div class="px-4 py-2 border-b border-hairline bg-charcoal flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-1" role="tablist">
+          <button type="button" data-tab="ast" class="out-tab px-3 py-1 rounded text-xs font-mono bg-elevated text-ivory">AST JSON</button>
+          <button type="button" data-tab="export" class="out-tab px-3 py-1 rounded text-xs font-mono text-slateMuted hover:text-ivory">Export</button>
+          <button type="button" data-tab="stats" class="out-tab px-3 py-1 rounded text-xs font-mono text-slateMuted hover:text-ivory">Stats &amp; Pacing</button>
+          <button type="button" data-tab="mermaid" class="out-tab px-3 py-1 rounded text-xs font-mono text-slateMuted hover:text-ivory">Mermaid Graph</button>
+        </div>
+        <div class="flex items-center gap-2">
+          <select id="export-fmt" class="hidden px-2 py-1 rounded text-xs font-mono border border-hairline bg-sheet text-ivory">
+            <option value="fountain">Fountain</option>
+            <option value="fdx">FDX XML</option>
+            <option value="astJson">JSON</option>
+          </select>
+          <button id="copy-out" type="button" class="px-2.5 py-1 rounded text-xs font-mono border border-hairline bg-sheet text-slateMuted hover:text-ivory">Copy</button>
+          <button id="download-out" type="button" class="px-2.5 py-1 rounded text-xs font-mono border border-hairline bg-sheet text-slateMuted hover:text-ivory">Download</button>
+        </div>
+      </div>
+      <div id="output-area" class="flex-1 p-4 overflow-auto min-h-[460px]">
+        <pre id="output-pre" class="font-mono text-xs leading-relaxed text-ivory whitespace-pre-wrap"></pre>
+        <div id="mermaid-container" class="hidden"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const SAMPLES = {
+      fountain: {
+        format: 'fountain',
+        title: 'Diner',
+        content: `Title: Diner\nAuthor: Jane Doe\n\nINT. DINER - NIGHT\n\nRain taps the window.\n\nALICE\n(quietly)\nDid you bring the drive?\n\nBOB ^\nRight here.\n\nCUT TO:`,
+        prebaked: {
+          astJson: JSON.stringify({ metadata: { title: 'Diner', source: 'playground' }, scenes: [{ scene_number: 1, heading: 'INT. DINER - NIGHT', elements: [{ type: 'action', text: 'Rain taps the window.' }, { type: 'dialogue', character: 'ALICE', parenthetical: 'quietly', lines: 'Did you bring the drive?', dual: false }, { type: 'dialogue', character: 'BOB', lines: 'Right here.', dual: true }, { type: 'transition', text: 'CUT TO:' }] }] }, null, 2),
+          fountain: `Title: Diner\nAuthor: Jane Doe\n\nINT. DINER - NIGHT\n\nRain taps the window.\n\nALICE\n(quietly)\nDid you bring the drive?\n\nBOB^\nRight here.\n\nCUT TO:\n`,
+          fdx: `<?xml version="1.0" encoding="UTF-8"?>\n<FinalDraft DocumentType="Script" Template="No" Version="5">\n  <Content>\n    <Paragraph Type="Scene Heading"><Text>INT. DINER - NIGHT</Text></Paragraph>\n  </Content>\n</FinalDraft>`,
+          stats: { title: 'Diner', total_scenes: 1, int_scenes: 1, ext_scenes: 0, dialogue_words: 7, action_words: 4, top_characters: [{ character: 'ALICE', dialogue_turns: 1, word_count: 5 }, { character: 'BOB', dialogue_turns: 1, word_count: 2 }], interactions: { ALICE: { BOB: 1 }, BOB: { ALICE: 1 } } },
+          mermaid: `\`\`\`mermaid\nflowchart LR\n    ALICE ---|1| BOB\n\`\`\``
+        }
+      },
+      fdx: {
+        format: 'fdx',
+        title: 'Lab',
+        content: `<?xml version="1.0" encoding="UTF-8"?>\n<FinalDraft DocumentType="Script" Version="5">\n  <Content>\n    <Paragraph Type="Scene Heading"><Text>INT. LAB - DAY</Text></Paragraph>\n    <Paragraph Type="Character"><Text>ALICE</Text></Paragraph>\n    <Paragraph Type="Dialogue"><Text>System online.</Text></Paragraph>\n  </Content>\n</FinalDraft>`,
+        prebaked: null
+      },
+      tr: {
+        format: 'fountain',
+        title: 'Yerli Yapım',
+        content: `İÇ. KAHVEHANE - GÜNDÜZ\n\nYağmur cama vuruyor.\n\nALİ (DIŞ SES)\nBuraya gelmemeliydik.\n\nAYŞE (TELEFONDA)\nHemen çıkıyorum.`,
+        prebaked: null
+      }
+    };
+
+    let currentResult = SAMPLES.fountain.prebaked;
+    let activeTab = 'ast';
+    let worker = null;
+    let reqCounter = 0;
+
+    const inputEl = document.getElementById('script-input');
+    const formatEl = document.getElementById('input-format');
+    const badgeEl = document.getElementById('pyodide-badge');
+    const errEl = document.getElementById('error-banner');
+    const preEl = document.getElementById('output-pre');
+    const mermaidEl = document.getElementById('mermaid-container');
+    const exportFmtEl = document.getElementById('export-fmt');
+
+    inputEl.value = SAMPLES.fountain.content;
+
+    function renderOutput() {
+      if (!currentResult) return;
+      exportFmtEl.classList.toggle('hidden', activeTab !== 'export');
+      if (activeTab === 'mermaid') {
+        preEl.classList.add('hidden');
+        mermaidEl.classList.remove('hidden');
+        const raw = (currentResult.mermaid || '').replace(/```mermaid\n?/g, '').replace(/```/g, '').trim();
+        mermaidEl.innerHTML = `<pre class="mermaid">${raw}</pre>`;
+        if (window.mermaid) {
+          mermaid.initialize({ startOnLoad: false, theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default' });
+          mermaid.run({ nodes: mermaidEl.querySelectorAll('.mermaid') });
+        }
+        return;
+      }
+      mermaidEl.classList.add('hidden');
+      preEl.classList.remove('hidden');
+      if (activeTab === 'ast') preEl.textContent = currentResult.astJson;
+      else if (activeTab === 'stats') preEl.textContent = JSON.stringify(currentResult.stats, null, 2);
+      else if (activeTab === 'export') preEl.textContent = currentResult[exportFmtEl.value] || '';
+    }
+
+    function getWorker() {
+      if (worker) return worker;
+      worker = new Worker('playground-worker.js');
+      worker.onmessage = (e) => {
+        const d = e.data;
+        if (d.type === 'status') { badgeEl.textContent = d.message; return; }
+        if (d.type === 'ready') { badgeEl.textContent = 'Pyodide Ready'; return; }
+        if (d.ok) {
+          errEl.classList.add('hidden');
+          currentResult = d.result;
+          badgeEl.textContent = 'Pyodide Ready';
+          renderOutput();
+        } else {
+          errEl.textContent = d.error;
+          errEl.classList.remove('hidden');
+        }
+      };
+      return worker;
+    }
+
+    function runPyodide() {
+      errEl.classList.add('hidden');
+      const w = getWorker();
+      w.postMessage({
+        id: ++reqCounter,
+        type: 'parse',
+        content: inputEl.value,
+        format: formatEl.value,
+        title: 'Playground Script',
+      });
+    }
+
+    document.getElementById('run-btn').addEventListener('click', runPyodide);
+    document.querySelectorAll('.sample-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const s = SAMPLES[btn.dataset.sample];
+        inputEl.value = s.content;
+        formatEl.value = s.format;
+        if (s.prebaked) { currentResult = s.prebaked; renderOutput(); }
+        else runPyodide();
+      });
+    });
+    document.querySelectorAll('.out-tab').forEach((tab) => {
+      tab.addEventListener('click', () => {
+        activeTab = tab.dataset.tab;
+        document.querySelectorAll('.out-tab').forEach((t) => t.className = 'out-tab px-3 py-1 rounded text-xs font-mono text-slateMuted hover:text-ivory');
+        tab.className = 'out-tab px-3 py-1 rounded text-xs font-mono bg-elevated text-ivory';
+        renderOutput();
+      });
+    });
+    exportFmtEl.addEventListener('change', renderOutput);
+    document.getElementById('copy-out').addEventListener('click', () => navigator.clipboard.writeText(preEl.textContent));
+    document.getElementById('download-out').addEventListener('click', () => {
+      const blob = new Blob([preEl.textContent], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `rtfs-export.${activeTab === 'export' ? (exportFmtEl.value === 'astJson' ? 'json' : exportFmtEl.value) : 'json'}`;
+      a.click();
+    });
+    document.getElementById('file-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (ext === 'pdf') {
+        errEl.textContent = 'PDF parsing requires a local rtfs serve backend (' + document.getElementById('backend-url').value + ').';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      formatEl.value = ext === 'fdx' ? 'fdx' : ext === 'txt' ? 'txt' : 'fountain';
+      inputEl.value = await file.text();
+      runPyodide();
+    });
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('rtfs-theme', isDark ? 'dark' : 'light');
+      if (activeTab === 'mermaid') renderOutput();
+    });
+
+    renderOutput();
+  </script>
+</body>
+</html>

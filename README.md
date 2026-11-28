@@ -14,7 +14,7 @@
 
 `rtfs` is an asynchronous Python 3.11+ CLI, SDK, FastMCP server, and optional HTTP API that queries multiple screenplay archives, parses PDF, FDX, Fountain, and HTML layouts into a typed Pydantic v2 Abstract Syntax Tree, and exports to JSON, streaming JSONL, Fountain, Final Draft (`.fdx`), or character-normalized dialogue analytics.
 
-Interactive Showcase & Release Hub: [https://atacanymc.github.io/rtfs/](https://atacanymc.github.io/rtfs/)
+Interactive Showcase & Release Hub: [https://atacanymc.github.io/rtfs/](https://atacanymc.github.io/rtfs/) | Live WASM Playground: [https://atacanymc.github.io/rtfs/playground.html](https://atacanymc.github.io/rtfs/playground.html)
 
 ## Table of Contents
 
