@@ -36,13 +36,13 @@ app = create_app(cache_url="memory://")
 
 ## Docker & GHCR Deployment
 
-Run `rtfs serve` with a `redis://` cache backend in one command:
+Run `rtfs serve` with `tesseract-ocr` (`pyrtfs[ocr]`) and a `redis://` cache backend in one command:
 
 ```bash
 docker compose up -d
 ```
 
-Or pull the published GHCR image directly:
+Or pull the multi-arch (`linux/amd64`, `linux/arm64`) GHCR image directly:
 
 ```bash
 docker run -d -p 8000:8000 -e RTFS_CACHE_URL=memory:// ghcr.io/atacanymc/rtfs:latest

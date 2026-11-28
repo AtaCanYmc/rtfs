@@ -243,3 +243,7 @@ Inspect Python version, `RTFS_CACHE_URL`, installed optional extras (`mcp`, `red
 ```bash
 rtfs doctor
 ```
+
+## MCP Registry (`server.json`)
+
+The repository includes [`server.json`](../server.json) (`io.github.atacanymc/rtfs`) for one-click discovery in the official MCP Registry, Smithery, and Glama (`uvx pyrtfs mcp`).
